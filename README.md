@@ -5,7 +5,7 @@ All code for all different roles shall be stored here.
 
 ## Basic Usage Rules
  - Don't push any binary or IDE files! Don't push rp-pc, rp-shared or rp-utils projects!
- - Use log4j in all of the code you right
+ - Use log4j in all of the code you write
  - Include javadocs and basic comments as you go along
 
 ## Getting Started
