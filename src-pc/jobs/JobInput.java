@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class JobInput {
 
 	private HashMap<String, ArrayList<Float>> itemRewardsWeights = new HashMap<>();
-	private HashMap<String, ArrayList<Float>> itemLocations = new HashMap<>(); // float
+	private HashMap<String, ArrayList<Float>> itemLocations = new HashMap<>();
 	private HashMap<Integer, ArrayList<String>> availableOrders = new HashMap<>();
 
 	//Change this depending on your location of files , File.separator is used so it is operating system independent
