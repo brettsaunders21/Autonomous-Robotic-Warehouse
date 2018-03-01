@@ -15,18 +15,18 @@ public class HowToUseJobInput {
 		
 		itemRewardsWeights = jb.getItemRewardsWeights();
 		
-		System.out.println("Values : " + itemRewardsWeights.get("a").toString());
-		System.out.println("Values : " + itemRewardsWeights.get("b").toString());
+		System.out.println("Reward, weight : " + itemRewardsWeights.get("a").toString());
+		System.out.println("Reward, weight : " + itemRewardsWeights.get("b").toString());
 		
 		itemLocations = jb.getItemLocations();
 		
-		System.out.println("Values : " + itemLocations.get("a").toString());
-		System.out.println("Values : " + itemLocations.get("b").toString());
+		System.out.println("X cord,Ycord : " + itemLocations.get("a").toString());
+		System.out.println("X cord,Ycord  : " + itemLocations.get("b").toString());
 		
 		availableOrders = jb.getAvailableOrders();
 		
-		System.out.println("Values : " + availableOrders.get(1001).toString());
-		System.out.println("Values : " + availableOrders.get(1002).toString());
+		System.out.println("What items it contains + qty : " + availableOrders.get(1001).toString());
+		System.out.println("What items it contains + qty : " + availableOrders.get(1002).toString());
 		
 		
 
