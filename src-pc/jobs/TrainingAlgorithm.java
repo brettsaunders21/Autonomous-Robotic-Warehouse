@@ -5,9 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
+
 /*This algorithm is based on Logistic Regression using Stochastic Gradient Descent to adjust the beta values */
 
 public class TrainingAlgorithm {
+	
+	static Logger log4j = Logger.getLogger("jobs.JobSelection");
 
 	// Beta values for each item will be stored here
 	private HashMap<String, Double> betaValuesFromTrainingSet = new HashMap<>();
@@ -68,11 +72,14 @@ public class TrainingAlgorithm {
 		// cancellations
 		try (BufferedReader br = new BufferedReader(new FileReader(cancelDataFile))) {
 
+			
 			while ((line = br.readLine()) != null) {
 				String[] data = line.split(csvSplitBy);
 				int order = Integer.parseInt(data[0]);
 				int cancelledOrNot = Integer.parseInt(data[1]);
 				ArrayList<String> itemsAndQty = availableOrders.get(order);
+				
+				log4j.debug("Available orders " + itemsAndQty.toString());
 
 				float totalReward = 0;
 				float totalWeight = 0;
@@ -419,6 +426,7 @@ public class TrainingAlgorithm {
 								+ betaValuesFromTrainingSet.get("z") * qtyZ
 								+ betaValuesFromTrainingSet.get("totalReward") * totalReward
 								+ betaValuesFromTrainingSet.get("totalWeight") * totalWeight)));
+				log4j.debug("Prediction " + prediction);
 
 				// Calculating new coeffs and updating the hashmap with them
 
@@ -579,7 +587,7 @@ public class TrainingAlgorithm {
 			e.printStackTrace();
 			System.out.println("File not found");
 		}
-
+		log4j.debug("Beta values after training " + betaValuesFromTrainingSet.toString());
 		return betaValuesFromTrainingSet;
 	}
 

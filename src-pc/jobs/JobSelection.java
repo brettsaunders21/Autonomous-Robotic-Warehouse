@@ -2,7 +2,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 public class JobSelection {
+	
+	static Logger log4j = Logger.getLogger("jobs.JobSelection");
 
 	JobInput jb = new JobInput();
 
@@ -29,6 +33,7 @@ public class JobSelection {
 		for (int i = 0; i < notOrderedOrdersList.size(); i++) {
 			int order = notOrderedOrdersList.get(i);
 			ArrayList<String> itemsAndQty = availableOrders.get(order);
+			log4j.debug("Available orders " + itemsAndQty.toString());
 			// ===========Prediction=========================
 			float totalReward = 0;
 			float totalWeight = 0;
@@ -339,6 +344,8 @@ public class JobSelection {
 							+ betaValuesFromTrainingSet.get("z") * qtyZ
 							+ betaValuesFromTrainingSet.get("totalReward") * totalReward
 							+ betaValuesFromTrainingSet.get("totalWeight") * totalWeight)));
+			
+			log4j.debug("Prediction " + prediction);
 
 			if (prediction < 0.5) {
 				prediction = 0; // not cancelled
@@ -354,7 +361,7 @@ public class JobSelection {
 
 		}
 		// Sorting orders that are not to be cancelled depending on their reward/weight
-		// ratio
+		// ratio 
 
 		Set<Float> ratiosSet = orderRewardsRatio.keySet();
 		//Convert set to array;
@@ -381,7 +388,7 @@ public class JobSelection {
 	    }
 
 		
-
+	    log4j.debug("Ordered orders " + orderedOrders.toString());
 		return orderedOrders;
 	}
 

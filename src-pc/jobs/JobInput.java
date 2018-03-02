@@ -1,17 +1,24 @@
+
+//C:\Users\samko\Desktop\rp-team1.1\src-pc\jobs
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.apache.log4j.Logger;
+
 
 public class JobInput {
+	static Logger log4j = Logger.getLogger("jobs.JobSelection");
 
 	private HashMap<String, ArrayList<Float>> itemRewardsWeights = new HashMap<>();
 	private HashMap<String, ArrayList<Float>> itemLocations = new HashMap<>();
 	private HashMap<Integer, ArrayList<String>> availableOrders = new HashMap<>();
 
-	//Change this depending on your location of files , File.separator is used so it is operating system independent
+	// Change this depending on your location of files , File.separator is used so
+	// it is operating system independent
 	String itemRewardsWeightsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator
 			+ "Desktop" + File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs"
 			+ File.separator + "csv" + File.separator + "itemRewardWeight.csv";
@@ -21,12 +28,12 @@ public class JobInput {
 	String availableOrdersFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
 			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator
 			+ "csv" + File.separator + "availableOrders.csv";
-	
+
 	private String line = "";
 	private String csvSplitBy = ",";
-	
+
 	public HashMap<String, ArrayList<Float>> getItemRewardsWeights() {
-		
+
 		try (BufferedReader br = new BufferedReader(new FileReader(itemRewardsWeightsFile))) {
 
 			while ((line = br.readLine()) != null) {
@@ -45,7 +52,7 @@ public class JobInput {
 			e.printStackTrace();
 			System.out.println("Error: File not found");
 		}
-
+		log4j.debug("Reward, weight : " + itemRewardsWeights.get("a").toString());
 		return itemRewardsWeights;
 
 	}
@@ -69,8 +76,7 @@ public class JobInput {
 			e.printStackTrace();
 			System.out.println("Error: File not found");
 		}
-		
-
+        log4j.debug("X cord,Ycord : " + itemLocations.get("a").toString());
 		return itemLocations;
 
 	}
@@ -95,7 +101,7 @@ public class JobInput {
 			e.printStackTrace();
 			System.out.println("Error: File not found");
 		}
-
+		log4j.debug("What items it contains + qty : " + availableOrders.get(1001).toString());
 		return availableOrders;
 
 	}
