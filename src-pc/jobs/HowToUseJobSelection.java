@@ -9,6 +9,8 @@ public class HowToUseJobSelection {
 		ArrayList<Integer> prioritizedOrders = js.prioritize();
 		// I can't test if the array is actually correct because I don't have the example files but that shouldn't matter as the method will be used the same no matter what
 
+		
+		//NOTE - You still need to use JobInput to get the details of the order (e.g items it contains , location of items) see HowToUseJobInput for example
 	}
 
 }
