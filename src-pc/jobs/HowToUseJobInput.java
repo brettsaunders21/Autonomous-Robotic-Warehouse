@@ -21,6 +21,8 @@ public class HowToUseJobInput {
 		
 		drops = jb.getDrops();
 		
+		ArrayList<String> itemNamesList = jb.itemNames();
+		
 		
 
 	}

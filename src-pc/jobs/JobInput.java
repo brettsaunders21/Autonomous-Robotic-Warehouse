@@ -17,6 +17,9 @@ public class JobInput {
 	private HashMap<String, ArrayList<Float>> itemLocations = new HashMap<>();
 	private HashMap<Integer, ArrayList<String>> availableOrders = new HashMap<>();
 	private HashMap<String, ArrayList<Integer>> drops = new HashMap<>();
+	
+
+
 
 	// Change this depending on your location of files 
 	String itemRewardsWeightsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator
@@ -53,7 +56,7 @@ public class JobInput {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: File not found");
+			System.out.println("File not found");
 		}
 		log4j.debug("Reward, weight : " + itemRewardsWeights.get("aa").toString());
 		return itemRewardsWeights;
@@ -77,7 +80,7 @@ public class JobInput {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: File not found");
+			log4j.debug("File not found");
 		}
         log4j.debug("X cord,Ycord : " + itemLocations.get("aa").toString());
 		return itemLocations;
@@ -102,7 +105,7 @@ public class JobInput {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: File not found");
+			log4j.debug("File not found");
 		}
 		log4j.debug("What items it contains + qty : " + availableOrders.get(10000).toString());
 		return availableOrders;
@@ -128,11 +131,33 @@ public class JobInput {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("Error: File not found");
+			log4j.debug("File not found");
 		}
 		log4j.debug("Drop point 1: " + drops.get("drop1").toString());
 		log4j.debug("Drop point 2: " + drops.get("drop2").toString());
 		return drops;
+	}
+	
+	
+	//This is method for TrainingAlg and JobSelect
+	
+	private ArrayList<String> itemNamesList = new ArrayList<String>();
+	public ArrayList<String>  itemNames() {
+		
+		try (BufferedReader br = new BufferedReader(new FileReader(itemRewardsWeightsFile))) {
+
+			while ((line = br.readLine()) != null) {
+		    String[] data = line.split(csvSplitBy);
+            itemNamesList.add(data[0]);
+
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			log4j.debug("File not found");
+		}
+		log4j.debug(itemNamesList.toString());
+		return itemNamesList;
 	}
 	
 	
