@@ -9,7 +9,7 @@ public class HowToUseJobInput {
 		HashMap<String, ArrayList<Float>> itemRewardsWeights = new HashMap<>();
 		HashMap<String, ArrayList<Float>> itemLocations = new HashMap<>();
 		HashMap<Integer, ArrayList<String>> availableOrders = new HashMap<>();
-		
+		HashMap<String, ArrayList<Integer>> drops = new HashMap<>();
 		
 		JobInput jb = new JobInput();
 		
@@ -18,6 +18,8 @@ public class HowToUseJobInput {
 		itemLocations = jb.getItemLocations();
 		
 		availableOrders = jb.getAvailableOrders();
+		
+		drops = jb.getDrops();
 		
 		
 
