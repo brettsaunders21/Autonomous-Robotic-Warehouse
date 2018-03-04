@@ -61,7 +61,7 @@ public class Map{
 	 * @param passable 2d array containing passable flags for each coordinate
 	 * @throws IllegalArgumentException one or more dimensions of array are of size 0
 	 * */
-	public Map(boolean[][] passable) {
+	private Map(boolean[][] passable) {
 		if (passable.length <1) {
 			throw new IllegalArgumentException("Array has no width");
 		}
