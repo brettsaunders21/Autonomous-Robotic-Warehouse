@@ -2,6 +2,8 @@ package routeplanning;
 
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.log4j.Logger;
 import interfaces.Action;
@@ -24,15 +26,13 @@ public class AStar {
 	private final Map map;
 
 	/**
-	 * @param m
-	 *            the map that route finding will be carried out on
+	 * @param map the map that route finding will be carried out on
 	 */
 	public AStar(Map map) {
 		this.map = map;
 	}
 
-	/**If more than one direction has the same absolute distance then the priority of directions is NEG_X, NEG_Y, POS_X, POS_Y
-	 * @param currentPosition
+	/**@param currentPosition
 	 *            the starting coordinate of the route
 	 * @param targetPosition
 	 *            the target coordinate of the route
@@ -45,12 +45,7 @@ public class AStar {
 	public Route generateRoute(Point currentPosition, Point targetPosition, Pose startingPose, Route[] routes) {
 		Map tempMap = map.clone();
 		BlockingQueue<Point> coordinates = new LinkedBlockingQueue<Point>();
-		ArrayList<Point> tempCoords = new ArrayList<Point>();
-		ArrayList<Integer> tempDirs = new ArrayList<Integer>();
 		int length = 0;
-		int timeInterval = 0;
-		Point testPoint = currentPosition.clone();
-		boolean atDestination = currentPosition.equals(targetPosition);
 
 		// checks that both points are within the map
 		if (!tempMap.withinMapBounds(currentPosition) || !tempMap.withinMapBounds(targetPosition)) {
@@ -61,12 +56,30 @@ public class AStar {
 			throw new IllegalStateException("One or both coordinates are not in the traversable area");
 		}
 		
+		TempRouteInfo ti = routeFindingAlgo(currentPosition, targetPosition, tempMap);
+		// moves final coordinates to queue and finalises the length of the route
+		coordinates.addAll(ti.getCoords());
+		length = ti.getTimeInterval();
+		BlockingQueue<Action> directions = generateDirectionsQueue(ti.getDirs());
+		return new Route(coordinates, directions, length, startingPose,
+				differenceInPose(poseToInt(startingPose), ti.getDirs().get(0), true));
+	}
+
+	/*The actual route finding code*/
+	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap) {
+		Point testPoint = startPosition.clone();
+		ArrayList<Point> visitedCoords = new ArrayList<Point>();
+		ArrayList<Point> traversedCoords = new ArrayList<Point>();
+		ConcurrentMap<Point, RouteCoordInfo> visitedPoints = new ConcurrentHashMap<>();
+		boolean atDestination = startPosition.equals(targetPosition);
+		
+		visitedPoints.put(startPosition ,new RouteCoordInfo(startPosition, startPosition, startPosition.distance(targetPosition), 0));
+		traversedCoords.add(startPosition);
+		visitedCoords.add(startPosition);
+				
 		// loops until coordinates are at the target coordinates
 		while (!atDestination) {
-			// double absoluteDistance = testPoint.distance(targetPosition);
 			double nextDist = Double.POSITIVE_INFINITY;
-			int shortestDir = 0;
-			// Point nextDir;
 			Point[] testDirs = new Point[] { new Point(testPoint.x - 1, testPoint.y), // left
 					new Point(testPoint.x, testPoint.y - 1), // up
 					new Point(testPoint.x + 1, testPoint.y), // right
@@ -77,35 +90,82 @@ public class AStar {
 				// for each point within the bounds of the map
 				if (tempMap.withinMapBounds(testDirs[allDirs])) {
 					// if test point is passable and makes the route shorter than the
-					if (tempMap.isPassable(testDirs[allDirs])
-							&& (testDirs[allDirs].distance(targetPosition) < nextDist)) {
-						nextDist = testDirs[allDirs].distance(targetPosition);
-						shortestDir = allDirs;
+					if (tempMap.isPassable(testDirs[allDirs])){
+						Point p = testDirs[allDirs];
+						if (!visitedCoords.contains(p)) {
+							visitedPoints.putIfAbsent(p, new RouteCoordInfo(p, testPoint, p.distance(targetPosition), visitedPoints.get(testPoint).getDistFromStart()+1));
+							visitedCoords.add(p);
+						}
 					}
 				}
 			}
-
-			// if another robot is already going to be at the coordinates
-			if (!otherRobotAtCoord(testDirs[shortestDir], timeInterval)) {
-				tempCoords.add(testDirs[shortestDir]);
-				tempDirs.add(shortestDir);
-				testPoint = testDirs[shortestDir];
-				timeInterval++;
-			} else {
-				tempCoords.add(testPoint);
-				tempDirs.add(STILL);
-				timeInterval++;
+			
+			for (int i = 0; i<visitedCoords.size(); i++) {
+				Point p = visitedCoords.get(i);
+				RouteCoordInfo pInfo = visitedPoints.get(p);
+				if (!traversedCoords.contains(p)) {
+					if (pInfo.getTotalPointDist()<nextDist) {
+						nextDist = pInfo.getTotalPointDist();
+						testPoint = p;
+						traversedCoords.add(p);
+					}
+				}
 			}
+			logger.info(testPoint);
+			logger.info(visitedPoints.get(testPoint).getTotalPointDist());
 			atDestination = testPoint.equals(targetPosition);
 		}
-		// moves final coordinates to queue and finalises the length of the route
-		coordinates.addAll(tempCoords);
-		length = timeInterval;
-		BlockingQueue<Action> directions = generateDirectionsQueue(tempDirs);
-		return new Route(coordinates, directions, length, startingPose,
-				differenceInPose(poseToInt(startingPose), tempDirs.get(0), true));
+		
+		
+		boolean atStart = startPosition.equals(testPoint);
+		ArrayList<Point> tempCoords = new ArrayList<Point>(visitedPoints.get(targetPosition).getDistFromStart());
+		ArrayList<Integer> tempDirs = new ArrayList<Integer>(visitedPoints.get(targetPosition).getDistFromStart());
+		for (int i = 0; i<visitedPoints.get(targetPosition).getDistFromStart(); i++) {
+			tempCoords.add(new Point(-1,-1));
+			tempDirs.add(-1);
+		}
+		while (!atStart){
+			RouteCoordInfo pInfo = visitedPoints.get(testPoint);
+			tempCoords.set(pInfo.getDistFromStart()-1, testPoint);
+			testPoint = pInfo.getOriginPoint();
+			atStart = startPosition.equals(testPoint);
+			tempDirs.set(pInfo.getDistFromStart()-1, getDirection(pInfo));
+		}
+		
+		int i = 0;
+		while (i<tempCoords.size()) {
+			if (otherRobotAtCoord(tempCoords.get(i), i)) {
+				tempCoords.add(i, tempCoords.get(i));
+				tempDirs.add(i, STILL);
+			}
+			i++;
+		}
+		return new TempRouteInfo(tempCoords.size(), tempCoords, tempDirs);
 	}
-
+	
+	/*determines which direction has to be travelled between the coordinate and its parent*/
+	private int getDirection(RouteCoordInfo pInfo) {
+		int direction;
+		Point difference = pInfo.getThisPoint().subtract(pInfo.getOriginPoint());
+		if (difference.x!=0d) {
+			if (difference.x==1d) {
+				direction = POS_X;
+			}
+			else {
+				direction = NEG_X;
+			}
+		}
+		else {
+			if(difference.y==1d) {
+				direction = POS_Y;
+			}
+			else {
+				direction = NEG_Y;
+			}
+		}
+		return direction;
+	}
+	
 	/*Converts from pose to int*/
 	private int poseToInt(Pose p) {
 		switch (p) {
@@ -127,13 +187,7 @@ public class AStar {
 		}
 	}
 
-	/**
-	 * @param coordinate
-	 *            the coordinate being checked
-	 * @param timeInterval
-	 *            the time interval for which the coordinate is being checked
-	 * @return if another robot is at the coordinate specified at the time specified
-	 */
+	/*if another robot is at the coordinate specified at the time specified then true is returned*/
 	private boolean otherRobotAtCoord(Point coordinate, int timeInterval) {
 		return false;
 	}
@@ -226,6 +280,9 @@ public class AStar {
 					if (startPose>3) {
 						startPose = startPose-4;
 					}
+					break;
+				}
+				default:{
 					break;
 				}
 				}
