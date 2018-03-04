@@ -56,6 +56,23 @@ public class Map{
 		}
 	}
 	
+	/**
+	 * Generates a map based upon the passable flag states of the 2d array
+	 * @param passable 2d array containing passable flags for each coordinate
+	 * @throws IllegalArgumentException one or more dimensions of array are of size 0
+	 * */
+	public Map(boolean[][] passable) {
+		if (passable.length <1) {
+			throw new IllegalArgumentException("Array has no width");
+		}
+		this.width = passable.length;
+		if (passable[0].length<1) {
+			throw new IllegalArgumentException("Array has no height");
+		}
+		this.height = passable[0].length;
+		this.passable = passable;
+	}
+	
 	/**@param p the coordinate being checked
 	 * @return true if the given point is within the bounds of the map, false if it is not*/
 	public boolean withinMapBounds(Point p) {
@@ -74,6 +91,11 @@ public class Map{
 			throw new IllegalArgumentException("Point not within bounds of map");
 		}
 		return true;
+	}
+	
+	/**@return a clone of the current object*/
+	public Map clone() {
+		return new Map(passable);
 	}
 	
 	/**@return the map width*/
