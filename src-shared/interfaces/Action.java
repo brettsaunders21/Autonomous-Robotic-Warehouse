@@ -6,5 +6,8 @@ public enum Action {
 	BACKWARD,
 	WAIT,
 	PICKUP,
-	DROPOFF;
+	DROPOFF,
+	TURN_180,
+	TURN_LEFT,
+	TURN_RIGHT;
 }
