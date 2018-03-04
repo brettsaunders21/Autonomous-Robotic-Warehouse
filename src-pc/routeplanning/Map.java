@@ -90,7 +90,7 @@ public class Map{
 			logger.debug("w "+width+" h "+height+" x "+p.x+" y "+p.y);
 			throw new IllegalArgumentException("Point not within bounds of map");
 		}
-		return true;
+		return passable[(int)p.x][(int)p.y];
 	}
 	
 	/**@return a clone of the current object*/
