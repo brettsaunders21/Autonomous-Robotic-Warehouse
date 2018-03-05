@@ -46,6 +46,6 @@ public class RouteCoordInfo{
 	
 	/**@return the sum of the distance from the start in grid units and the absolute distance to the target coordinate from this coordinate*/
 	public double getTotalPointDist() {
-		return distanceToDest +(double)distFromStart;
+		return distanceToDest +distFromStart;
 	}
 }

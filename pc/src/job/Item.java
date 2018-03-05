@@ -1,3 +1,5 @@
+package job;
+
 import lejos.geom.Point;
 
 /**
