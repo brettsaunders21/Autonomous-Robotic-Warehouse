@@ -1,5 +1,3 @@
-package interfaces;
-
 import java.util.Queue;
 import lejos.geom.Point;
 import jobs.JobDetails;
