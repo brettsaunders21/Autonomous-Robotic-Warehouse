@@ -10,16 +10,20 @@ public class Item {
 
 	private final String ID;
 	private final float WEIGHT;
+	private final float TOTAL_WEIGHT;
 	private final float REWARD;
+	private final float TOTAL_REWARD;
 	private final Point POSITION;
 	private final int QUANTITY;
 	
-	public Item(String _ID, int _QUANTITY) {
+	public Item(String _ID, int _QUANTITY, float _WEIGHT, Point _POS, float _REWARD) {
 		this.ID = _ID;
 		this.QUANTITY = _QUANTITY;
-		WEIGHT = 0;
-		POSITION = new Point(1,1);
-		REWARD = 0;
+		this.WEIGHT = _WEIGHT;
+		this.POSITION = _POS;
+		this.REWARD = _REWARD;
+		this.TOTAL_WEIGHT = WEIGHT * QUANTITY;
+		this.TOTAL_REWARD = REWARD * QUANTITY;
 	}
 
 	/**
@@ -55,5 +59,19 @@ public class Item {
 	 */
 	public final int getQUANTITY() {
 		return QUANTITY;
+	}
+
+	/**
+	 * @return the tOTAL_WEIGHT
+	 */
+	public float getTOTAL_WEIGHT() {
+		return TOTAL_WEIGHT;
+	}
+
+	/**
+	 * @return the tOTAL_REWARD
+	 */
+	public float getTOTAL_REWARD() {
+		return TOTAL_REWARD;
 	}
 }

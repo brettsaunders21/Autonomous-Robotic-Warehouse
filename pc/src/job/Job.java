@@ -12,23 +12,22 @@ public class Job {
 	private final int ID;
 	private final ArrayList<Item> ITEMS;
 	private final float WEIGHT;
-	private final float SCORE;
+	private final float REWARD;
 	private Point dropLocation;
 
 	public Job(int _ID, ArrayList<Item> _ITEMS) {
 		this.ID = _ID;
 		this.ITEMS = _ITEMS;
-		this.WEIGHT = 0;
-		this.SCORE = 0;
+		this.WEIGHT = calculateWeight();
+		this.REWARD = calculateReward();
 		dropLocation = null;
 	}
-	
 	
 	public Job(int _ID, ArrayList<Item> _ITEMS, Point _dropLocation) {
 		this.ID = _ID;
 		this.ITEMS = _ITEMS;
-		this.WEIGHT = 0;
-		this.SCORE = 0;
+		this.WEIGHT = calculateWeight();
+		this.REWARD = calculateReward();
 		dropLocation = _dropLocation;
 	}
 
@@ -47,20 +46,6 @@ public class Job {
 	}
 
 	/**
-	 * @return the total weight of the job
-	 */
-	public final float getWEIGHT() {
-		return WEIGHT;
-	}
-
-	/**
-	 * @return the total score of the job
-	 */
-	public final float getSCORE() {
-		return SCORE;
-	}
-
-	/**
 	 * @return the dropLocation
 	 */
 	public final Point getDropLocation() {
@@ -72,5 +57,35 @@ public class Job {
 	 */
 	public final void setDropLocation(Point dropLocation) {
 		this.dropLocation = dropLocation;
+	}
+	
+	public float calculateWeight() {
+		float weight = 0.0f;
+		for (Item i : ITEMS) {
+			weight += i.getTOTAL_WEIGHT();
+		}
+		return weight;
+	}
+	
+	public float calculateReward() {
+		float reward = 0.0f;
+		for (Item i : ITEMS) {
+			reward += i.getTOTAL_REWARD();
+		}
+		return reward;
+	}
+
+	/**
+	 * @return the wEIGHT
+	 */
+	public float getWEIGHT() {
+		return WEIGHT;
+	}
+
+	/**
+	 * @return the rEWARD
+	 */
+	public float getREWARD() {
+		return REWARD;
 	}
 }
