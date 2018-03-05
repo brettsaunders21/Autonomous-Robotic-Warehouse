@@ -1,3 +1,5 @@
+package main;
+
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 import rp.config.WheeledRobotConfiguration;

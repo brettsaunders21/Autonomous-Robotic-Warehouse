@@ -1,3 +1,7 @@
+package main;
+
+import actions.Movement;
+import interfaces.Action;
 import lejos.nxt.LightSensor;
 import lejos.util.Delay;
 import rp.systems.StoppableRunnable;
