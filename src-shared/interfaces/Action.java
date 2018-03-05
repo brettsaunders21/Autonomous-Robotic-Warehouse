@@ -10,5 +10,7 @@ public enum Action {
 	DROPOFF,
 	TURN_180,
 	TURN_LEFT,
-	TURN_RIGHT;
+	TURN_RIGHT,
+	CANCEL,
+	SHUTDOWN
 }
