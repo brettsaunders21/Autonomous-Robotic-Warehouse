@@ -9,7 +9,6 @@ public class Movement {
 	private final LightSensor RIGHT_SENSOR;
 	private final DifferentialPilot PILOT;
 	private final int CORRECTION = 7;
-	private Configuration c = new Configuration();
 	
 	public Movement(int _adjustmentValue) {
 		PILOT = new WheeledRobotSystem(Configuration.CUSTOM_EXPRESS_BOT).getPilot();
@@ -18,8 +17,8 @@ public class Movement {
 		adjustmentValue = _adjustmentValue;
 	}
 	
-	public void nextAction(Action a) {
-		switch(a) {
+	public void nextAction(Action command, int pickAmount) {
+		switch(command) {
 		case WAIT: 
 			Delay.msDelay(100);
 			return;
@@ -46,6 +45,25 @@ public class Movement {
 				PILOT.rotateLeft();
 			}
 			PILOT.rotate(20);
+			break;
+		case PICKUP:
+			//Need interface code
+			break;
+		case DROPOFF:
+			//Need interface code
+			break;
+		case TURN_180: 
+			PILOT.rotate(180);
+			break;
+		case TURN_LEFT:
+			PILOT.rotate(90);
+			break;
+		case TURN_RIGHT:
+			PILOT.rotate(-90);
+			break;
+		case CANCEL:
+			break;
+		case SHUTDOWN:
 			break;
 		}
 	}
