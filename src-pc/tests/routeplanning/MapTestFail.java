@@ -10,6 +10,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+/**
+ * @author ladderackroyd
+ * @author Lewis Ackroyd
+ * */
+
 @RunWith(value = Parameterized.class)
 public class MapTestFail {
 	final static Logger logger = Logger.getLogger(MapTestFail.class);
@@ -40,6 +45,6 @@ public class MapTestFail {
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorTest() {
 		logger.debug("w: "+width+" h: "+height+" p: ("+pointx+","+pointy+")");
-		new Map(width, height, new Point[] { new Point(pointx, pointy) });
+		Map.createTestMap(width, height, new Point[] { new Point(pointx, pointy) });
 	}
 }

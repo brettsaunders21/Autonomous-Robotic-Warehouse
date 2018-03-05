@@ -13,22 +13,29 @@ import interfaces.Action;
 import org.apache.log4j.Level;
 import interfaces.Pose;
 
-public class AStarTestSuccess {
-	final static Logger logger = Logger.getLogger(AStarTestSuccess.class);
+/**
+ * @author ladderackroyd
+ * @author Lewis Ackroyd
+ * */
+
+public class AStarTest {
+	final static Logger logger = Logger.getLogger(AStarTest.class);
 	final static Logger aStarLogger = Logger.getLogger(AStar.class);
 	
-	private Map map = new Map(12,8, new Point[] {new Point(1,2), new Point(1,3), new Point(1,4), new Point(1,5), new Point(1,6),
+	/*private Map map = Map.createTestMap(12,8, new Point[] {new Point(1,2), new Point(1,3), new Point(1,4), new Point(1,5), new Point(1,6),
 			new Point(4,2), new Point(4,3), new Point(4,4), new Point(4,5), new Point(4,6),
 			new Point(7,2), new Point(4,3), new Point(7,4), new Point(7,5), new Point(7,6),
-			new Point(10,2), new Point(10,3), new Point(10,4), new Point(10,5), new Point(10,6)});
+			new Point(10,2), new Point(10,3), new Point(10,4), new Point(10,5), new Point(10,6)});*/
+	
+	private Map map = Map.generateRealWarehouseMap();
 	
 	private AStar aStar;
 	
 	/*Initialises each parameter for each test*/
-	public AStarTestSuccess() {
+	public AStarTest() {
 		aStar = new AStar(map);
 		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(Level.DEBUG);
 	}
 
 	//Starts facing left and wants to travel left
@@ -160,7 +167,7 @@ public class AStarTestSuccess {
 	public void directionsNoObstructionTurnReverse() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3,2), new Point(0,0), Pose.NEG_X, new Route[] {});
-		Action[] ds = new Action[] {Action.FORWARD, Action.RIGHT, Action.LEFT, Action.FORWARD, Action.RIGHT};
+		Action[] ds = new Action[] {Action.FORWARD, Action.RIGHT, Action.FORWARD, Action.LEFT, Action.FORWARD};
 		assertArrayEquals(ds,r.getDirections().toArray());
 	}
 	
@@ -169,7 +176,7 @@ public class AStarTestSuccess {
 	public void coordinatesNoObstructionTurnReverse() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3,2), new Point(0,0), Pose.NEG_X, new Route[] {});
-		Point[] ps = new Point[] {new Point(2,2), new Point(2,1), new Point(1,1), new Point(0,1), new Point(0,0)};
+		Point[] ps = new Point[] {new Point(2,2), new Point(2,1), new Point(2,0), new Point(1,0), new Point(0,0)};
 		assertArrayEquals(ps,r.getRouteCoordinates().toArray());
 	}                      
 
@@ -178,8 +185,22 @@ public class AStarTestSuccess {
 	public void coordinatesObstacleAvoid() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(2,6), Pose.NEG_X, new Route[] {});
-		Point[] ps = new Point[] {new Point(0,1), new Point(0,2), new Point(0,3), new Point(0,4), new Point(0,5), new Point(0,6), new Point(0,7), new Point(1,7), new Point(2,7), new Point(2,6)};
+		Point[] ps = new Point[] {new Point(0,1), new Point(0,2), new Point(0,3), new Point(0,4), new Point(0,5), new Point(0,6), new Point(1,6), new Point(2,6)};
 		assertArrayEquals(ps,r.getRouteCoordinates().toArray());
 	}
 
+	@Ignore
+	@Test
+	public void whatAreCoords() {
+		boolean[][] b = map.obstructions();
+		logger.debug(map.getWidth() + " " + map.getHeight());
+		for (int x = 0; x<map.getWidth(); x++) {
+			for(int y = 0; y<map.getHeight(); y++) {
+				if (!b[x][y]) {
+					logger.debug(new Point(x,y));
+				}
+			}
+		}
+		assertTrue(map.withinMapBounds(new Point(11,7)));
+	}
 }
