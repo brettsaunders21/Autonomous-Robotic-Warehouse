@@ -9,6 +9,12 @@ import org.apache.log4j.Logger;
 import interfaces.Action;
 import interfaces.Pose;
 import lejos.geom.Point;
+import routeplanning.astarhelpers.*;
+
+/**
+ * @author ladderackroyd
+ * @author Lewis Ackroyd
+ * */
 
 public class AStar {
 	final static Logger logger = Logger.getLogger(AStar.class);
@@ -43,6 +49,7 @@ public class AStar {
 	 *             one or both coordinates are in an inaccessible area
 	 */
 	public Route generateRoute(Point currentPosition, Point targetPosition, Pose startingPose, Route[] routes) {
+		//creates a clone of the existing map to prevent accidental overwriting of the map
 		Map tempMap = map.clone();
 		BlockingQueue<Point> coordinates = new LinkedBlockingQueue<Point>();
 		int length = 0;
@@ -56,82 +63,38 @@ public class AStar {
 			throw new IllegalStateException("One or both coordinates are not in the traversable area");
 		}
 		
+		//finds the shortest route between the two points
 		TempRouteInfo ti = routeFindingAlgo(currentPosition, targetPosition, tempMap);
+		
 		// moves final coordinates to queue and finalises the length of the route
 		coordinates.addAll(ti.getCoords());
-		length = ti.getTimeInterval();
+		length = ti.getCoords().size();
+		
+		//uses the list of coordinates to produce a queue of directions
 		BlockingQueue<Action> directions = generateDirectionsQueue(ti.getDirs());
 		return new Route(coordinates, directions, length, startingPose,
 				differenceInPose(poseToInt(startingPose), ti.getDirs().get(0), true));
 	}
 
-	/*The actual route finding code*/
+	/*The actual route finding code
+	 * @param startPosition the starting point of the route
+	 * @param targetPosition the end point of the route
+	 * @param tempMap the map route finding is being carried out on
+	 * @return the information about the route that is used to produce a route object*/
 	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap) {
-		Point testPoint = startPosition.clone();
-		ArrayList<Point> visitedCoords = new ArrayList<Point>();
-		ArrayList<Point> traversedCoords = new ArrayList<Point>();
-		ConcurrentMap<Point, RouteCoordInfo> visitedPoints = new ConcurrentHashMap<>();
-		boolean atDestination = startPosition.equals(targetPosition);
+		//finds the shortest route through the map
+		ConcurrentMap<Point, RouteCoordInfo> visitedPoints = findShortestRoute(tempMap, startPosition, targetPosition);
 		
-		visitedPoints.put(startPosition ,new RouteCoordInfo(startPosition, startPosition, startPosition.distance(targetPosition), 0));
-		traversedCoords.add(startPosition);
-		visitedCoords.add(startPosition);
-				
-		// loops until coordinates are at the target coordinates
-		while (!atDestination) {
-			double nextDist = Double.POSITIVE_INFINITY;
-			Point[] testDirs = new Point[] { new Point(testPoint.x - 1, testPoint.y), // left
-					new Point(testPoint.x, testPoint.y - 1), // up
-					new Point(testPoint.x + 1, testPoint.y), // right
-					new Point(testPoint.x, testPoint.y + 1) }; // down
+		//produces the route information in the correct order
+		TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints);
+		
+		return addRobotAvoidInstructions(tempInfo);
+	}
 
-			// indexes: [0]:left, [1]:right, [2]:up, [3]:down
-			for (int allDirs = 0; allDirs < 4; allDirs++) {
-				// for each point within the bounds of the map
-				if (tempMap.withinMapBounds(testDirs[allDirs])) {
-					// if test point is passable and makes the route shorter than the
-					if (tempMap.isPassable(testDirs[allDirs])){
-						Point p = testDirs[allDirs];
-						if (!visitedCoords.contains(p)) {
-							visitedPoints.putIfAbsent(p, new RouteCoordInfo(p, testPoint, p.distance(targetPosition), visitedPoints.get(testPoint).getDistFromStart()+1));
-							visitedCoords.add(p);
-						}
-					}
-				}
-			}
-			
-			for (int i = 0; i<visitedCoords.size(); i++) {
-				Point p = visitedCoords.get(i);
-				RouteCoordInfo pInfo = visitedPoints.get(p);
-				if (!traversedCoords.contains(p)) {
-					if (pInfo.getTotalPointDist()<nextDist) {
-						nextDist = pInfo.getTotalPointDist();
-						testPoint = p;
-						traversedCoords.add(p);
-					}
-				}
-			}
-			logger.info(testPoint);
-			logger.info(visitedPoints.get(testPoint).getTotalPointDist());
-			atDestination = testPoint.equals(targetPosition);
-		}
-		
-		
-		boolean atStart = startPosition.equals(testPoint);
-		ArrayList<Point> tempCoords = new ArrayList<Point>(visitedPoints.get(targetPosition).getDistFromStart());
-		ArrayList<Integer> tempDirs = new ArrayList<Integer>(visitedPoints.get(targetPosition).getDistFromStart());
-		for (int i = 0; i<visitedPoints.get(targetPosition).getDistFromStart(); i++) {
-			tempCoords.add(new Point(-1,-1));
-			tempDirs.add(-1);
-		}
-		while (!atStart){
-			RouteCoordInfo pInfo = visitedPoints.get(testPoint);
-			tempCoords.set(pInfo.getDistFromStart()-1, testPoint);
-			testPoint = pInfo.getOriginPoint();
-			atStart = startPosition.equals(testPoint);
-			tempDirs.set(pInfo.getDistFromStart()-1, getDirection(pInfo));
-		}
-		
+	/*adds additional coordinates and directions to allow the robot to execute a wait instruction to avoid a collision*/
+	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo) {
+		ArrayList<Point> tempCoords = tempInfo.getCoords();
+		ArrayList<Integer> tempDirs = tempInfo.getDirs();
 		int i = 0;
 		while (i<tempCoords.size()) {
 			if (otherRobotAtCoord(tempCoords.get(i), i)) {
@@ -140,7 +103,119 @@ public class AStar {
 			}
 			i++;
 		}
-		return new TempRouteInfo(tempCoords.size(), tempCoords, tempDirs);
+		return new TempRouteInfo(tempCoords, tempDirs);
+	}
+
+	/*returns a TempRouteInfo object which contains two ArrayLists holding the coordinates and directions in the correct order*/
+	private TempRouteInfo produceInOrderRouteInfo(Point startPosition, Point targetPosition,
+			ConcurrentMap<Point, RouteCoordInfo> visitedPoints) {
+		//loop exit condition
+		boolean atStart = startPosition.equals(targetPosition);
+		Point testPoint = targetPosition;
+		ArrayList<Point> tempCoords = new ArrayList<Point>(visitedPoints.get(targetPosition).getDistFromStart());
+		ArrayList<Integer> tempDirs = new ArrayList<Integer>(visitedPoints.get(targetPosition).getDistFromStart());
+		
+		//initialises both arrays to be the correct size so that they can be inserted into correctly
+		for (int i = 0; i<visitedPoints.get(targetPosition).getDistFromStart(); i++) {
+			tempCoords.add(new Point(-1,-1));
+			tempDirs.add(-1);
+		}
+		
+		//loops through the route from the destination until the start is reached, producing a correctly ordered ArrayList
+		while (!atStart){
+			RouteCoordInfo pInfo = visitedPoints.get(testPoint);
+			tempCoords.set(pInfo.getDistFromStart()-1, testPoint);
+			testPoint = pInfo.getOriginPoint();
+			atStart = startPosition.equals(testPoint);
+			tempDirs.set(pInfo.getDistFromStart()-1, getDirection(pInfo));
+		}
+		return new TempRouteInfo(tempCoords, tempDirs);
+	}
+
+	/*returns the ConcurrentMap which holds information on the points which can be used to obtain the shortest route*/
+	private ConcurrentMap<Point, RouteCoordInfo> findShortestRoute(Map tempMap, Point startPosition, Point targetPosition) {
+		
+		//holds information about each point that is currently accessible to route find on
+		ConcurrentMap<Point, RouteCoordInfo> visitedPoints = new ConcurrentHashMap<>();
+		
+		//creates arrays to hold all points that are accessible so far and points that have already been traversed
+		ArrayList<Point> traversedCoords = new ArrayList<Point>();
+		ArrayList<Point> visitedCoords = new ArrayList<Point>();
+		
+		//adds start coordinate to the lists
+		visitedPoints.put(startPosition ,new RouteCoordInfo(startPosition, startPosition, startPosition.distance(targetPosition), 0));
+		traversedCoords.add(startPosition);
+		visitedCoords.add(startPosition);
+		
+		//the point currently being traversed
+		Point testPoint = startPosition.clone();
+		//loop exit condition
+		boolean atDestination = startPosition.equals(targetPosition);
+		// loops until the test coordinate is at the target coordinates
+		while (!atDestination) {
+			//returns a list of all points directly adjacent to the current point that are valid points to move to
+			Point[] points = getValidSurroundingPoints(tempMap, testPoint);
+			for (int i = 0; i<points.length; i++) {
+				Point p = points[i];
+				//adds the information about each point to corresponding arrays if it is not already in the arrays
+				if (!visitedCoords.contains(p)) {
+					visitedPoints.putIfAbsent(p, new RouteCoordInfo(p, testPoint, p.distance(targetPosition), visitedPoints.get(testPoint).getDistFromStart()+1));
+					visitedCoords.add(p);
+				}
+			}
+			
+			//finds the next closest untraversed point to the target
+			testPoint = optimalPoint(visitedCoords, traversedCoords, visitedPoints);
+			traversedCoords.add(testPoint);
+			
+			//checks if the target poisiton has been reached
+			atDestination = testPoint.equals(targetPosition);
+			
+			logger.info(testPoint);
+			logger.info(visitedPoints.get(testPoint).getTotalPointDist());
+		}
+		return visitedPoints;
+	}
+	
+	/*returns a list of all points directly adjacent to the current point that are valid points to move to*/
+	private Point[] getValidSurroundingPoints(Map tempMap, Point testPoint) {
+		ArrayList<Point> points = new ArrayList<Point>(4);
+		Point[] testDirs = new Point[] { new Point(testPoint.x - 1, testPoint.y), // left
+			new Point(testPoint.x, testPoint.y - 1), // up
+			new Point(testPoint.x + 1, testPoint.y), // right
+			new Point(testPoint.x, testPoint.y + 1) }; // down
+
+		// indexes: [0]:left, [1]:right, [2]:up, [3]:down
+		for (int allDirs = 0; allDirs < 4; allDirs++) {
+			// for each point within the bounds of the map
+			if (tempMap.withinMapBounds(testDirs[allDirs])) {
+				// if test point is passable and makes the route shorter than the
+				if (tempMap.isPassable(testDirs[allDirs])){
+					 points.add(testDirs[allDirs]);
+				}
+			}
+		}
+		return points.toArray(new Point[0]);
+	}
+	
+	/*given the points that are available, returns the point closest to the target coordinates that has not yet been visited*/
+	private Point optimalPoint(ArrayList<Point> visitedCoords, ArrayList<Point> traversedCoords, ConcurrentMap<Point, RouteCoordInfo> visitedPoints) {
+		//the shortest route found so far
+		double nextDist = Double.POSITIVE_INFINITY;
+		//the point corresponding to the shortest route
+		Point nextPoint = new Point(-1,-1);
+		for (int i = 0; i<visitedCoords.size(); i++) {
+			Point p = visitedCoords.get(i);
+			RouteCoordInfo pInfo = visitedPoints.get(p);
+			if (!traversedCoords.contains(p)) {
+				if (pInfo.getTotalPointDist()<nextDist) {
+					nextPoint = p;
+					nextDist = pInfo.getTotalPointDist();
+					traversedCoords.add(p);
+				}
+			}
+		}
+		return nextPoint;
 	}
 	
 	/*determines which direction has to be travelled between the coordinate and its parent*/

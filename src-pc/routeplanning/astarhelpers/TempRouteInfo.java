@@ -1,28 +1,23 @@
-package routeplanning;
+package routeplanning.astarhelpers;
 
 import java.util.ArrayList;
-
 import lejos.geom.Point;
 
+/**
+ * @author ladderackroyd
+ * @author Lewis Ackroyd
+ * */
+
 public class TempRouteInfo{
-	private final int timeInterval;
 	private final ArrayList<Point> coords;
 	private final ArrayList<Integer> dirs;
 	
-	/**@param time the number of directions the robot has to execute  to carry out this route
-	 * @param coords the list of coordinates on the route in the order they should be reached
+	/**@param coords the list of coordinates on the route in the order they should be reached
 	 * @param dirs the list of directions that needs to be carried out to traverse the route*/
-	public TempRouteInfo(int time, ArrayList<Point> coords, ArrayList<Integer> dirs) {
-		this.timeInterval = time;
+	public TempRouteInfo(ArrayList<Point> coords, ArrayList<Integer> dirs) {
 		this.coords = coords;
 		this.dirs = dirs;
 	}
-	
-	/**@return the number of directions the robot has to execute  to carry out this route7*/
-	public int getTimeInterval() {
-		return timeInterval;
-	}
-	
 	/**@return the list of coordinates on the route in the order they should be reached*/
 	public ArrayList<Point> getCoords(){
 		return coords;

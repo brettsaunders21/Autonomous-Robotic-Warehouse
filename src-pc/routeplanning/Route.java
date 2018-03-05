@@ -6,6 +6,11 @@ import lejos.geom.Point;
 import interfaces.Action;
 import interfaces.Pose;
 
+/**
+ * @author ladderackroyd
+ * @author Lewis Ackroyd
+ * */
+
 public class Route{
 	final static Logger logger = Logger.getLogger(Route.class);
 	private BlockingQueue<Point> coordinates;
