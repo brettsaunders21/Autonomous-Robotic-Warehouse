@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public class TrainingAlgorithm {
 
 	}
 
-	// This constructor is used when you already have some beta values from previous
+	// This constructor is used when you already have beta values from previous
 	// training
 	public TrainingAlgorithm(ArrayList<String> itemN, HashMap<Integer, ArrayList<String>> availableOrders,
 			HashMap<String, ArrayList<Float>> itemRewardsWeights, HashMap<String, Double> betaValuesFromTrainingSet) {
@@ -56,7 +57,7 @@ public class TrainingAlgorithm {
 	}
 
 	/* ============== TRAINING =========== */
-	public HashMap<String, Double> train() {
+	public void train() {
 
 		// These loop will be repeated for each order in the file with past
 		// cancellations
@@ -77,7 +78,6 @@ public class TrainingAlgorithm {
 
 				double totalRewardBeta;
 				double totalWeightBeta;
-				
 
 				double alpha = 0.3f; // learning rate
 
@@ -95,7 +95,6 @@ public class TrainingAlgorithm {
 
 				}
 
-				
 				// Sigmoid function to predict the outcome with current beta values (Logistic
 				// Regression)
 				double prediction = 1 / (1 + Math.pow(Math.E,
@@ -135,7 +134,34 @@ public class TrainingAlgorithm {
 			System.out.println("File not found");
 		}
 		log4j.debug("Beta values after training " + betaValuesFromTrainingSet.toString());
-		return betaValuesFromTrainingSet;
+
+		try {
+			FileWriter writer = new FileWriter("betaValuesFromTraining.csv");
+			for (int i = 0; i < itemNamesList.size(); i++) {
+				writer.append(itemNamesList.get(i));
+				writer.append(',');
+				writer.append(betaValuesFromTrainingSet.get(itemNamesList.get(i)).toString());
+				writer.append('\n');
+			}
+			writer.append("bias");
+			writer.append(',');
+			writer.append(betaValuesFromTrainingSet.get("bias").toString());
+			writer.append('\n');
+			writer.append("totalReward");
+			writer.append(',');
+			writer.append(betaValuesFromTrainingSet.get("totalReward").toString());
+			writer.append('\n');
+			writer.append("totalWeight");
+			writer.append(',');
+			writer.append(betaValuesFromTrainingSet.get("totalWeight").toString());
+			writer.append('\n');
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }

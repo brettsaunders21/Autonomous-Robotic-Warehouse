@@ -18,7 +18,7 @@ public class TrainingTest {
 		
 		HashMap<String, Double> betaValuesFromTrainingSet = new HashMap<>();
 		
-		betaValuesFromTrainingSet = tA.train();
+		betaValuesFromTrainingSet = jb.getBetaValues();
 		
 		
 		
