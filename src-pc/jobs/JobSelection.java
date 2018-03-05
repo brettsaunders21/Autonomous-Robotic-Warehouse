@@ -20,9 +20,12 @@ public class JobSelection {
 														// stored here
 	private ArrayList<String> itemNamesList = jb.itemNames();
 
-	private TrainingAlgorithm tA = new TrainingAlgorithm(itemNamesList, availableOrders, itemRewardsWeights);
-
-	private HashMap<String, Double> betaValuesFromTrainingSet = tA.train();
+	private HashMap<String, Double> betaValuesFromTrainingSet = new HashMap<>();
+	
+	public JobSelection (HashMap<String, Double> betaValues) {
+		this.betaValuesFromTrainingSet = betaValues;
+		
+	}
 
 	public ArrayList<Integer> prioritize() {
 

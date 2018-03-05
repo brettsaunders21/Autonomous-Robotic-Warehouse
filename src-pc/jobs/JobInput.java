@@ -17,11 +17,12 @@ public class JobInput {
 	private HashMap<String, ArrayList<Float>> itemLocations = new HashMap<>();
 	private HashMap<Integer, ArrayList<String>> availableOrders = new HashMap<>();
 	private HashMap<String, ArrayList<Integer>> drops = new HashMap<>();
+	private HashMap<String, Double> betaValuesFromTraining = new HashMap<>();
 	
 
 
 
-	// Change this depending on your location of files 
+	// Change this depending on your file path
 	String itemRewardsWeightsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator
 			+ "Desktop" + File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs"
 			+ File.separator + "csv" + File.separator + "items.csv";
@@ -34,6 +35,10 @@ public class JobInput {
 	String dropsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
 			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator
 			+ "csv" + File.separator + "drops.csv";
+	String betaValuesFromTrainingFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
+			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator
+			+ "csv" + File.separator + "betaValuesFromTraining.csv";
+	
 
 	private String line = "";
 	private String csvSplitBy = ",";
@@ -139,6 +144,28 @@ public class JobInput {
 	}
 	
 	
+	
+	public HashMap<String,Double> getBetaValues() {
+		try (BufferedReader br = new BufferedReader(new FileReader(betaValuesFromTrainingFile))) {
+			while ((line = br.readLine()) != null) {
+                
+				String[] data = line.split(csvSplitBy);
+
+				
+				
+				betaValuesFromTraining.put(data[0],Double.parseDouble(data[1]));
+
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			log4j.debug("File not found");
+		}
+		log4j.debug(betaValuesFromTraining.toString());
+		return betaValuesFromTraining;
+	}
+	
+	
 	//This is method for TrainingAlg and JobSelect
 	
 	private ArrayList<String> itemNamesList = new ArrayList<String>();
@@ -159,6 +186,7 @@ public class JobInput {
 		log4j.debug(itemNamesList.toString());
 		return itemNamesList;
 	}
+	
 	
 	
 
