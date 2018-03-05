@@ -1,6 +1,11 @@
-package routeplanning;
+package routeplanning.astarhelpers;
 
 import lejos.geom.Point;
+
+/**
+ * @author ladderackroyd
+ * @author Lewis Ackroyd
+ * */
 
 public class RouteCoordInfo{
 	private final Point thisPoint;
