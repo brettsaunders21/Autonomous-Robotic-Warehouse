@@ -1,6 +1,10 @@
+package actions;
+
+import interfaces.Action;
 import lejos.nxt.LightSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.Delay;
+import main.Configuration;
 import rp.systems.WheeledRobotSystem;
 
 public class Movement {
