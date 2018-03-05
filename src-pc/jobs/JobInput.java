@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import org.apache.log4j.Logger;
 
+/*
+ * @author Samuel Chorvat <sxc1101@student.bham.ac.uk>
+ */
 
 public class JobInput {
 	static Logger log4j = Logger.getLogger("jobs.JobSelection");

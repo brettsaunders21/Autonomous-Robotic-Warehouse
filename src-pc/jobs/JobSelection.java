@@ -4,7 +4,12 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+/*
+ * @author Samuel Chorvat <sxc1101@student.bham.ac.uk>
+ */
+
 public class JobSelection {
+	
 	
 	static Logger log4j = Logger.getLogger("jobs.JobSelection");
 

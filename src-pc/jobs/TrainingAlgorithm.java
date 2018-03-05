@@ -9,7 +9,9 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 
 /*This algorithm is based on Logistic Regression using Stochastic Gradient Descent to adjust the beta values */
-
+/*
+ * @author Samuel Chorvat <sxc1101@student.bham.ac.uk>
+ */
 public class TrainingAlgorithm {
 
 	static Logger log4j = Logger.getLogger("jobs.JobSelection");
