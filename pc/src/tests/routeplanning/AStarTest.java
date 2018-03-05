@@ -1,6 +1,5 @@
 package tests.routeplanning;
 
-import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import lejos.geom.Point;
@@ -8,9 +7,12 @@ import routeplanning.AStar;
 import routeplanning.Map;
 import routeplanning.Route;
 import static org.junit.Assert.*;
-import interfaces.Action;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import interfaces.Action;
+
 import interfaces.Pose;
 
 /**

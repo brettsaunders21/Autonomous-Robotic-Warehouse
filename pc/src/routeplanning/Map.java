@@ -5,6 +5,7 @@ import rp.robotics.mapping.GridMap;
 import rp.robotics.mapping.MapUtils;
 
 import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -159,6 +160,7 @@ public class Map {
 	}
 
 	/** @return a clone of the current object */
+	@Override
 	public Map clone() {
 		return new Map(passable);
 	}

@@ -1,7 +1,9 @@
 package routeplanning;
 
 import java.util.concurrent.BlockingQueue;
+
 import org.apache.log4j.Logger;
+
 import lejos.geom.Point;
 import interfaces.Action;
 import interfaces.Pose;
