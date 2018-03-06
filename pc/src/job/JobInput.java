@@ -27,21 +27,21 @@ public class JobInput {
 
 	// Change this depending on your file path
 	String itemRewardsWeightsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator
-			+ "Desktop" + File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs"
+			+ "Desktop" + File.separator + "rp-team1.1" + File.separator + "pc" + File.separator + "src" + File.separator + "job"
 			+ File.separator + "csv" + File.separator + "items.csv";
 	String itemLocationsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator
+			+ File.separator + "rp-team1.1" + File.separator + "pc" + File.separator + "src" + File.separator + "job"+ File.separator
 			+ "csv" + File.separator + "locations.csv";
 	String availableOrdersFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator
+			+ File.separator + "rp-team1.1" + File.separator + "pc" + File.separator + "src" + File.separator + "job" + File.separator
 			+ "csv" + File.separator + "jobs.csv";
 	String dropsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator
+			+ File.separator + "rp-team1.1" + File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator
 			+ "csv" + File.separator + "drops.csv";
 	String betaValuesFromTrainingFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator + "betaValuesFromTraining.csv";
+			+ File.separator + "rp-team1.1"+ File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator + "betaValuesFromTraining.csv";
 	String trainingJobsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator
+			+ File.separator + "rp-team1.1"+ File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator
 			+ "csv" + File.separator + "training_jobs.csv";
 	
 

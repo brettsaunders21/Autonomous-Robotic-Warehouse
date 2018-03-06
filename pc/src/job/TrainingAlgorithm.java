@@ -27,7 +27,7 @@ public class TrainingAlgorithm {
 	// File with past cancellation , this file + hashmap obtained from file with
 	// available orders will be used to train
 	private String cancelDataFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator
-			+ "Desktop" + File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs"
+			+ "Desktop" + File.separator + "rp-team1.1" + File.separator + "pc"  + File.separator + "src" + File.separator + "job"
 			+ File.separator + "csv" + File.separator + "cancellations.csv";
 
 	private String line = "";
