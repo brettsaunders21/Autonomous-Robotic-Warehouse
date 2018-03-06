@@ -32,3 +32,14 @@ hs_err_pid*
 # Eclipse files
 .project
 .classpath
+.metadata/
+.reccomenders/
+
+# Other eclipse projects
+rp-team-assignment1/
+RoboticsAssignment2/
+java_gui_logging/
+log4j/
+rp-pc/
+rp-shared/
+rp-utils/
