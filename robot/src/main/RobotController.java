@@ -26,6 +26,7 @@ public class RobotController implements StoppableRunnable{
 
 	@Override
 	public void run() {
+		networkHandler.run();
 		Action currentCommand = null;
 		int pickAmount = 0;
 		while (running) {
@@ -34,7 +35,7 @@ public class RobotController implements StoppableRunnable{
 			if (currentCommand != null) {
 				//Print Message
 				if (currentCommand.equals(Action.PICKUP)) {
-					pickAmount = receiveAmmount();
+					pickAmount = receiveAmount();
 				}
 				move.nextAction(currentCommand, pickAmount);
 			} else {
@@ -60,7 +61,7 @@ public class RobotController implements StoppableRunnable{
 		return null;
 	}
 	
-	public int receiveAmmount() {
+	public int receiveAmount() {
 		int i = -1;
 		try {
 			return (int) networkHandler.receiveObject(i);

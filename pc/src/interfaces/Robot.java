@@ -2,6 +2,8 @@ package interfaces;
 
 import job.Job;
 import lejos.geom.Point;
+import lejos.pc.comm.NXTCommFactory;
+import lejos.pc.comm.NXTInfo;
 
 public class Robot {
 	public static final int MAX_WEIGHT = 50;	//max weight any robot can carry
@@ -14,9 +16,12 @@ public class Robot {
 	private boolean jobFinished;
 	private float reward;
 	private int jobsCompleted;
+	private NXTInfo nxtInfo;
 	
-	public Robot(String _robotName){
-		this.robotName = _robotName;
+	public Robot(String _robotName, String _btAddress){
+		this.robotName = this.nxtInfo.name = _robotName;
+		this.nxtInfo.deviceAddress = _btAddress;
+		this.nxtInfo.protocol = NXTCommFactory.BLUETOOTH;
 		this.routeSet = false;
 		this.setWeight(0);
 		this.jobCancelled = false;

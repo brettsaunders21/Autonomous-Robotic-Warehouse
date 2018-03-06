@@ -13,7 +13,6 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	private NXTInfo nxtInfo;
 
 	public PCNetworkHandler(NXTInfo _nxtInfo) {
-		super();
 		nxtInfo = _nxtInfo;
 	}
 	
