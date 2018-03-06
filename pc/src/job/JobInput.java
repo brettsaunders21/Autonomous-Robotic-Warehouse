@@ -39,7 +39,7 @@ public class JobInput {
 			+ File.separator + "rp-team1.1" + File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator
 			+ "csv" + File.separator + "drops.csv";
 	String betaValuesFromTrainingFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1"+ File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator + "betaValuesFromTraining.csv";
+			+ File.separator + "rp-team1.1"+ File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator+ "csv" + File.separator + "betaValuesFromTraining.csv";
 	String trainingJobsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
 			+ File.separator + "rp-team1.1"+ File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator
 			+ "csv" + File.separator + "training_jobs.csv";
