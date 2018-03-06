@@ -1,67 +1,61 @@
-package comms;
+package communication;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import lejos.nxt.comm.BTConnection;
+import lejos.nxt.comm.Bluetooth;
 
-import lejos.pc.comm.NXTComm;
-import lejos.pc.comm.NXTCommException;
-import lejos.pc.comm.NXTCommFactory;
-import lejos.pc.comm.NXTInfo;
+public class RobotNetworkHandler implements Runnable {
 
-public class PCNetworkHandler implements Runnable {
-
-	private DataInputStream inputStream;
 	private DataOutputStream outputStream;
-	private NXTInfo nxtInfo;
+	private DataInputStream inputStream;
+	private BTConnection bluetoothConnection;
+	private boolean connected;
 
-	public PCNetworkHandler(NXTInfo _nxtInfo) {
-		nxtInfo = _nxtInfo;
+	/*
+	 * The constructor
+	 */
+	public RobotNetworkHandler() {
+		connected = false;
 	}
-	
+
 	@Override
 	public void run() {
-		System.out.println("Attempting to connect to: " + nxtInfo.name);
-		
-		try {
-			NXTComm nxtComm = NXTCommFactory
-					.createNXTComm(NXTCommFactory.BLUETOOTH);
-			
-			if (nxtComm.open(nxtInfo)) {
-
-				inputStream = new DataInputStream(nxtComm.getInputStream());
-				outputStream = new DataOutputStream(nxtComm.getOutputStream());
-			}
-		} catch (NXTCommException e) {
-			System.out.println("Exception when connecting to NXT: " + e.getMessage());
-		}
+		// Establish a bluetooth connection and start input and output streams
+		System.out.println("Waiting for bluetooth connection...");
+		bluetoothConnection = Bluetooth.waitForConnection();
+		outputStream = bluetoothConnection.openDataOutputStream();
+		inputStream = bluetoothConnection.openDataInputStream();
+		connected = true;
+		System.out.println("Bluetooth connection established! Receiver and sender streams created");
 	}
 
 	public boolean isConnected() {
-		return outputStream != null;
+		return connected;
 	}
 
 	/*
-	 * Method for receiving objects from NXT
+	 * Method for receiving objects from PC
 	 */
 	public Object receiveObject(Object inputObject) throws IOException {
 		// Read the right kind of data dependent on the format of the input - most will
 		// be handled by the enum or integer, the others included for redundancy
-		if (inputObject instanceof Integer || inputObject instanceof Enum) {
-			return inputStream.readInt();
-		} else if (inputObject instanceof String) {
+		if (inputObject instanceof String || inputObject instanceof Enum) {
 			return inputStream.readUTF();
+		} else if (inputObject instanceof Integer) {
+			return inputStream.readInt();
 		} else if (inputObject instanceof Double) {
 			return inputStream.readDouble();
 		} else if (inputObject instanceof Float) {
 			return inputStream.readFloat();
 		}
-
+		
 		return null;
 	}
 
 	/*
-	 * Method for sending objects to NXT
+	 * Method for sending objects to PC
 	 */
 	public void sendObject(Object inputObject) throws IOException {
 		if (inputObject instanceof Integer || inputObject instanceof Enum) {
