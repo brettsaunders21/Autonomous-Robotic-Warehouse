@@ -10,11 +10,33 @@ public class Robot {
 	private Job activeJob;
 	private boolean routeSet;
 	private String robotName;
+	private boolean jobCancelled;
+	private boolean jobFinished;
+	private float reward;
+	private int jobsCompleted;
 	
 	public Robot(String _robotName){
 		this.robotName = _robotName;
 		this.routeSet = false;
 		this.setWeight(0);
+		this.jobCancelled = false;
+		this.jobFinished = false;
+		this.reward = 0;
+		this.jobsCompleted = 0;
+	}
+	
+	public void jobFinished() {
+		jobFinished = true;
+		reward += activeJob.getREWARD();
+		jobsCompleted += 1;
+	}
+	
+	public void cancelJob() {
+		jobCancelled = true;
+	}
+	
+	public boolean getJobCancelled() {
+		return jobCancelled;
 	}
 
 
@@ -66,4 +88,16 @@ public class Robot {
 		this.weight = weight;
 	}
 
+	public boolean isJobFinished() {
+		return jobFinished;
+	}
+	
+	public float currentReward() {
+		return reward;
+	}
+	
+	public int jobsCompleted() {
+		return jobsCompleted;
+	}
+ 
 }
