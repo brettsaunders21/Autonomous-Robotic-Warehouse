@@ -17,7 +17,8 @@ public abstract class AbstractSenderReceiver implements Runnable {
 		// Read the right kind of data dependent on the format of the input - most will
 		// be handled by Action or Integer. 
 		if (inputObject instanceof String) {
-			return Action.convertToAction(inputStream.readUTF());
+			Action receivedAction = Action.valueOf(inputStream.readUTF());
+			return receivedAction;
 		} else if (inputObject instanceof Integer) {
 			return inputStream.readInt();
 		}
@@ -43,7 +44,7 @@ public abstract class AbstractSenderReceiver implements Runnable {
 			outputStream.writeInt((int) inputObject);
 		} else if (inputObject instanceof Action) {
 			Action inputAction = (Action) inputObject;
-			outputStream.writeUTF(inputAction.getActionString());
+			outputStream.writeUTF(inputAction.name());
 		}
 
 		// Below provided for redundancy - could be changed to throw exceptions instead?
