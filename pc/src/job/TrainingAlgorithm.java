@@ -88,11 +88,7 @@ public class TrainingAlgorithm {
 
 				// Sigmoid function to predict the outcome with current beta values (Logistic
 				// Regression)
-				double prediction = 1 / (1 + Math.exp(-(betaValuesFromTrainingSet.get("bias") + qtyTimesBetaTotal
-				/*
-				 * + betaValuesFromTrainingSet.get("totalReward") * totalReward +
-				 * betaValuesFromTrainingSet.get("totalWeight") * totalWeight
-				 */)));
+				double prediction = 1 / (1 + Math.exp(-(betaValuesFromTrainingSet.get("bias") + qtyTimesBetaTotal)));
 				log4j.debug("Prediction " + prediction);
 
 				if ((prediction < 0.5 && cancelledOrNot == 0) || (prediction > 0.5 && cancelledOrNot == 1)) {
