@@ -21,6 +21,7 @@ public class JobInput {
 	private HashMap<Integer, ArrayList<String>> availableOrders = new HashMap<>();
 	private HashMap<String, ArrayList<Integer>> drops = new HashMap<>();
 	private HashMap<String, Double> betaValuesFromTraining = new HashMap<>();
+	private HashMap<Integer, ArrayList<String>> trainingJobs = new HashMap<>();
 	
 
 
@@ -39,8 +40,10 @@ public class JobInput {
 			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator
 			+ "csv" + File.separator + "drops.csv";
 	String betaValuesFromTrainingFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
+			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator + "betaValuesFromTraining.csv";
+	String trainingJobsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
 			+ File.separator + "rp-team1.1" + File.separator + "src-pc" + File.separator + "jobs" + File.separator
-			+ "csv" + File.separator + "betaValuesFromTraining.csv";
+			+ "csv" + File.separator + "training_jobs.csv";
 	
 
 	private String line = "";
@@ -188,6 +191,31 @@ public class JobInput {
 		}
 		log4j.debug(itemNamesList.toString());
 		return itemNamesList;
+	}
+	
+	public HashMap<Integer, ArrayList<String>> getTrainingJobs() {
+		try (BufferedReader br = new BufferedReader(new FileReader(trainingJobsFile))) {
+
+			while ((line = br.readLine()) != null) {
+
+				ArrayList<String> itemQty = new ArrayList<String>();
+				String[] data = line.split(csvSplitBy);
+				int dataSize = data.length;
+				for (int i = 1; i < dataSize; i++) {
+					itemQty.add(data[i]);
+				}
+
+				trainingJobs.put(Integer.parseInt(data[0]), itemQty);
+
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			log4j.debug("File not found");
+		}
+		log4j.debug("What items it contains + qty : " + trainingJobs.get(10100).toString());
+		return trainingJobs;
+
 	}
 	
 	
