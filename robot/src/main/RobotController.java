@@ -1,6 +1,9 @@
 package main;
 
+import java.io.IOException;
+
 import actions.Movement;
+import comms.RobotNetworkHandler;
 import interfaces.Action;
 import lejos.nxt.LightSensor;
 import lejos.util.Delay;
@@ -11,17 +14,18 @@ public class RobotController implements StoppableRunnable{
 	private  final LightSensor LEFT_SENSOR;
 	private final LightSensor RIGHT_SENSOR;
 	private boolean running;
+	private RobotNetworkHandler network;
 	
 	public RobotController() {
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		move = new Movement(calibrate());
 		running = true;
+		network = new RobotNetworkHandler();
 	}
 
 	@Override
 	public void run() {
-		// TODO Start connection
 		Action currentCommand = null;
 		int pickAmount = 0;
 		while (running) {
@@ -48,16 +52,30 @@ public class RobotController implements StoppableRunnable{
 	}
 	
 	public String receiveCommand() {
-		//Replace with bluetooth code
-		return "FORWARD";
+		try {
+			return (String) network.receiveObject(Action.WAIT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public int receiveAmmount() {
-		return 3;
+		int i = -1;
+		try {
+			return (int) network.receiveObject(i);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return i;
 	}
 	
 	public void sendCommand(String command) {
-		//Replace with bluetooth code
+		try {
+			network.sendObject(command);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public int calibrate() {
