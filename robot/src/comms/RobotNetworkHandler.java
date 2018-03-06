@@ -41,16 +41,16 @@ public class RobotNetworkHandler implements Runnable {
 	public Object receiveObject(Object inputObject) throws IOException {
 		// Read the right kind of data dependent on the format of the input - most will
 		// be handled by the enum or integer, the others included for redundancy
-		if (inputObject instanceof Integer || inputObject instanceof Enum) {
-			return inputStream.readInt();
-		} else if (inputObject instanceof String) {
+		if (inputObject instanceof String || inputObject instanceof Enum) {
 			return inputStream.readUTF();
+		} else if (inputObject instanceof Integer) {
+			return inputStream.readInt();
 		} else if (inputObject instanceof Double) {
 			return inputStream.readDouble();
 		} else if (inputObject instanceof Float) {
 			return inputStream.readFloat();
 		}
-
+		
 		return null;
 	}
 
