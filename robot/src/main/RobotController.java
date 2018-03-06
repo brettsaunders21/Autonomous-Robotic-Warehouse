@@ -3,7 +3,7 @@ package main;
 import java.io.IOException;
 
 import actions.Movement;
-import comms.RobotNetworkHandler;
+import communication.RobotNetworkHandler;
 import interfaces.Action;
 import lejos.nxt.LightSensor;
 import lejos.util.Delay;
@@ -14,14 +14,14 @@ public class RobotController implements StoppableRunnable{
 	private  final LightSensor LEFT_SENSOR;
 	private final LightSensor RIGHT_SENSOR;
 	private boolean running;
-	private RobotNetworkHandler network;
+	private RobotNetworkHandler networkHandler;
 	
 	public RobotController() {
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		move = new Movement(calibrate());
 		running = true;
-		network = new RobotNetworkHandler();
+		networkHandler = new RobotNetworkHandler();
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class RobotController implements StoppableRunnable{
 	
 	public String receiveCommand() {
 		try {
-			return (String) network.receiveObject(Action.WAIT);
+			return (String) networkHandler.receiveObject(Action.WAIT);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -63,7 +63,7 @@ public class RobotController implements StoppableRunnable{
 	public int receiveAmmount() {
 		int i = -1;
 		try {
-			return (int) network.receiveObject(i);
+			return (int) networkHandler.receiveObject(i);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -72,7 +72,7 @@ public class RobotController implements StoppableRunnable{
 	
 	public void sendCommand(String command) {
 		try {
-			network.sendObject(command);
+			networkHandler.sendObject(command);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
