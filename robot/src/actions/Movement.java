@@ -19,6 +19,7 @@ public class Movement {
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		adjustmentValue = _adjustmentValue;
+		PILOT.setTravelSpeed(0.2f);
 	}
 	
 	public void nextAction(Action command, int pickAmount) {
@@ -70,10 +71,29 @@ public class Movement {
 		case SHUTDOWN:
 			break;
 		}
+		
+		while (!(isRightOnLine() && isLeftOnLine())) {
+			PILOT.forward();
+			while (isLeftOnLine() && !isRightOnLine()) {
+				PILOT.rotateLeft();
+			}
+			while (!isLeftOnLine() && isRightOnLine()) {
+				PILOT.rotateRight();
+			}
+		}
+		PILOT.stop();
 	}
 	
 	public boolean isOnLine(int lightValue) {
 		return Math.abs(adjustmentValue - lightValue) > CORRECTION;
+	}
+	
+	public boolean isRightOnLine() {
+		return isOnLine(RIGHT_SENSOR.readValue());
+	}
+	
+	public boolean isLeftOnLine() {
+		return isOnLine(LEFT_SENSOR.readValue());
 	}
 
 }
