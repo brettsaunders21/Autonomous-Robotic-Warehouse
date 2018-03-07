@@ -13,25 +13,32 @@ public abstract class AbstractSenderReceiver implements Runnable {
 	/*
 	 * Method for receiving objects
 	 */
-	public Object receiveObject(Object inputObject) throws IOException {
+	public Object receiveObject(CommunicationData dataType) throws IOException {
 		// Read the right kind of data dependent on the format of the input - most will
-		// be handled by Action or Integer. 
-		if (inputObject instanceof String) {
-			Action receivedAction = Action.valueOf(inputStream.readUTF());
-			return receivedAction;
-		} else if (inputObject instanceof Integer) {
-			return inputStream.readInt();
+		// be handled by Action or Integer.
+		try {
+			if (dataType == CommunicationData.ACTION) {
+				Action receivedAction = Action.valueOf(inputStream.readUTF());
+				return receivedAction;
+			} else if (dataType == CommunicationData.INT) {
+				return inputStream.readInt();
+			} else if (dataType == CommunicationData.STRING) {
+				return inputStream.readUTF();
+			}
+			
+			/*
+			else if (inputObject instanceof String) {
+				return inputStream.readUTF();
+			} else if (inputObject instanceof Double) {
+				return inputStream.readDouble();
+			} else if (inputObject instanceof Float) {
+				return inputStream.readFloat();
+			}
+			*/
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		
-		// These provided for redundancy - could be changed to throw exceptions instead?
-		else if (inputObject instanceof String) {
-			return inputStream.readUTF();
-		} else if (inputObject instanceof Double) {
-			return inputStream.readDouble();
-		} else if (inputObject instanceof Float) {
-			return inputStream.readFloat();
-		} 
-		
+
 		return null;
 	}
 
@@ -39,24 +46,29 @@ public abstract class AbstractSenderReceiver implements Runnable {
 	 * Method for sending objects
 	 */
 	public void sendObject(Object inputObject) throws IOException {
-		// Most data types will be
-		if (inputObject instanceof Integer) {
-			outputStream.writeInt((int) inputObject);
-		} else if (inputObject instanceof Action) {
-			Action inputAction = (Action) inputObject;
-			outputStream.writeUTF(inputAction.name());
+		try {
+			// Most data types will be
+			if (inputObject instanceof Integer) {
+				outputStream.writeInt((int) inputObject);
+			} else if (inputObject instanceof Action) {
+				Action inputAction = (Action) inputObject;
+				outputStream.writeUTF(inputAction.name());
+			}
+			/*
+			// Below provided for redundancy - could be changed to throw exceptions instead?
+			else if (inputObject instanceof String) {
+				outputStream.writeUTF((String) inputObject);
+			} else if (inputObject instanceof Double) {
+				outputStream.writeDouble((double) inputObject);
+			} else if (inputObject instanceof Float) {
+				outputStream.writeFloat((float) inputObject);
+			}
+			*/
+			
+			outputStream.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-
-		// Below provided for redundancy - could be changed to throw exceptions instead?
-		else if (inputObject instanceof String) {
-			outputStream.writeUTF((String) inputObject);
-		} else if (inputObject instanceof Double) {
-			outputStream.writeDouble((double) inputObject);
-		} else if (inputObject instanceof Float) {
-			outputStream.writeFloat((float) inputObject);
-		}
-
-		outputStream.flush();
 	}
 
 	public boolean isConnected() {
