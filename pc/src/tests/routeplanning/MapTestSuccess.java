@@ -28,7 +28,7 @@ public class MapTestSuccess {
 	@Parameters
 	public static Collection<Integer[]> getTestParameters() {
 		return Arrays.asList(new Integer[][] {
-				{ 2, 1, 2, 1 }, //  width, height, obstructionX, obstructionY
+				{ 2, 1, 1, 0 }, //  width, height, obstructionX, obstructionY
 				{ 2, 1, 0, 0 }, //  width, height, obstructionX, obstructionY
 				{ 4, 3, 1, 0 }, //  width, height, obstructionX, obstructionY
 		});
@@ -46,5 +46,10 @@ public class MapTestSuccess {
 	public void constructorTest() {
 		logger.debug("w: "+width+" h: "+height+" p: ("+pointx+","+pointy+")");
 		Map.createTestMap(width, height, new Point[] { new Point(pointx, pointy) });
+	}
+	
+	@Test
+	public void warehouseConstructorTest() {
+		Map.generateRealWarehouseMap();
 	}
 }

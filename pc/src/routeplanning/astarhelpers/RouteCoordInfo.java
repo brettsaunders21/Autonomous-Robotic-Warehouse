@@ -18,6 +18,12 @@ public class RouteCoordInfo{
 	 * @param distanceToTest the absolute distance to the target position
 	 * @param distFromStart the shortest distance in grid units from the start coordinate*/
 	public RouteCoordInfo(Point thisPoint, Point originPoint, double distanceToDest, int distFromStart) {
+		if (distanceToDest<0) {
+			throw new IllegalArgumentException("distance to destination must be positive or 0");
+		}
+		if (distFromStart<0) {
+			throw new IllegalArgumentException("distance from start must be positive or 0");
+		}
 		this.thisPoint = thisPoint;
 		this.originPoint = originPoint;
 		this.distanceToDest = distanceToDest;
@@ -46,6 +52,6 @@ public class RouteCoordInfo{
 	
 	/**@return the sum of the distance from the start in grid units and the absolute distance to the target coordinate from this coordinate*/
 	public double getTotalPointDist() {
-		return distanceToDest +distFromStart;
+		return distanceToDest + distFromStart;
 	}
 }
