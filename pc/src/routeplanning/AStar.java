@@ -20,7 +20,7 @@ import utilities.Utilities;
 public class AStar {
 	final static Logger logger = Logger.getLogger(AStar.class);
 
-	/**
+	/*
 	 * Directions for route planning, for global directions see
 	 * {@link interfaces.Direction}
 	 */
@@ -45,21 +45,26 @@ public class AStar {
 	 *            the starting coordinate of the route
 	 * @param targetPosition
 	 *            the target coordinate of the route
-	 * @param startingPose the axis along which the robot is facing before starting the route
-	 * @param routes an array containing all the routes of the other robots active within the map
-	 * @param myStartTime the time at which the currently generated route will begin executing
+	 * @param startingPose
+	 *            the axis along which the robot is facing before starting the route
+	 * @param routes
+	 *            an array containing all the routes of the other robots active
+	 *            within the map
+	 * @param myStartTime
+	 *            the time at which the currently generated route will begin
+	 *            executing
 	 * @return shortest route between the two points avoiding obstacles
 	 * @throws IllegalArgumentException
 	 *             one or both coordinates are not within the map area
 	 * @throws IllegalStateException
 	 *             one or both coordinates are in an inaccessible area
 	 */
-	public Route generateRoute(Point currentPosition, Point targetPosition, Pose startingPose, Route[] routes, int myStartTime) {
+	public Route generateRoute(Point currentPosition, Point targetPosition, Pose startingPose, Route[] routes,
+			int myStartTime) {
 		// creates a clone of the existing map to prevent accidental overwriting of the
 		// map
 		Map tempMap = map.clone();
 		BlockingQueue<Point> coordinates = new LinkedBlockingQueue<Point>();
-		int length = 0;
 
 		// checks that both points are within the map
 		if (!tempMap.withinMapBounds(currentPosition) || !tempMap.withinMapBounds(targetPosition)) {
@@ -77,11 +82,13 @@ public class AStar {
 		coordinates.addAll(ti.getCoords());
 
 		// uses the list of coordinates to produce a queue of directions
-		BlockingQueue<Action> directions = generateDirectionsQueue(ti.getDirs());
-		return new Route(coordinates, directions, startingPose,
-				differenceInPose(poseToInt(startingPose), ti.getDirs().get(0), true), myStartTime);
+		BlockingQueue<Action> directions = new LinkedBlockingQueue<Action>();
+		directions.add(generateDirectionInstruction(poseToInt(startingPose), ti.getDirs().get(0)));
+		BlockingQueue<Action> temp = generateDirectionsQueue(ti.getDirs());
+		temp.remove();
+		directions.addAll(temp);
+		return new Route(coordinates, directions, startingPose, myStartTime);
 	}
-	
 
 	/*
 	 * The actual route finding code
@@ -104,7 +111,7 @@ public class AStar {
 
 		return addRobotAvoidInstructions(tempInfo);
 	}
-	
+
 	/*
 	 * returns the ConcurrentMap which holds information on the points which can be
 	 * used to obtain the shortest route
@@ -234,18 +241,18 @@ public class AStar {
 			tempCoords.set(pInfo.getDistFromStart() - 1, testPoint);
 			testPoint = pInfo.getOriginPoint();
 			atStart = startPosition.equals(testPoint);
-			tempDirs.set(pInfo.getDistFromStart() - 1, getDirection(pInfo));
+			tempDirs.set(pInfo.getDistFromStart() - 1, getDirection(pInfo.getOriginPoint(), pInfo.getThisPoint()));
 		}
 		return new TempRouteInfo(tempCoords, tempDirs);
 	}
-	
-	
-/*determines which direction has to be travelled between the coordinate and its
+
+	/*
+	 * determines which direction has to be travelled between the coordinate and its
 	 * parent
 	 */
-	private int getDirection(RouteCoordInfo pInfo) {
+	public static int getDirection(Point firstPoint, Point secondPoint) {
 		int direction;
-		Point difference = pInfo.getThisPoint().subtract(pInfo.getOriginPoint());
+		Point difference = secondPoint.subtract(firstPoint);
 		if (difference.x != 0d) {
 			if (difference.x == 1d) {
 				direction = POS_X;
@@ -262,13 +269,12 @@ public class AStar {
 		return direction;
 	}
 
-
 	/*
 	 * adds additional coordinates and directions to allow the robot to execute a
 	 * wait instruction to avoid a collision
 	 */
 	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo) {
-	ArrayList<Point> tempCoords = tempInfo.getCoords();
+		ArrayList<Point> tempCoords = tempInfo.getCoords();
 		ArrayList<Integer> tempDirs = tempInfo.getDirs();
 		int i = 0;
 		while (i < tempCoords.size()) {
@@ -280,7 +286,7 @@ public class AStar {
 		}
 		return new TempRouteInfo(tempCoords, tempDirs);
 	}
-	
+
 	/*
 	 * if another robot is at the coordinate specified at the time specified then
 	 * true is returned
@@ -301,7 +307,7 @@ public class AStar {
 				directions.add(Action.WAIT);
 			} else {
 				logger.debug(startPose);
-				Action action = differenceInPose(startPose, tempDirs.get(i), false);
+				Action action = generateDirectionInstruction(startPose, tempDirs.get(i));
 				directions.add(action);
 				logger.debug(action);
 				switch (action) {
@@ -328,13 +334,14 @@ public class AStar {
 		return directions;
 	}
 
-	private Action differenceInPose(int currentPose, int targetDir, boolean rotationOnly) {
+	/*
+	 * generates the correct direction instruction to match the difference in the
+	 * orientation of the robot relative to its target direction
+	 */
+	public static Action generateDirectionInstruction(int currentPose, int targetDir) {
 		Action dir = Action.WAIT;
 		int initialDir = findRotation(currentPose, targetDir);
-		logger.trace("r " + rotationOnly + " cp " + currentPose + " td " + targetDir + " id " + initialDir);
-		if (rotationOnly) {
-			initialDir = initialDir + 4;
-		}
+		logger.trace(" cp " + currentPose + " td " + targetDir + " id " + initialDir);
 		switch (initialDir) {
 		case 0: {
 			dir = Action.FORWARD;
@@ -344,28 +351,12 @@ public class AStar {
 			dir = Action.LEFT;
 			break;
 		}
-		case 2: { // this case should not be possible to reach in practice
-			dir = Action.WAIT;
+		case 2: {
+			dir = Action.BACKWARD;
 			break;
 		}
 		case 3: {
 			dir = Action.RIGHT;
-			break;
-		}
-		case 4: {
-			dir = Action.WAIT;
-			break;
-		}
-		case 5: {
-			dir = Action.TURN_LEFT;
-			break;
-		}
-		case 6: {
-			dir = Action.TURN_180;
-			break;
-		}
-		case 7: {
-			dir = Action.TURN_RIGHT;
 			break;
 		}
 		}
@@ -373,24 +364,21 @@ public class AStar {
 		return dir;
 	}
 
-	/* produces an integer representation of the difference in direction of the pose
+	/*
+	 * produces an integer representation of the difference in direction of the pose
 	 * and direction specified
 	 */
-	private int findRotation(int p, int initialMoveDir) {
-		int initialDir = p - initialMoveDir;
-		logger.trace("p " + p + " imd " + initialMoveDir + " id " + initialDir);
+	private static int findRotation(int pose, int initialMoveDir) {
+		int initialDir = pose - initialMoveDir;
+		logger.trace("p " + pose + " imd " + initialMoveDir + " id " + initialDir);
 		if (initialDir < 0) {
 			initialDir = initialDir + 4;
 		}
 		return initialDir;
 	}
-	
-
-
 
 	/* Converts from pose to int */
-
-	private int poseToInt(Pose p) {
+	public static int poseToInt(Pose p) {
 		switch (p) {
 		case POS_X: {
 			return POS_X;
@@ -409,11 +397,8 @@ public class AStar {
 		}
 		}
 	}
-	
 
 	/* returns the direction that the robot needs to travel in next */
-
-
 	private int firstCommonRouteTime(int[] startTimes) {
 		int earliestTime;
 		if (startTimes.length > 1) {
@@ -428,11 +413,9 @@ public class AStar {
 				sorted[i] = Integer.valueOf(sortedTemp[i]);
 			}
 			earliestTime = startTimes[1];
-		}
-		else if (startTimes.length == 1){
+		} else if (startTimes.length == 1) {
 			earliestTime = startTimes[0];
-		}
-		else {
+		} else {
 			throw new IllegalStateException("Array has no length");
 		}
 		return earliestTime;
