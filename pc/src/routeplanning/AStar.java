@@ -10,7 +10,6 @@ import interfaces.Action;
 import interfaces.Pose;
 import lejos.geom.Point;
 import routeplanning.astarhelpers.*;
-import utilities.Utilities;
 
 /**
  * @author ladderackroyd
@@ -21,8 +20,8 @@ public class AStar {
 	final static Logger logger = Logger.getLogger(AStar.class);
 
 	/*
-	 * Directions for route planning, for global directions see
-	 * {@link interfaces.Direction}
+	 * Directions for route planning, for global directions see {@link
+	 * interfaces.Direction}
 	 */
 	private final static int NEG_X = 0;
 	private final static int NEG_Y = 1;
@@ -58,6 +57,8 @@ public class AStar {
 	 *             one or both coordinates are not within the map area
 	 * @throws IllegalStateException
 	 *             one or both coordinates are in an inaccessible area
+	 * @throws UnsupportedOperationException
+	 *             cannot generate a route that starts and ends at the same location
 	 */
 	public Route generateRoute(Point currentPosition, Point targetPosition, Pose startingPose, Route[] routes,
 			int myStartTime) {
@@ -73,6 +74,10 @@ public class AStar {
 		// checks that both points are at potentially reachable positions
 		if (!tempMap.isPassable(currentPosition) || !tempMap.isPassable(targetPosition)) {
 			throw new IllegalStateException("One or both coordinates are not in the traversable area");
+		}
+		//
+		if (currentPosition.equals(targetPosition)) {
+			throw new UnsupportedOperationException("Cannot generate route that starts and ends at the same location");
 		}
 
 		// finds the shortest route between the two points
@@ -398,26 +403,4 @@ public class AStar {
 		}
 	}
 
-	/* returns the direction that the robot needs to travel in next */
-	private int firstCommonRouteTime(int[] startTimes) {
-		int earliestTime;
-		if (startTimes.length > 1) {
-			Integer[] temp = new Integer[startTimes.length];
-			for (int i = 0; i < startTimes.length; i++) {
-				temp[i] = Integer.valueOf(startTimes[i]);
-			}
-			Integer[] sortedTemp = Utilities.sort(temp, true);
-
-			int[] sorted = new int[startTimes.length];
-			for (int i = 0; i < startTimes.length; i++) {
-				sorted[i] = Integer.valueOf(sortedTemp[i]);
-			}
-			earliestTime = startTimes[1];
-		} else if (startTimes.length == 1) {
-			earliestTime = startTimes[0];
-		} else {
-			throw new IllegalStateException("Array has no length");
-		}
-		return earliestTime;
-	}
 }

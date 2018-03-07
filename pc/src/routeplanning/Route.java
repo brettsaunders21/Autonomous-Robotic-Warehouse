@@ -49,68 +49,6 @@ public class Route {
 		this.myStartTime = myStartTime;
 	}
 
-	/* constructor method shared by all route merging constructors */
-	private void concatenationConstructor(Route firstRoute, Route secondRoute, Action middleAction) {
-		// checks both routes have elements
-		if ((firstRoute.getCoordinatesArray().length < 1) || (secondRoute.getCoordinatesArray().length < 1)) {
-			throw new IllegalArgumentException("One or both routes have no instructions");
-		}
-		// checks that the end of the first route is only one grid space away from the
-		// start of the second
-		else if (!adjacentCoords(firstRoute.getCoordinatesArray()[firstRoute.getCoordinatesArray().length - 1],
-				secondRoute.getCoordinatesArray()[0])) {
-			throw new IllegalArgumentException(
-					"last coordinate of first route is not adjacent to first coordinate of second route");
-		} else {
-			this.coordinates = firstRoute.getCoordinates();
-			this.startPose = firstRoute.getStartPose();
-			this.myStartTime = firstRoute.getStartTime();
-			this.directions = firstRoute.getDirections();
-
-			int tempRouteLength = firstRoute.getLength() + secondRoute.getLength();
-
-			// the middleAction can only be null when called by the constructor which only
-			// takes in two routes
-			if (!(middleAction == null)) {
-				this.coordinates.add(secondRoute.getCoordinatesArray()[0]);
-				this.directions.add(middleAction);
-				tempRouteLength = tempRouteLength + 1;
-			}
-			this.routeLength = tempRouteLength;
-
-			BlockingQueue<Action> temp = secondRoute.getDirections();
-			// the first instructon of the second route has to be changed to change the
-			// direction the robot is travelling in
-			temp.remove();
-			Point[] ps = firstRoute.getCoordinatesArray();
-			Point p1 = ps[ps.length - 1];
-			Point p2 = secondRoute.getCoordinatesArray()[0];
-
-			// adds correct direction instruction
-			this.directions.add(generateRotation(p1, p2, firstRoute.getFinalPose()));
-			this.directions.addAll(temp);
-
-			this.coordinates.addAll(secondRoute.getCoordinates());
-			Point[] p = new Point[coordinates.size()];
-			this.coordsArray = coordinates.toArray(p);
-			Action[] a = new Action[directions.size()];
-			this.dirsArray = directions.toArray(a);
-		}
-	}
-
-	private boolean adjacentCoords(Point p1, Point p2) {
-		for (int x = -1; x < 2; x++) {
-			for (int y = -1; y < 2; y++) {
-				if (x != y && x != -y) {
-					if (p1.equals(new Point(p2.x + x, p2.y + y))) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * @deprecated Creates a new route from an existing one by appending the new
 	 *             directions to the end of the existing route
@@ -283,6 +221,69 @@ public class Route {
 		Action[] a = new Action[directions.size()];
 		this.dirsArray = directions.toArray(a);
 		this.myStartTime = routes.get(0).getStartTime();
+	}
+
+	/* constructor method shared by all route merging constructors */
+	private void concatenationConstructor(Route firstRoute, Route secondRoute, Action middleAction) {
+		// checks both routes have elements
+		if ((firstRoute.getCoordinatesArray().length < 1) || (secondRoute.getCoordinatesArray().length < 1)) {
+			throw new IllegalArgumentException("One or both routes have no instructions");
+		}
+		// checks that the end of the first route is only one grid space away from the
+		// start of the second
+		else if (!adjacentCoords(firstRoute.getCoordinatesArray()[firstRoute.getCoordinatesArray().length - 1],
+				secondRoute.getCoordinatesArray()[0])) {
+			throw new IllegalArgumentException(
+					"last coordinate of first route is not adjacent to first coordinate of second route");
+		} else {
+			this.coordinates = firstRoute.getCoordinates();
+			this.startPose = firstRoute.getStartPose();
+			this.myStartTime = firstRoute.getStartTime();
+			this.directions = firstRoute.getDirections();
+
+			int tempRouteLength = firstRoute.getLength() + secondRoute.getLength();
+
+			// the middleAction can only be null when called by the constructor which only
+			// takes in two routes
+			if (!(middleAction == null)) {
+				this.coordinates.add(secondRoute.getCoordinatesArray()[0]);
+				this.directions.add(middleAction);
+				tempRouteLength = tempRouteLength + 1;
+			}
+			this.routeLength = tempRouteLength;
+
+			BlockingQueue<Action> temp = secondRoute.getDirections();
+			// the first instructon of the second route has to be changed to change the
+			// direction the robot is travelling in
+			temp.remove();
+			Point[] ps = firstRoute.getCoordinatesArray();
+			Point p1 = ps[ps.length - 1];
+			Point p2 = secondRoute.getCoordinatesArray()[0];
+
+			// adds correct direction instruction
+			this.directions.add(generateRotation(p1, p2, firstRoute.getFinalPose()));
+			this.directions.addAll(temp);
+
+			this.coordinates.addAll(secondRoute.getCoordinates());
+			Point[] p = new Point[coordinates.size()];
+			this.coordsArray = coordinates.toArray(p);
+			Action[] a = new Action[directions.size()];
+			this.dirsArray = directions.toArray(a);
+		}
+	}
+
+	/* checks if two points are at adjacent grid positions to each other*/
+	private boolean adjacentCoords(Point p1, Point p2) {
+		for (int x = -1; x < 2; x++) {
+			for (int y = -1; y < 2; y++) {
+				if (x != y && x != -y) {
+					if (p1.equals(new Point(p2.x + x, p2.y + y))) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
