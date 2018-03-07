@@ -1,7 +1,6 @@
 package job;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,23 +25,12 @@ public class JobInput {
 
 
 	// Change this depending on your file path
-	String itemRewardsWeightsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator
-			+ "Desktop" + File.separator + "rp-team1.1" + File.separator + "pc" + File.separator + "src" + File.separator + "job"
-			+ File.separator + "csv" + File.separator + "items.csv";
-	String itemLocationsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1" + File.separator + "pc" + File.separator + "src" + File.separator + "job"+ File.separator
-			+ "csv" + File.separator + "locations.csv";
-	String availableOrdersFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1" + File.separator + "pc" + File.separator + "src" + File.separator + "job" + File.separator
-			+ "csv" + File.separator + "jobs.csv";
-	String dropsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1" + File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator
-			+ "csv" + File.separator + "drops.csv";
-	String betaValuesFromTrainingFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1"+ File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator+ "csv" + File.separator + "betaValuesFromTraining.csv";
-	String trainingJobsFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-			+ File.separator + "rp-team1.1"+ File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator
-			+ "csv" + File.separator + "training_jobs.csv";
+	String itemRewardsWeightsFile = "src/job/csv/items.csv";
+	String itemLocationsFile = "src/job/csv/locations.csv";
+	String availableOrdersFile = "src/job/csv/jobs.csv";
+	String dropsFile = "src/job/csv/drops.csv";
+	String betaValuesFromTrainingFile = "src/job/csv/betaValuesFromTraining.csv";
+	String trainingJobsFile = "src/job/csv/training_jobs.csv";
 	
 
 	private String line = "";

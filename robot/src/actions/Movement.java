@@ -73,7 +73,7 @@ public class Movement {
 		}
 		
 		while (!(isRightOnLine() && isLeftOnLine())) {
-			PILOT.forward();
+			if (!PILOT.isMoving()) PILOT.forward();
 			while (isLeftOnLine() && !isRightOnLine()) {
 				PILOT.rotateLeft();
 			}
