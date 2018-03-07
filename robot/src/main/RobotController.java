@@ -3,7 +3,8 @@ package main;
 import java.io.IOException;
 
 import actions.Movement;
-import comms.RobotNetworkHandler;
+import communication.CommunicationData;
+import communication.RobotNetworkHandler;
 import interfaces.Action;
 import lejos.nxt.LightSensor;
 import lejos.util.Delay;
@@ -14,27 +15,28 @@ public class RobotController implements StoppableRunnable{
 	private  final LightSensor LEFT_SENSOR;
 	private final LightSensor RIGHT_SENSOR;
 	private boolean running;
-	private RobotNetworkHandler network;
+	private RobotNetworkHandler networkHandler;
 	
 	public RobotController() {
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		move = new Movement(calibrate());
 		running = true;
-		network = new RobotNetworkHandler();
+		networkHandler = new RobotNetworkHandler();
 	}
 
 	@Override
 	public void run() {
+		networkHandler.run();
 		Action currentCommand = null;
 		int pickAmount = 0;
 		while (running) {
 			//Print message
-			currentCommand = Action.valueOf(receiveCommand());
+			currentCommand = (Action) networkHandler.receiveObject(CommunicationData.ACTION);
 			if (currentCommand != null) {
 				//Print Message
 				if (currentCommand.equals(Action.PICKUP)) {
-					pickAmount = receiveAmmount();
+					pickAmount = (int) networkHandler.receiveObject(CommunicationData.INT);
 				}
 				move.nextAction(currentCommand, pickAmount);
 			} else {
@@ -42,40 +44,17 @@ public class RobotController implements StoppableRunnable{
 				break;
 			}
 		}
-		sendCommand("ACTION COMPLETE");
+		try {
+			networkHandler.sendObject("ACTION COMPLETE");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void stop() {
 		running = false;
 		
-	}
-	
-	public String receiveCommand() {
-		try {
-			return (String) network.receiveObject(Action.WAIT);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public int receiveAmmount() {
-		int i = -1;
-		try {
-			return (int) network.receiveObject(i);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return i;
-	}
-	
-	public void sendCommand(String command) {
-		try {
-			network.sendObject(command);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	public int calibrate() {

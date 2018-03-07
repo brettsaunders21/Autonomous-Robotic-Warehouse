@@ -3,6 +3,7 @@ package job;
 import java.util.ArrayList;
 
 import lejos.geom.Point;
+import routeplanning.Route;
 
 /**
  * @author Brett Saunders <bjs730@cs.bham.ac.uk>
@@ -14,6 +15,8 @@ public class Job {
 	private final float WEIGHT;
 	private final float REWARD;
 	private Point dropLocation;
+	private Route currentroute;
+	private boolean canceled;
 
 	public Job(int _ID, ArrayList<Item> _ITEMS) {
 		this.ID = _ID;
@@ -21,14 +24,8 @@ public class Job {
 		this.WEIGHT = calculateWeight();
 		this.REWARD = calculateReward();
 		dropLocation = null;
-	}
-	
-	public Job(int _ID, ArrayList<Item> _ITEMS, Point _dropLocation) {
-		this.ID = _ID;
-		this.ITEMS = _ITEMS;
-		this.WEIGHT = calculateWeight();
-		this.REWARD = calculateReward();
-		dropLocation = _dropLocation;
+		currentroute = null;
+		setCanceled(false);
 	}
 
 	/**
@@ -87,5 +84,21 @@ public class Job {
 	 */
 	public float getREWARD() {
 		return REWARD;
+	}
+
+	public Route getCurrentroute() {
+		return currentroute;
+	}
+
+	public void assignCurrentroute(Route currentroute) {
+		this.currentroute = currentroute;
+	}
+
+	public boolean isCanceled() {
+		return canceled;
+	}
+
+	public void setCanceled(boolean canceled) {
+		this.canceled = canceled;
 	}
 }

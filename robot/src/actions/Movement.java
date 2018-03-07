@@ -31,14 +31,14 @@ public class Movement {
 			break;
 		case LEFT:
 			PILOT.rotate(10);
-			while (!isOnLine(LEFT_SENSOR.readValue())) {
+			while (!isLeftOnLine()) {
 				PILOT.rotateLeft();
 			}
 			PILOT.rotate(10);
 			break;
 		case RIGHT: 
 			PILOT.rotate(10);
-			while (!isOnLine(RIGHT_SENSOR.readValue())) {
+			while (!isRightOnLine()) {
 				PILOT.rotateRight();
 			}
 			PILOT.rotate(10);
@@ -46,7 +46,7 @@ public class Movement {
 		case BACKWARD: 
 			PILOT.travel(-0.1);
 			PILOT.rotate(20);
-			while (!isOnLine(LEFT_SENSOR.readValue())) {
+			while (!isLeftOnLine()) {
 				PILOT.rotateLeft();
 			}
 			PILOT.rotate(20);
@@ -73,7 +73,7 @@ public class Movement {
 		}
 		
 		while (!(isRightOnLine() && isLeftOnLine())) {
-			PILOT.forward();
+			if (!PILOT.isMoving()) PILOT.forward();
 			while (isLeftOnLine() && !isRightOnLine()) {
 				PILOT.rotateLeft();
 			}

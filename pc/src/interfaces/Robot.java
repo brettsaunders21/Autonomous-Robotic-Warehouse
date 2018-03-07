@@ -2,6 +2,8 @@ package interfaces;
 
 import job.Job;
 import lejos.geom.Point;
+import lejos.pc.comm.NXTCommFactory;
+import lejos.pc.comm.NXTInfo;
 
 public class Robot {
 	public static final int MAX_WEIGHT = 50;	//max weight any robot can carry
@@ -10,11 +12,36 @@ public class Robot {
 	private Job activeJob;
 	private boolean routeSet;
 	private String robotName;
+	private boolean jobCancelled;
+	private boolean jobFinished;
+	private float reward;
+	private int jobsCompleted;
+	private NXTInfo nxtInfo;
 	
-	public Robot(String _robotName){
-		this.robotName = _robotName;
+	public Robot(String _robotName, String _btAddress){
+		this.robotName = this.nxtInfo.name = _robotName;
+		this.nxtInfo.deviceAddress = _btAddress;
+		this.nxtInfo.protocol = NXTCommFactory.BLUETOOTH;
 		this.routeSet = false;
 		this.setWeight(0);
+		this.jobCancelled = false;
+		this.jobFinished = false;
+		this.reward = 0;
+		this.jobsCompleted = 0;
+	}
+	
+	public void jobFinished() {
+		jobFinished = true;
+		reward += activeJob.getREWARD();
+		jobsCompleted += 1;
+	}
+	
+	public void cancelJob() {
+		jobCancelled = true;
+	}
+	
+	public boolean getJobCancelled() {
+		return jobCancelled;
 	}
 
 
@@ -66,4 +93,16 @@ public class Robot {
 		this.weight = weight;
 	}
 
+	public boolean isJobFinished() {
+		return jobFinished;
+	}
+	
+	public float currentReward() {
+		return reward;
+	}
+	
+	public int jobsCompleted() {
+		return jobsCompleted;
+	}
+ 
 }

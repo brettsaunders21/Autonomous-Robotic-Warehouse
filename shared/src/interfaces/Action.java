@@ -1,6 +1,9 @@
 package interfaces;
 
-//COmmands
+// Commands
+
+// Note - coded as strings instead of ints as the robot will receive
+// an int value relating to the amount of a certain object it should pick up
 public enum Action {
 	LEFT,		//Move forwards then turn left
 	FORWARD,	//Move forwards
