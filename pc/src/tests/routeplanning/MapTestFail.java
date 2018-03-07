@@ -17,7 +17,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(value = Parameterized.class)
 public class MapTestFail {
-	final static Logger logger = Logger.getLogger(MapTestFail.class);
+	private final static Logger logger = Logger.getLogger(MapTestFail.class);
 	public int width;
 	public int height;
 	public int pointx;
@@ -31,6 +31,8 @@ public class MapTestFail {
 				{ 2, 1, 4, 5 }, //  width, height, obstructionX, obstructionY
 				{ 1, 1, 2, 1 }, //  width, height, obstructionX, obstructionY
 				{ 1, 3, 1, -1 }, //  width, height, obstructionX, obstructionY
+				{ 2, 1, 2, 1 },	// width, height, obstructionX, obstructionY
+				{ 0, 0, 0, 0 }, // width, height, obstructionX, obstructionY
 		});
 	}
 	
