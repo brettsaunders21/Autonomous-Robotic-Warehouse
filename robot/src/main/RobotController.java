@@ -10,13 +10,13 @@ import lejos.nxt.LightSensor;
 import lejos.util.Delay;
 import rp.systems.StoppableRunnable;
 
-public class RobotController implements StoppableRunnable{
+public class RobotController implements StoppableRunnable {
 	private Movement move;
-	private  final LightSensor LEFT_SENSOR;
+	private final LightSensor LEFT_SENSOR;
 	private final LightSensor RIGHT_SENSOR;
 	private boolean running;
 	private RobotNetworkHandler networkHandler;
-	
+
 	public RobotController() {
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
@@ -31,37 +31,45 @@ public class RobotController implements StoppableRunnable{
 		Action currentCommand = null;
 		int pickAmount = 0;
 		while (running) {
-			//Print message
-			currentCommand = (Action) networkHandler.receiveObject(CommunicationData.ACTION);
-			if (currentCommand != null) {
-				//Print Message
-				if (currentCommand.equals(Action.PICKUP)) {
-					pickAmount = (int) networkHandler.receiveObject(CommunicationData.INT);
+			try {
+				// Print message
+				currentCommand = (Action) networkHandler.receiveObject(CommunicationData.ACTION);
+
+				if (currentCommand != null) {
+					// Print Message
+					if (currentCommand.equals(Action.PICKUP)) {
+						pickAmount = (int) networkHandler.receiveObject(CommunicationData.INT);
+					}
+
+					move.nextAction(currentCommand, pickAmount);
+
+				} else {
+					System.out.println("Error: No command received");
+					break;
 				}
-				move.nextAction(currentCommand, pickAmount);
-			} else {
-				System.out.println("Error: No command received");
-				break;
+			} catch (IOException e) {
+				System.out.println("Couldn't receive object in RobotController" + e.getMessage());
 			}
+
 		}
 		try {
 			networkHandler.sendObject("ACTION COMPLETE");
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Couldn't send object in RobotController" + e.getMessage());
 		}
 	}
 
 	@Override
 	public void stop() {
 		running = false;
-		
+
 	}
-	
+
 	public int calibrate() {
 		Delay.msDelay(500);
 		return (LEFT_SENSOR.readValue() + RIGHT_SENSOR.readValue()) / 2;
 	}
-	
+
 	public static void main(String[] args) {
 		RobotController rc = new RobotController();
 		rc.run();
