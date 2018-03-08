@@ -2,9 +2,12 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+
+
 
 public class WarehouseInterface extends JFrame implements Runnable{
 	private Image bg = new ImageIcon("src/FullMap.jpg").getImage();
@@ -39,7 +42,6 @@ public class WarehouseInterface extends JFrame implements Runnable{
 		g.drawImage(robot2, zeroOnXRobot2, zeroOnYRobot2, null);		
 		//To change the starting position do zeroOnXRobot + moveByXAxis * number
 		g.drawImage(robot3, zeroOnXRobot3, zeroOnYRobot3, null);
-		
 		JLabel lblRobot = new JLabel();
 			this.add(lblRobot);
 		
@@ -59,15 +61,7 @@ public class WarehouseInterface extends JFrame implements Runnable{
 				zeroOnXRobot1 = zeroOnXRobot1 + 5;
 				if(zeroOnXRobot1>1000){
 					zeroOnXRobot1 = 60;					
-				}	
-				zeroOnXRobot2 = zeroOnXRobot2 + 4;
-				if(zeroOnXRobot2>1000){
-					zeroOnXRobot2 = 60;					
-				}	
-				zeroOnXRobot3 = zeroOnXRobot3 + 3;
-				if(zeroOnXRobot3>1000){
-					zeroOnXRobot3 = 60;					
-				}	
+				}		
 			//Pseudocode
 			//r1:       zeroOnXRobot1 += moveByXAxis *r1.getXCoordinate
 			//r1:       zeroOnYRobot1 += moveByYAxis *r1.getYCoordinate
@@ -79,14 +73,18 @@ public class WarehouseInterface extends JFrame implements Runnable{
 			repaint();
 			
 			try {
-				Thread.sleep(50);
+				Thread.sleep(150);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	
+	public static void main(String[] args) {
+		new WarehouseInterface();
+		JobsInterface t = new JobsInterface();
+		t.setVisible(true);
+	}
 }
 
 
