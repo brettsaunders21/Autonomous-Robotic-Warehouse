@@ -5,6 +5,12 @@ import communication.AbstractSenderReceiver;
 import lejos.nxt.comm.BTConnection;
 import lejos.nxt.comm.Bluetooth;
 
+/*
+ * RobotNetworkHandler class
+ * 
+ * Handles the bluetooth connection for the robot
+ */
+
 public class RobotNetworkHandler extends AbstractSenderReceiver {
 	private BTConnection bluetoothConnection;
 
