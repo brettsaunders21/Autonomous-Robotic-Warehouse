@@ -17,16 +17,6 @@ import interfaces.Action;
  * PCNetworkHandler class
  * 
  * Handles the bluetooth connection for the PC
- * 
- * Notes about pairing from lejos bluetooth example:
- * You must pair every NXT with the PC for the Bluetooth connection to work (hint: on Ubuntu I connected to each NXT
- * using a known PIN, although for some reason when setting up each connection I had to select PIN Options twice
- * before it remembered my choice). Once paired you can use nxjbrowse -b to get the name and address of the NXTs.
- * This information should be put into AdderConnection.java in place of the details I've put there. Next, compile and
- * upload AdderClient.java to each NXT then run it. Finally run AdderConnection.java and it should talk to all NXTs
- * in parallel and double-check what they're sending back. Note that it appeears that the NXTComm Bluetooth class (or
- * some other related part of the comms infrastructure) is not thread safe, so concurrent calls to it should be
- * synchronised.
  */
 
 public class PCNetworkHandler extends AbstractSenderReceiver {
@@ -50,7 +40,7 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	@Override
 	public void run() {
 		// Amount of connection retries
-		final int MAX_CONNECTION_RETRIES = 3;
+		final int MAX_CONNECTION_RETRIES = 10;
 
 		// Time delay between attempting a reconnect
 		final int RETRY_DELAY = 500;
@@ -60,19 +50,13 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 		try {
 			// Create an NXTComm object ready to connect using the bluetooth protocol
 			NXTComm nxtComm = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
-
-			// Flag for whether the intial connection has been established or not
-			boolean initialConnection = false;
 			
 			for (int i = 0; i < MAX_CONNECTION_RETRIES; i++) {
-				
-				// Check if the robot is ready to connect
-				initialConnection = nxtComm.open(nxtInfo);
 				
 				/* If the NXT is ready for connection, connect to it and create data streams,
 				 * otherwise try again after a delay
 				 */
-				if (initialConnection) {
+				if (nxtComm.open(nxtInfo)) {
 					inputStream = new DataInputStream(nxtComm.getInputStream());
 					outputStream = new DataOutputStream(nxtComm.getOutputStream());
 					
