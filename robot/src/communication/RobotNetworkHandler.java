@@ -12,6 +12,7 @@ import lejos.nxt.comm.Bluetooth;
  */
 
 public class RobotNetworkHandler extends AbstractSenderReceiver {
+	// Bluetooth connection object
 	private BTConnection bluetoothConnection;
 
 	@Override

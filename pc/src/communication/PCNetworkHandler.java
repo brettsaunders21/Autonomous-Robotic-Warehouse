@@ -8,6 +8,8 @@ import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
 
+import org.apache.log4j.Logger;
+
 /*
  * PCNetworkHandler class
  * 
@@ -26,12 +28,17 @@ import lejos.pc.comm.NXTInfo;
 
 public class PCNetworkHandler extends AbstractSenderReceiver {
 
+	// The logger
+	final static Logger logger = Logger.getLogger(PCNetworkHandler.class);
+
+	// NXTInfo object which holds the robot's bluetooth address + other info
 	private NXTInfo nxtInfo;
 
 	/**
 	 * The constructor
 	 *
-	 * @param _nxtInfo The NXTInfo object of the robot being connected to
+	 * @param _nxtInfo
+	 *            The NXTInfo object of the robot being connected to
 	 */
 	public PCNetworkHandler(NXTInfo _nxtInfo) {
 		nxtInfo = _nxtInfo;
@@ -39,18 +46,47 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 
 	@Override
 	public void run() {
+		// Amount of connection retries
+		final int MAX_CONNECTION_RETRIES = 3;
+
+		// Time delay between attempting a reconnect
+		final int RETRY_DELAY = 500;
+
 		System.out.println("Attempting to connect to: " + nxtInfo.name);
 
 		try {
 			// Create an NXTComm object ready to connect using the bluetooth protocol
 			NXTComm nxtComm = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
 
-			// If the NXT is ready for connection, connect to it adnd create data streams
-			if (nxtComm.open(nxtInfo)) {
-
-				inputStream = new DataInputStream(nxtComm.getInputStream());
-				outputStream = new DataOutputStream(nxtComm.getOutputStream());
+			// Flag for whether the intial connection has been established or not
+			boolean initialConnection = false;
+			
+			for (int i = 0; i < MAX_CONNECTION_RETRIES; i++) {
+				
+				// Check if the robot is ready to connect
+				initialConnection = nxtComm.open(nxtInfo);
+				
+				/* If the NXT is ready for connection, connect to it and create data streams,
+				 * otherwise try again after a delay
+				 */
+				if (initialConnection) {
+					inputStream = new DataInputStream(nxtComm.getInputStream());
+					outputStream = new DataOutputStream(nxtComm.getOutputStream());
+					
+					System.out.println("Successfully connected to: " + nxtInfo.name);
+					return;
+				}
+				else {
+					System.out.println("Attempt + " + i + " failed. Retrying in " + RETRY_DELAY + " seconds");
+					try {
+						Thread.sleep(RETRY_DELAY);
+					} catch (InterruptedException e) {
+						System.out.println("PCNetworkHandler thread interrupted.");
+						return;
+					}
+				}
 			}
+
 		} catch (NXTCommException e) {
 			System.out.println("Exception when connecting to NXT: " + e.getMessage());
 		}

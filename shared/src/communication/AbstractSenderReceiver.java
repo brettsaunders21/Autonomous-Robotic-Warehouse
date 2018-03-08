@@ -14,6 +14,7 @@ import java.io.IOException;
  */
 
 public abstract class AbstractSenderReceiver implements Runnable {
+	// Input/output data streams
 	protected DataOutputStream outputStream;
 	protected DataInputStream inputStream;
 
