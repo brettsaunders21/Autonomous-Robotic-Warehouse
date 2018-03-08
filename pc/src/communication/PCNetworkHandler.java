@@ -106,6 +106,7 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	@Override
 	public Object receiveObject(CommunicationData dataType) throws IOException {
 		try {
+			// Call parent method to receive the object
 			super.receiveObject(dataType);
 			
 			logger.info("Received object of type " + dataType.name() + " from "+ nxtInfo.name);
