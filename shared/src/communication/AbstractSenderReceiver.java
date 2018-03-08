@@ -24,17 +24,11 @@ public abstract class AbstractSenderReceiver implements Runnable {
 				return inputStream.readInt();
 			} else if (dataType == CommunicationData.STRING) {
 				return inputStream.readUTF();
-			}
-			
-			/*
-			else if (inputObject instanceof String) {
-				return inputStream.readUTF();
-			} else if (inputObject instanceof Double) {
+			} else if (dataType == CommunicationData.DOUBLE) {
 				return inputStream.readDouble();
-			} else if (inputObject instanceof Float) {
+			} else if (dataType == CommunicationData.FLOAT) {
 				return inputStream.readFloat();
 			}
-			*/
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -47,24 +41,19 @@ public abstract class AbstractSenderReceiver implements Runnable {
 	 */
 	public void sendObject(Object inputObject) throws IOException {
 		try {
-			// Most data types will be
 			if (inputObject instanceof Integer) {
 				outputStream.writeInt((int) inputObject);
 			} else if (inputObject instanceof Action) {
 				Action inputAction = (Action) inputObject;
 				outputStream.writeUTF(inputAction.name());
-			}
-			/*
-			// Below provided for redundancy - could be changed to throw exceptions instead?
-			else if (inputObject instanceof String) {
+			} else if (inputObject instanceof String) {
 				outputStream.writeUTF((String) inputObject);
 			} else if (inputObject instanceof Double) {
 				outputStream.writeDouble((double) inputObject);
 			} else if (inputObject instanceof Float) {
 				outputStream.writeFloat((float) inputObject);
 			}
-			*/
-			
+
 			outputStream.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
