@@ -81,7 +81,7 @@ public class AStar {
 		}
 
 		// finds the shortest route between the two points
-		TempRouteInfo ti = routeFindingAlgo(currentPosition, targetPosition, tempMap);
+		TempRouteInfo ti = routeFindingAlgo(currentPosition, targetPosition, tempMap, routes, myStartTime);
 
 		// moves final coordinates to queue and finalises the length of the route
 		coordinates.addAll(ti.getCoords());
@@ -107,14 +107,15 @@ public class AStar {
 	 * @return the information about the route that is used to produce a route
 	 * object
 	 */
-	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap) {
+	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap, Route[] routes,
+			int myStartTime) {
 		// finds the shortest route through the map
 		ConcurrentMap<Point, RouteCoordInfo> visitedPoints = findShortestRoute(tempMap, startPosition, targetPosition);
 
 		// produces the route information in the correct order
 		TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints);
 
-		return addRobotAvoidInstructions(tempInfo);
+		return addRobotAvoidInstructions(tempInfo, routes, myStartTime, startPosition);
 	}
 
 	/*
@@ -278,14 +279,29 @@ public class AStar {
 	 * adds additional coordinates and directions to allow the robot to execute a
 	 * wait instruction to avoid a collision
 	 */
-	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo) {
+	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo, Route[] routes, int myStartTime, Point myStartCoord) {
 		ArrayList<Point> tempCoords = tempInfo.getCoords();
 		ArrayList<Integer> tempDirs = tempInfo.getDirs();
+		ArrayList<Point[]> otherRobotCoords = new ArrayList<Point[]>();
 		int i = 0;
 		while (i < tempCoords.size()) {
-			if (otherRobotAtCoord(tempCoords.get(i), i)) {
-				tempCoords.add(i, tempCoords.get(i));
-				tempDirs.add(i, STILL);
+			logger.debug("length "+routes.length);
+			for (int robot = 0; robot < routes.length; robot++) {
+				logger.debug("robot " +robot);
+				int otherRobotTime = (myStartTime + i) - routes[robot].getStartTime();
+				if ((otherRobotTime >= 0)&& (otherRobotTime<routes[robot].getLength()-1)) {
+					logger.debug("otherTime "+otherRobotTime);
+					logger.debug("this "+tempCoords.get(i) + " other "+routes[robot].getCoordinatesArray()[otherRobotTime]);
+					if (tempCoords.get(i).equals(routes[robot].getCoordinatesArray()[otherRobotTime])) {
+						if (i>0) {
+							tempCoords.add(i, tempCoords.get(i-1));
+						}
+						else {
+							tempCoords.add(i, myStartCoord);
+						}
+						tempDirs.add(i, STILL);
+					}
+				}
 			}
 			i++;
 		}
