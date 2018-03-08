@@ -6,13 +6,11 @@ import lejos.geom.Point;
 import routeplanning.AStar;
 import routeplanning.Map;
 import routeplanning.Route;
+import routeplanning.astarhelpers.BacktrackNeededException;
 import static org.junit.Assert.*;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
 import interfaces.Action;
-
 import interfaces.Pose;
 
 /**
@@ -229,6 +227,23 @@ public class AStarTest {
 		assertArrayEquals(ps3,r3.getCoordinates().toArray());
 	}
 	
+	//tests that two robots will not occupy the same space
+	@Test(timeout=1000)
+	public void multiRobotRouteCoords3() {
+		aStarLogger.setLevel(Level.ALL);
+		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(1,0), Pose.POS_X, new Route[] {}, 0);
+		Route[] rs = new Route[1];
+		rs[0] = r1;
+		Route r2 = aStar.generateRoute(new Point(1, 0), new Point(0,1), Pose.POS_X, rs, 0);
+		
+		
+		Point[] ps1 = new Point[] {new Point(1,0)};
+		assertArrayEquals(ps1,r1.getCoordinates().toArray());
+		
+		Point[] ps2 = new Point[] {new Point(0,0)};
+		assertArrayEquals(ps2,r2.getCoordinates().toArray());
+		aStarLogger.setLevel(Level.OFF);
+	}
 	
 	@Ignore
 	@Test

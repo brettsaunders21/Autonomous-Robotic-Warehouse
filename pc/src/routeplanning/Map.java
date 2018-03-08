@@ -160,8 +160,17 @@ public class Map {
 	}
 
 	/** @return a clone of the current object */
-	@Override
 	public Map clone() {
+		return new Map(passable);
+	}
+	
+	/**@param p a previously unknown point that is non-passable 
+	 * @return a clone of the current object, with the point specified marked as non-passable */
+	public Map clone(Point p) {
+		if (!withinMapBounds(p)) {
+			throw new IllegalArgumentException();
+		}
+		passable[(int)p.x][(int)p.y] = false;
 		return new Map(passable);
 	}
 

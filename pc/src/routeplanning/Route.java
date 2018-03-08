@@ -21,6 +21,7 @@ public class Route {
 	private Action[] dirsArray;
 	private Point[] coordsArray;
 	private int myStartTime;
+	private Point startPoint;
 
 	/**
 	 * @param coordinates
@@ -31,10 +32,11 @@ public class Route {
 	 *            the pose the robot is in when the first direction is executed
 	 * @param myStartTime
 	 *            the time at which the currentRoute is started
+	 * @param startPoint the starting coordinate of this route, before any movement occurs
 	 * @throws IllegalArgumentException
 	 *             coordinates and directions queues differ in length
 	 */
-	public Route(BlockingQueue<Point> coordinates, BlockingQueue<Action> directions, Pose startPose, int myStartTime) {
+	public Route(BlockingQueue<Point> coordinates, BlockingQueue<Action> directions, Pose startPose, int myStartTime, Point startPoint) {
 		if (coordinates.size() != directions.size()) {
 			throw new IllegalArgumentException("queues differ in length");
 		}
@@ -47,6 +49,7 @@ public class Route {
 		Point[] p = new Point[coordinates.size()];
 		this.coordsArray = coordinates.toArray(p);
 		this.myStartTime = myStartTime;
+		this.startPoint = startPoint;
 	}
 
 	/**
@@ -74,6 +77,7 @@ public class Route {
 		this.coordsArray = (Point[]) coordinates.toArray();
 		this.dirsArray = (Action[]) directions.toArray();
 		this.myStartTime = currentRoute.getStartTime();
+		this.startPoint = currentRoute.getStartPoint();
 	}
 
 	/**
@@ -96,7 +100,7 @@ public class Route {
 	 *             route length is negative
 	 */
 	public Route(Route currentRoute, BlockingQueue<Point> coordinates, BlockingQueue<Action> directions, Pose startPose,
-			Action orientationAdj, int myStartTime) {
+			Action orientationAdj, int myStartTime, Point startPoint) {
 		this.coordinates = coordinates;
 		this.coordinates.addAll(currentRoute.getCoordinates());
 		this.directions = directions;
@@ -106,6 +110,7 @@ public class Route {
 		this.dirsArray = (Action[]) directions.toArray();
 		this.coordsArray = (Point[]) coordinates.toArray();
 		this.myStartTime = myStartTime;
+		this.startPoint = startPoint;
 	}
 
 	/**
@@ -177,6 +182,7 @@ public class Route {
 		Action[] a = new Action[directions.size()];
 		this.dirsArray = directions.toArray(a);
 		this.myStartTime = routes.get(0).getStartTime();
+		this.startPoint = routes.get(0).getStartPoint();
 	}
 
 	/**
@@ -218,8 +224,35 @@ public class Route {
 		Action[] a = new Action[directions.size()];
 		this.dirsArray = directions.toArray(a);
 		this.myStartTime = routes.get(0).getStartTime();
+		this.startPoint = routes.get(0).getStartPoint();
 	}
 
+	/**
+	 * @param firstRoute
+	 *            the route which is to form the start of the new route
+	 * @param action
+	 *            the action to be carried out between the two routes
+	 * @throws IllegalArgumentException
+	 *             action can only be WAIT, PICKUP, DROPOFF, CANCEL or SHUTDOWN
+	 */
+	public Route(Route route, Action action) {
+		if (!nonMovementAction(action)) {
+			throw new IllegalArgumentException("action was not a valid non-movement action");
+		}
+		this.coordinates = route.getCoordinates();
+		this.coordinates.add(route.getCoordinatesArray()[route.getLength()-1]);
+		this.directions = route.getDirections();
+		directions.add(action);
+		this.routeLength = route.getLength()+1;
+		this.startPose = route.getStartPose();
+		Action[] a = new Action[directions.size()];
+		this.dirsArray = directions.toArray(a);
+		Point[] p = new Point[coordinates.size()];
+		this.coordsArray = coordinates.toArray(p);
+		this.myStartTime = route.getStartTime();
+		this.startPoint = route.getStartPoint();
+	}
+	
 	/* constructor method shared by all route merging constructors */
 	private void concatenationConstructor(Route firstRoute, Route secondRoute, Action middleAction) {
 		// checks both routes have elements
@@ -237,6 +270,7 @@ public class Route {
 			this.startPose = firstRoute.getStartPose();
 			this.myStartTime = firstRoute.getStartTime();
 			this.directions = firstRoute.getDirections();
+			this.startPoint = firstRoute.getStartPoint();
 
 			int tempRouteLength = firstRoute.getLength() + secondRoute.getLength();
 
@@ -393,6 +427,10 @@ public class Route {
 		return myStartTime;
 	}
 
+	public Point getStartPoint() {
+		return startPoint;
+	}
+	
 	/*returns the new instruction that must be carried out to move from the end of one route to the start of the next*/
 	private Action generateRotation(Point firstPoint, Point secondPoint, Pose poseAtFirstPoint) {
 		int direction = AStar.getDirection(firstPoint, secondPoint);
