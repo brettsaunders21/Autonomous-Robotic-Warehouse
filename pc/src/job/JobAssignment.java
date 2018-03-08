@@ -4,91 +4,59 @@ import routeplanning.Map;
 import interfaces.Action;
 import interfaces.Pose;
 import java.util.ArrayList;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import interfaces.Robot;
 import routeplanning.AStar;
 import routeplanning.Route;
 
 public class JobAssignment {
-	private ConcurrentHashMap<String, ArrayList<Integer>> robotJobMap;
+	
 	private ArrayList<Job> jobs;
 	private Robot[] robotsArray;
 	private Map map = Map.generateRealWarehouseMap();
-
-	public JobAssignment(Route routes, ArrayList<Job> j, Robot[] r) {
+	private int time;
+	private Pose currentPose = Pose.POS_X;
+	
+	public JobAssignment(ArrayList<Job> j, Robot[] r, int t) {
 		robotsArray = r;
 		jobs = j;
-		generateTable(r);
+		time = t;
 	}
 
-	public ConcurrentHashMap<String, ArrayList<Integer>> assignJobs() {
-		run();
-		return robotJobMap;
+	public void assignJobs(Robot robot) {
+		Job job = jobs.get(0);
+		ArrayList<Item> items = job.getITEMS();
+		ArrayList<Route> routes = calculateRoute(robot, map, job, items);
+		ArrayList<Action> actions = calculateActions(routes);
+		
+		Route routeForAllItems = new Route(routes, actions);
+		Route routeWithDropoff = new Route(routeForAllItems, Action.DROPOFF);
+		job.assignCurrentroute(routeWithDropoff);
+		robot.setActiveJob(job);
+		jobs.remove(job);
+	
 	}
 
-	private void generateTable(Robot[] robotsArray) {
-		for (Robot r : robotsArray) {
-			robotJobMap.put(r.getRobotName(), new ArrayList<Integer>());
-		}
-	}
-
-	public void run() {
-		generateTable(robotsArray);
-		while (checkAvailableRobot()) {
-			for (Job job : jobs) {
-				Robot robot = getAvailableRobot();
-				ArrayList<Item> items = job.getITEMS();
-				ArrayList<Route> routes = calculateRoute(robot, map, job, items);
-				ArrayList<Action> actions = calculateActions(routes);
-				Route routeForAllItems = new Route(routes, actions);
-				job.assignCurrentroute(routeForAllItems);
-				robot.setActiveJob(job);
-				ArrayList<Integer> currentJobs = robotJobMap.get(robot.getRobotName());
-				currentJobs.add(job.getID());
-				robotJobMap.put(robot.getRobotName(), currentJobs);
-				jobs.remove(job);
-			}
-		}
-
-	}
 
 	private ArrayList<Action> calculateActions(ArrayList<Route> routes) {
 		ArrayList<Action> actions = new ArrayList<Action>();
-		for (int i = 0; i < routes.size(); i++) {
+		for (int i = 1; i < routes.size(); i++) {
 			actions.add(Action.PICKUP);
 		}
 		return actions;
-	}
-
-	private boolean checkAvailableRobot() {
-		for (Robot robot : robotsArray) {
-			if (robotJobMap.get(robot.getRobotName()).isEmpty()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private Robot getAvailableRobot() {
-		Robot leastJobRobot = robotsArray[0];
-		for (Robot robot : robotsArray) {
-			if (robotJobMap.get(robot.getRobotName()).isEmpty()) {
-				return robot;
-			} else if (robotJobMap.get(robot.getRobotName()).size() < robotJobMap.get(leastJobRobot.getRobotName())
-					.size()) {
-				leastJobRobot = robot;
-			}
-		}
-		return leastJobRobot;
 	}
 
 	private ArrayList<Route> calculateRoute(Robot r, Map map, Job job, ArrayList<Item> items) {
 		AStar routeMaker = new AStar(map);
 		ArrayList<Route> routes = new ArrayList<Route>();
 		for (Item item : items) {
-			routes.add(
-					routeMaker.generateRoute(r.getCurrentPosition(), item.getPOSITION(), Pose.POS_X, new Route[] {}));
+			Route itemRoute = routeMaker.generateRoute(r.getCurrentPosition(), item.getPOSITION(), currentPose, new Route[] {}, time);
+			routes.add(itemRoute);
+			currentPose = itemRoute.getFinalPose();
 		}
 		return routes;
 	}
+	
 }
