@@ -17,8 +17,6 @@ public class RobotThread extends Thread{
 	
 	public void run() {
 		while(true) {
-			//Get from tasker if current job equals cancelled
-				//Cancel job
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
 				TASKER.assignJobs(robot);
 			}

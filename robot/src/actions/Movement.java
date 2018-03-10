@@ -57,18 +57,11 @@ public class Movement {
 		case DROPOFF:
 			//Need interface code
 			break;
-		case TURN_180: 
-			PILOT.rotate(180);
-			break;
-		case TURN_LEFT:
-			PILOT.rotate(90);
-			break;
-		case TURN_RIGHT:
-			PILOT.rotate(-90);
-			break;
 		case CANCEL:
 			break;
 		case SHUTDOWN:
+			break;
+		default:
 			break;
 		}
 		
