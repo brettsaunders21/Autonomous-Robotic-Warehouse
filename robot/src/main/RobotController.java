@@ -37,7 +37,7 @@ public class RobotController implements StoppableRunnable {
 
 				if (currentCommand != null) {
 					// Print Message
-					if (currentCommand.equals(Action.PICKUP)) {
+					if (currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)) {
 						pickAmount = (int) networkHandler.receiveObject(CommunicationData.INT);
 					}
 
@@ -53,7 +53,7 @@ public class RobotController implements StoppableRunnable {
 
 		}
 		try {
-			networkHandler.sendObject("ACTION COMPLETE");
+			networkHandler.sendObject(Action.ACTION_COMPLETE);
 		} catch (IOException e) {
 			System.out.println("Couldn't send object in RobotController" + e.getMessage());
 		}
