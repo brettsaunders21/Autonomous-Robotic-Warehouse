@@ -21,7 +21,7 @@ public class CommunicationTests {
 	// Set up the bluetooth connection before any tests
 	@BeforeClass
 	public void setup() {
-		// A3 - Spike - 0016530AA681
+		// Drawer A3 - Spike - 0016530AA681
 		nxtInfo.deviceAddress = "0016530AA681";
 		nxtInfo.protocol = NXTCommFactory.BLUETOOTH;
 		nxtInfo.name = "Spike";
@@ -30,7 +30,7 @@ public class CommunicationTests {
 	}
 	
 	// Test if a connection can be established
-	@Test
+	@Test(timeout=1000)
 	public void singleRobotConnectionTest() throws InterruptedException{
 		networkHandler.run();
 		Thread.sleep(5000);
@@ -38,7 +38,7 @@ public class CommunicationTests {
 	}
 	
 	// Test if an Action object can be sent and received
-	@Test
+	@Test(timeout=1000)
 	public void singleRobotSendReceiveActionTest() throws IOException, InterruptedException {
 		Action testObject = Action.WAIT;
 		networkHandler.sendObject(testObject);
@@ -51,7 +51,7 @@ public class CommunicationTests {
 	}
 	
 	// Test if an integer can be sent and received
-	@Test
+	@Test(timeout=1000)
 	public void singleRobotSendReceiveIntegerTest() throws IOException, InterruptedException {
 		int testObject = 43565;
 		networkHandler.sendObject(testObject);
@@ -64,7 +64,7 @@ public class CommunicationTests {
 	}
 	
 	// Test if a string can be sent and received
-	@Test
+	@Test(timeout=1000)
 	public void singleRobotSendReceiveStringTest() throws IOException, InterruptedException {
 		String testObject = "Test string";
 		networkHandler.sendObject(testObject);
@@ -76,5 +76,5 @@ public class CommunicationTests {
 		assertEquals(testObject, receivedObject);
 	}
 	
-	// Include more tests + multiple robot tests? + possiby parameterize
+	// Include more tests + multiple robot tests?
 }
