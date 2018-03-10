@@ -13,6 +13,13 @@ import communication.CommunicationData;
 import communication.PCNetworkHandler;
 import interfaces.Action;
 
+/*
+ * CommunicationTests class
+ * 
+ * JUnit tests for bluetooth communication. It is required to run
+ * CommunicationTestHelper on the robot for there to work.
+ */
+
 public class CommunicationTests {
 	
 	NXTInfo nxtInfo;

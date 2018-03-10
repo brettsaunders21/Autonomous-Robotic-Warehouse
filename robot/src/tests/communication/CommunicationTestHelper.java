@@ -6,6 +6,12 @@ import communication.CommunicationData;
 import communication.RobotNetworkHandler;
 import interfaces.Action;
 
+/*
+ * CommunicationTestHelper class
+ * 
+ * To be run on the robot when the bluetooth communication tests are run on the PC
+ */
+
 public class CommunicationTestHelper {
 	
 	
