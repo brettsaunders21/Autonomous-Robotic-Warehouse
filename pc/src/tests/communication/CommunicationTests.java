@@ -76,5 +76,31 @@ public class CommunicationTests {
 		assertEquals(testObject, receivedObject);
 	}
 	
+	// Test if a float can be sent and received
+		@Test(timeout=1000)
+		public void singleRobotSendReceiveFloatTest() throws IOException, InterruptedException {
+			float testObject = 0.56443f;
+			networkHandler.sendObject(testObject);
+			
+			Thread.sleep(1000);
+			
+			float receivedObject = (float) networkHandler.receiveObject(CommunicationData.FLOAT);
+			
+			assertEquals(testObject, receivedObject, 0.5f);
+		}
+		
+		// Test if a double can be sent and received
+		@Test(timeout=1000)
+		public void singleRobotSendReceiveDoubleTest() throws IOException, InterruptedException {
+			double testObject = 0.97338474f;
+			networkHandler.sendObject(testObject);
+			
+			Thread.sleep(1000);
+			
+			double receivedObject = (double) networkHandler.receiveObject(CommunicationData.DOUBLE);
+			
+			assertEquals(testObject, receivedObject, 0.5f);
+		}
+	
 	// Include more tests + multiple robot tests?
 }
