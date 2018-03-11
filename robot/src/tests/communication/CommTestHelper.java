@@ -5,6 +5,7 @@ import java.io.IOException;
 import communication.CommunicationData;
 import communication.RobotNetworkHandler;
 import interfaces.Action;
+import lejos.nxt.Button;
 
 /*
  * CommTestHelper class
@@ -21,34 +22,36 @@ public class CommTestHelper {
 		networkHandler.run();
 
 		// singleRobotSendReceiveActionTest
-		Action receivedObject = (Action) networkHandler.receiveObject(CommunicationData.ACTION);
+		Action receivedObject = networkHandler.receiveAction();
 		System.out.println("Received Action");
 		networkHandler.sendObject(receivedObject);
 		System.out.println("Sent Action");
 
 		// singleRobotSendReceiveDoubleTest
-		double receivedObject4 = (double) networkHandler.receiveObject(CommunicationData.DOUBLE);
+		double receivedObject4 = networkHandler.receiveDouble();
 		System.out.println("Received double");
 		networkHandler.sendObject(receivedObject4);
 		System.out.println("Sent double");
 
 		// singleRobotSendReceiveFloatTest
-		float receivedObject3 = (float) networkHandler.receiveObject(CommunicationData.FLOAT);
+		float receivedObject3 = networkHandler.receiveFloat();
 		System.out.println("Received float");
 		networkHandler.sendObject(receivedObject3);
 		System.out.println("Sent float");
 
 		// singleRobotSendReceiveIntegerTest
-		int receivedObject1 = (int) networkHandler.receiveObject(CommunicationData.INT);
+		int receivedObject1 = networkHandler.receiveInt();
 		System.out.println("Received int");
 		networkHandler.sendObject(receivedObject1);
 		System.out.println("Sent int");
 
 		// singleRobotSendReceiveStringTest
-		String receivedObject2 = (String) networkHandler.receiveObject(CommunicationData.STRING);
+		String receivedObject2 = networkHandler.receiveString();
 		System.out.println("Received String");
 		networkHandler.sendObject(receivedObject2);
 		System.out.println("Sent String");
-
+		
+		System.out.println("Tests completed!");
+		Button.waitForAnyPress();
 	}
 }

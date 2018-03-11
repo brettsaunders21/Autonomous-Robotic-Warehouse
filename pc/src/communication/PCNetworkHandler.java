@@ -5,14 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import lejos.pc.comm.NXTComm;
-import lejos.pc.comm.NXTCommException;
-import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTConnector;
 import lejos.pc.comm.NXTInfo;
 
 import org.apache.log4j.Logger;
-
-import interfaces.Action;
 
 /*
  * PCNetworkHandler class

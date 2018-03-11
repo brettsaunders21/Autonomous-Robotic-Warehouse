@@ -50,7 +50,7 @@ public class CommunicationTests {
 		Action testObject = Action.WAIT;
 		networkHandler.sendObject(testObject);;
 
-		Action receivedObject = (Action) networkHandler.receiveObject(CommunicationData.ACTION);
+		Action receivedObject = networkHandler.receiveAction();
 
 		assertEquals(testObject, receivedObject);
 	}
@@ -61,7 +61,7 @@ public class CommunicationTests {
 		double testObject = 0.97338474f;
 		networkHandler.sendObject(testObject);
 
-		double receivedObject = (double) networkHandler.receiveObject(CommunicationData.DOUBLE);
+		double receivedObject = networkHandler.receiveDouble();
 
 		assertEquals(testObject, receivedObject, 0.5f);
 	}
@@ -72,7 +72,7 @@ public class CommunicationTests {
 		float testObject = 0.56443f;
 		networkHandler.sendObject(testObject);
 
-		float receivedObject = (float) networkHandler.receiveObject(CommunicationData.FLOAT);
+		float receivedObject = networkHandler.receiveFloat();
 
 		assertEquals(testObject, receivedObject, 0.5f);
 	}
@@ -83,7 +83,7 @@ public class CommunicationTests {
 		int testObject = 43565;
 		networkHandler.sendObject(testObject);
 
-		int receivedObject = (int) networkHandler.receiveObject(CommunicationData.INT);
+		int receivedObject = networkHandler.receiveInt();
 
 		assertEquals(testObject, receivedObject);
 	}
@@ -94,7 +94,7 @@ public class CommunicationTests {
 		String testObject = "Test string";
 		networkHandler.sendObject(testObject);
 
-		String receivedObject = (String) networkHandler.receiveObject(CommunicationData.STRING);
+		String receivedObject = networkHandler.receiveString();
 
 		assertEquals(testObject, receivedObject);
 	}

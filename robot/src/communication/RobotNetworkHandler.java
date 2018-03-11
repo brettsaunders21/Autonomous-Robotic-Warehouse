@@ -18,12 +18,12 @@ public class RobotNetworkHandler extends AbstractSenderReceiver {
 	@Override
 	public void run() {
 		// Establish a bluetooth connection and start input and output streams
-		System.out.println("Waiting for bt connection...");
+		System.out.println("Waiting for PC..");
 		
 		bluetoothConnection = Bluetooth.waitForConnection();
 		outputStream = bluetoothConnection.openDataOutputStream();
 		inputStream = bluetoothConnection.openDataInputStream();
 		
-		System.out.println("Connected! Streams created.");
+		System.out.println("Connected!");
 	}
 }
