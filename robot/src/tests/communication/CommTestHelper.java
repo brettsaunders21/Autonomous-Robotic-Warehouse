@@ -1,8 +1,6 @@
 package tests.communication;
 
 import java.io.IOException;
-
-import communication.CommunicationData;
 import communication.RobotNetworkHandler;
 import interfaces.Action;
 import lejos.nxt.Button;

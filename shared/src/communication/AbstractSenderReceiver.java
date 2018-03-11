@@ -19,100 +19,18 @@ public abstract class AbstractSenderReceiver implements Runnable {
 	protected DataInputStream inputStream;
 
 	/**
-	 * Method for receiving objects
+	 * Method for receiving Action objects
 	 * 
-	 * @param dataType
-	 *            The expected type of data to be received
-	 * 
-	 * @return the received object
+	 * @return the received Action object
 	 */
-	public Object receiveObject(CommunicationData dataType) throws IOException {
-		// Read the right kind of data dependent on the format of the input
-		if (dataType == CommunicationData.ACTION) {
-			// If action to be received, return the right action object
-			
-			// NOTE - can't call .valueOf() as this crashes lejos!
-			String receivedString = inputStream.readUTF();
-
-			Action receivedAction = null;
-			switch (receivedString) {
-			case "LEFT":
-				receivedAction = Action.LEFT;
-				break;
-			case "FORWARD":
-				receivedAction = Action.FORWARD;
-				break;
-			case "RIGHT":
-				receivedAction = Action.RIGHT;
-				break;
-			case "BACKWARD":
-				receivedAction = Action.BACKWARD;
-				break;
-			case "TURN_180":
-				receivedAction = Action.TURN_180;
-				break;
-			case "TURN_LEFT":
-				receivedAction = Action.TURN_LEFT;
-				break;
-			case "TURN_RIGHT":
-				receivedAction = Action.RIGHT;
-				break;
-			case "WAIT":
-				receivedAction = Action.WAIT;
-				break;
-			case "PICKUP":
-				receivedAction = Action.PICKUP;
-				break;
-			case "DROPOFF":
-				receivedAction = Action.DROPOFF;
-				break;
-			case "CANCEL":
-				receivedAction = Action.CANCEL;
-				break;
-			case "SHUTDOWN":
-				receivedAction = Action.SHUTDOWN;
-				break;
-			case "ACTION_COMPLETE":
-				receivedAction = Action.BACKWARD;
-				break;
-			default:
-				break;
-			}
-
-			return receivedAction;
-		} else if (dataType == CommunicationData.INT) {
-			return inputStream.readInt();
-		} else if (dataType == CommunicationData.STRING) {
-			return inputStream.readUTF();
-		} else if (dataType == CommunicationData.DOUBLE) {
-			return inputStream.readDouble();
-		} else if (dataType == CommunicationData.FLOAT) {
-			return inputStream.readFloat();
-		}
-
-		return null;
-	}
-	
-	public int receiveInt() throws IOException {
-		return inputStream.readInt();
-	}
-	
-	public String receiveString() throws IOException {
-		return inputStream.readUTF();
-	}
-	
-	public double receiveDouble() throws IOException {
-		return inputStream.readDouble();
-	}
-	
-	public float receiveFloat() throws IOException {
-		return inputStream.readFloat();
-	}
-	
 	public Action receiveAction() throws IOException {
+		// Get the Action in string form from input stream
 		String receivedString = inputStream.readUTF();
 
 		Action receivedAction = null;
+		// Convert the string into an Action object
+		
+		//NOTE - Can't use valueOf as this crashes lejos!
 		switch (receivedString) {
 		case "LEFT":
 			receivedAction = Action.LEFT;
@@ -158,6 +76,42 @@ public abstract class AbstractSenderReceiver implements Runnable {
 		}
 
 		return receivedAction;
+	}
+	
+	/**
+	 * Method for receiving ints
+	 * 
+	 * @return the received int
+	 */
+	public int receiveInt() throws IOException {
+		return inputStream.readInt();
+	}
+
+	/**
+	 * Method for receiving strings
+	 * 
+	 * @return the received string
+	 */
+	public String receiveString() throws IOException {
+		return inputStream.readUTF();
+	}
+
+	/**
+	 * Method for receiving doubles
+	 * 
+	 * @return the received double
+	 */
+	public double receiveDouble() throws IOException {
+		return inputStream.readDouble();
+	}
+
+	/**
+	 * Method for receiving floats
+	 * 
+	 * @return the received float
+	 */
+	public float receiveFloat() throws IOException {
+		return inputStream.readFloat();
 	}
 
 	/**

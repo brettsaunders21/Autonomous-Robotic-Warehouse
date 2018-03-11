@@ -11,7 +11,6 @@ import org.junit.runners.MethodSorters;
 
 import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTInfo;
-import communication.CommunicationData;
 import communication.PCNetworkHandler;
 import interfaces.Action;
 

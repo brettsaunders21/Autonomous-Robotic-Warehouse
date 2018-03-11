@@ -10,6 +10,8 @@ import lejos.pc.comm.NXTInfo;
 
 import org.apache.log4j.Logger;
 
+import interfaces.Action;
+
 /*
  * PCNetworkHandler class
  * 
@@ -69,27 +71,90 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 		}
 
 	}
-
+	
 	/**
-	 * Method for receiving objects
+	 * Method for receiving Action objects
 	 * 
-	 * @param dataType
-	 *            The expected type of data to be received
-	 * 
-	 * @return the received object
+	 * @return the received Action object
 	 */
-	@Override
-	public Object receiveObject(CommunicationData dataType) throws IOException {
+	public Action receiveAction() throws IOException {
 		try {
 			// Call parent method to receive the object
-			super.receiveObject(dataType);
-
-			logger.info("Received object of type " + dataType.name() + " from " + nxtInfo.name);
+			logger.info("Received Action " + " from " + nxtInfo.name);
+			
+			return super.receiveAction();
 		} catch (IOException e) {
-			logger.error("IOException when trying to receive object from " + nxtInfo.name + ": " + e.getMessage());
+			logger.error("IOException when trying to receive Action from " + nxtInfo.name + ": " + e.getMessage());
+			return null;
 		}
+	}
+	
+	/**
+	 * Method for receiving ints
+	 * 
+	 * @return the received int
+	 */
+	public int receiveInt() throws IOException {
+		try {
+			// Call parent method to receive the object
+			logger.info("Received int " + " from " + nxtInfo.name);
+			
+			return super.receiveInt();
+		} catch (IOException e) {
+			logger.error("IOException when trying to receive int from " + nxtInfo.name + ": " + e.getMessage());
+			return -1;
+		}
+	}
 
-		return null;
+	/**
+	 * Method for receiving strings
+	 * 
+	 * @return the received string
+	 */
+	public String receiveString() throws IOException {
+		try {
+			// Call parent method to receive the object
+			logger.info("Received string " + " from " + nxtInfo.name);
+			
+			return super.receiveString();
+		} catch (IOException e) {
+			logger.error("IOException when trying to receive string from " + nxtInfo.name + ": " + e.getMessage());
+			return null;
+		}
+	}
+
+	/**
+	 * Method for receiving doubles
+	 * 
+	 * @return the received double
+	 */
+	public double receiveDouble() throws IOException {
+		try {
+			// Call parent method to receive the object
+			logger.info("Received double " + " from " + nxtInfo.name);
+			
+			return super.receiveDouble();
+		} catch (IOException e) {
+			logger.error("IOException when trying to receive double from " + nxtInfo.name + ": " + e.getMessage());
+			return -1;
+		}
+	}
+
+	/**
+	 * Method for receiving floats
+	 * 
+	 * @return the received float
+	 */
+	public float receiveFloat() throws IOException {
+		try {
+			// Call parent method to receive the object
+			logger.info("Received float " + " from " + nxtInfo.name);
+			
+			return super.receiveFloat();
+		} catch (IOException e) {
+			logger.error("IOException when trying to receive float from " + nxtInfo.name + ": " + e.getMessage());
+			return -1;
+		}
 	}
 
 	/**
