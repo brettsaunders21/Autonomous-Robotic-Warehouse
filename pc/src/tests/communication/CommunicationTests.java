@@ -38,20 +38,17 @@ public class CommunicationTests {
 	}
 
 	// Test if a connection can be established
-	@Test(timeout = 10000)
-	public void singleRobotConnectionTest() throws InterruptedException {
+	@Test(timeout = 6000)
+	public void singleRobotConnectionTest() {
 		networkHandler.run();
-		Thread.sleep(5000);
 		assertTrue(networkHandler.isConnected());
 	}
 
 	// Test if an Action object can be sent and received
-	@Test(timeout = 5000)
-	public void singleRobotSendReceiveActionTest() throws IOException, InterruptedException {
+	@Test(timeout = 3000)
+	public void singleRobotSendReceiveActionTest() throws IOException {
 		Action testObject = Action.WAIT;
-		networkHandler.sendObject(testObject);
-
-		Thread.sleep(1000);
+		networkHandler.sendObject(testObject);;
 
 		Action receivedObject = (Action) networkHandler.receiveObject(CommunicationData.ACTION);
 
@@ -59,12 +56,10 @@ public class CommunicationTests {
 	}
 
 	// Test if a double can be sent and received
-	@Test(timeout = 5000)
-	public void singleRobotSendReceiveDoubleTest() throws IOException, InterruptedException {
+	@Test(timeout = 3000)
+	public void singleRobotSendReceiveDoubleTest() throws IOException {
 		double testObject = 0.97338474f;
 		networkHandler.sendObject(testObject);
-
-		Thread.sleep(1000);
 
 		double receivedObject = (double) networkHandler.receiveObject(CommunicationData.DOUBLE);
 
@@ -72,12 +67,10 @@ public class CommunicationTests {
 	}
 
 	// Test if a float can be sent and received
-	@Test(timeout = 5000)
-	public void singleRobotSendReceiveFloatTest() throws IOException, InterruptedException {
+	@Test(timeout = 3000)
+	public void singleRobotSendReceiveFloatTest() throws IOException {
 		float testObject = 0.56443f;
 		networkHandler.sendObject(testObject);
-
-		Thread.sleep(1000);
 
 		float receivedObject = (float) networkHandler.receiveObject(CommunicationData.FLOAT);
 
@@ -85,12 +78,10 @@ public class CommunicationTests {
 	}
 
 	// Test if an integer can be sent and received
-	@Test(timeout = 5000)
-	public void singleRobotSendReceiveIntegerTest() throws IOException, InterruptedException {
+	@Test(timeout = 3000)
+	public void singleRobotSendReceiveIntegerTest() throws IOException {
 		int testObject = 43565;
 		networkHandler.sendObject(testObject);
-
-		Thread.sleep(1000);
 
 		int receivedObject = (int) networkHandler.receiveObject(CommunicationData.INT);
 
@@ -98,12 +89,10 @@ public class CommunicationTests {
 	}
 
 	// Test if a string can be sent and received
-	@Test(timeout = 5000)
-	public void singleRobotSendReceiveStringTest() throws IOException, InterruptedException {
+	@Test(timeout = 3000)
+	public void singleRobotSendReceiveStringTest() throws IOException {
 		String testObject = "Test string";
 		networkHandler.sendObject(testObject);
-
-		Thread.sleep(1000);
 
 		String receivedObject = (String) networkHandler.receiveObject(CommunicationData.STRING);
 

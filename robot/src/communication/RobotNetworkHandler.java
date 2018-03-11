@@ -24,6 +24,6 @@ public class RobotNetworkHandler extends AbstractSenderReceiver {
 		outputStream = bluetoothConnection.openDataOutputStream();
 		inputStream = bluetoothConnection.openDataInputStream();
 		
-		System.out.println("Connected! Streams made.");
+		System.out.println("Connected! Streams created.");
 	}
 }
