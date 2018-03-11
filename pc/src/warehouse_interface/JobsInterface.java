@@ -24,11 +24,14 @@ public class JobsInterface extends JFrame implements Runnable {
 	private Thread thread;
 	GridLayout mainLayout = new GridLayout(12, 0);
 	GridLayout cancelJobLayout = new GridLayout(2, 0);
-	int weight = 2;
-	Object[][] completedJobsData = { { "Robot1", "aa", weight, "13.2", "" }, { "Robot3", "ba", "0.221", "3.2" },
+	
+	Object[][] robotInfoData = { { "32", "5.321", "13.2", "ac, ad, fc, th, fd, kj" } };
+	Object[][] itemsInformationData = { { "aa", "0.321", "13.2" }, { "ab", "0.221", "3.2" }, { "bc", "2.221", "3.2" },
+			{ "ef", "6.221", "3.2" }, { "dj", "4.221", "3.2" }, { "rc", "0.221", "3.2" } };
+	Object[][] completedJobsData = { { "Robot1", "aa", "4.1", "13.2", "" }, { "Robot3", "ba", "0.221", "3.2" },
 			{ "Robot2", "ba", "2.221", "3.2" }, { "Robot1", "ca", "6.221", "3.2" }, { "Robot2", "ha", "4.221", "3.2" },
 			{ "Robot3", "ba", "0.221", "3.2" } };
-	Object[][] robotInfoData = { { "32", "5.321", "13.2", "ac, ad, fc, th, fd, kj" } };
+	
 	private JTable t;
 
 	public JobsInterface() {
@@ -63,9 +66,7 @@ public class JobsInterface extends JFrame implements Runnable {
 		add(label2);
 		contentPane.setName("Completed jobs");
 		String[] fields = { "Item Name", "Weight", "Reward" };
-		Object[][] data = { { "aa", "0.321", "13.2" }, { "ab", "0.221", "3.2" }, { "bc", "2.221", "3.2" },
-				{ "ef", "6.221", "3.2" }, { "dj", "4.221", "3.2" }, { "rc", "0.221", "3.2" } };
-		t = new JTable(data, fields);
+		t = new JTable(itemsInformationData, fields);
 		t.setFillsViewportHeight(true);
 		JScrollPane scrollPane = new JScrollPane(t);
 		getContentPane().add(scrollPane);
@@ -143,6 +144,7 @@ public class JobsInterface extends JFrame implements Runnable {
 	}
 	
 	public void setRobotInfo(){
+		//Robot 1 table
 		//Pseudocode for future integration
 		//robotInfoData[0][0] = Job.getID()
 		//robotInfoData[0][1] = Job.getTOTAL_WEIGHT()
@@ -155,11 +157,22 @@ public class JobsInterface extends JFrame implements Runnable {
 	}
 	
 	public void setAllItemsInfo(){
+		//Items information table
+		//Pseudocode for future integration
+		//int i = 0;
+		//for(String s: Job.getITEMS){
+		//	itemsInformationData [i][0] = Item.getID()
+		//	itemsInformationData [i][1] = Item.getWEIGHT()
+		//	itemsInformationData [i][1] = Item.getREWARD()
+		//}
 		
 	}
 	
 	public void setCompletedJobsInfo(){
-		
+		//Completed jobs table
+		//Pseudocode for future integration
+		//...
+			
 	}
 
 }

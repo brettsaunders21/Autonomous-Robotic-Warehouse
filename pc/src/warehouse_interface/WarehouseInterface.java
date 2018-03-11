@@ -34,8 +34,9 @@ public class WarehouseInterface extends JFrame implements Runnable{
 	public void paint(Graphics g){
 		g.drawImage(bg, 0, 0, null);
 		g.drawImage(robot1, zeroOnXRobot1, zeroOnYRobot1, null);
-		g.drawImage(robot2, zeroOnXRobot2, zeroOnYRobot2, null);		
-		g.drawImage(robot3, zeroOnXRobot3, zeroOnYRobot3, null);
+		//Two more robots 
+		//g.drawImage(robot2, zeroOnXRobot2, zeroOnYRobot2, null);		
+		//g.drawImage(robot3, zeroOnXRobot3, zeroOnYRobot3, null);
 		JLabel lblRobot = new JLabel();
 			this.add(lblRobot);		
 	}
