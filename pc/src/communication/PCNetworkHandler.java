@@ -5,14 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import lejos.pc.comm.NXTComm;
-import lejos.pc.comm.NXTCommException;
-import lejos.pc.comm.NXTCommFactory;
 import lejos.pc.comm.NXTConnector;
 import lejos.pc.comm.NXTInfo;
 
 import org.apache.log4j.Logger;
-
-import interfaces.Action;
 
 /*
  * PCNetworkHandler class
@@ -44,7 +40,7 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 		final int MAX_CONNECTION_RETRIES = 10;
 
 		// Time delay between attempting a reconnect
-		final int RETRY_DELAY = 1000;
+		final int RETRY_DELAY = 500;
 
 		logger.info("Attempting to connect to: " + nxtInfo.name);
 		// Create an NXTComm object ready to connect using the bluetooth protocol
