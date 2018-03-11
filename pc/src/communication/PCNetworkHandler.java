@@ -7,6 +7,7 @@ import java.io.IOException;
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTCommException;
 import lejos.pc.comm.NXTCommFactory;
+import lejos.pc.comm.NXTConnector;
 import lejos.pc.comm.NXTInfo;
 
 import org.apache.log4j.Logger;
@@ -43,42 +44,36 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 		final int MAX_CONNECTION_RETRIES = 10;
 
 		// Time delay between attempting a reconnect
-		final int RETRY_DELAY = 500;
+		final int RETRY_DELAY = 1000;
 
 		logger.info("Attempting to connect to: " + nxtInfo.name);
+		// Create an NXTComm object ready to connect using the bluetooth protocol
+		NXTConnector nxtConnector = new NXTConnector();
+		for (int i = 0; i < MAX_CONNECTION_RETRIES; i++) {
 
-		try {
-			// Create an NXTComm object ready to connect using the bluetooth protocol
-			NXTComm nxtComm = NXTCommFactory.createNXTComm(NXTCommFactory.BLUETOOTH);
-			
-			for (int i = 0; i < MAX_CONNECTION_RETRIES; i++) {
-				
-				/* If the NXT is ready for connection, connect to it and create data streams,
-				 * otherwise try again after a delay
-				 */
-				if (nxtComm.open(nxtInfo)) {
-					inputStream = new DataInputStream(nxtComm.getInputStream());
-					outputStream = new DataOutputStream(nxtComm.getOutputStream());
-					
-					logger.info("Successfully connected to: " + nxtInfo.name);
+			/*
+			 * If the NXT is ready for connection, connect to it and create data streams,
+			 * otherwise try again after a delay
+			 */
+			if (nxtConnector.connectTo(nxtInfo, NXTComm.PACKET)) {
+				inputStream = new DataInputStream(nxtConnector.getInputStream());
+				outputStream = new DataOutputStream(nxtConnector.getOutputStream());
+
+				logger.info("Successfully connected to: " + nxtInfo.name);
+				return;
+			} else {
+				logger.warn("Attempt " + i + " failed. Retrying in " + RETRY_DELAY + " seconds");
+				try {
+					Thread.sleep(RETRY_DELAY);
+				} catch (InterruptedException e) {
+					logger.error("PCNetworkHandler thread interrupted.");
 					return;
 				}
-				else {
-					logger.warn("Attempt + " + i + " failed. Retrying in " + RETRY_DELAY + " seconds");
-					try {
-						Thread.sleep(RETRY_DELAY);
-					} catch (InterruptedException e) {
-						logger.error("PCNetworkHandler thread interrupted.");
-						return;
-					}
-				}
 			}
-
-		} catch (NXTCommException e) {
-			logger.error("Exception when connecting to NXT: " + e.getMessage());
 		}
+
 	}
-	
+
 	/**
 	 * Method for receiving objects
 	 * 
@@ -92,15 +87,15 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 		try {
 			// Call parent method to receive the object
 			super.receiveObject(dataType);
-			
-			logger.info("Received object of type " + dataType.name() + " from "+ nxtInfo.name);
+
+			logger.info("Received object of type " + dataType.name() + " from " + nxtInfo.name);
 		} catch (IOException e) {
 			logger.error("IOException when trying to receive object from " + nxtInfo.name + ": " + e.getMessage());
 		}
 
 		return null;
 	}
-	
+
 	/**
 	 * Method for sending objects
 	 * 
@@ -112,8 +107,8 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 		try {
 			// Call parent method to send the object
 			super.sendObject(inputObject);
-			
-			logger.info("Sent object of type" + inputObject.getClass() + " to "+ nxtInfo.name);
+
+			logger.info("Sent object of type" + inputObject.getClass() + " to " + nxtInfo.name);
 		} catch (IOException e) {
 			logger.error("IOException when trying to send object to " + nxtInfo.name + ": " + e.getMessage());
 		}
