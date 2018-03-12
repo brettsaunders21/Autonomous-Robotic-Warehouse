@@ -5,6 +5,7 @@ import interfaces.Action;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import interfaces.Robot;
+import lejos.geom.Point;
 import routeplanning.AStar;
 import routeplanning.Route;
 
@@ -50,12 +51,14 @@ public class JobAssignment {
 	}
 
 	private ArrayList<Route> calculateRoute(Robot r, Map map, Job job, ArrayList<Item> items) {
+		Point currentRobotPosition = r.getCurrentPosition();
 		AStar routeMaker = new AStar(map);
 		ArrayList<Route> routes = new ArrayList<Route>();
 		for (Item item : items) {
-			Route itemRoute = routeMaker.generateRoute(r.getCurrentPosition(), item.getPOSITION(), r.getCurrentPose(), new Route[] {}, time);
+			Route itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), r.getCurrentPose(), new Route[] {}, time);
 			routes.add(itemRoute);
 			r.setCurrentPose(itemRoute.getFinalPose()); 
+			currentRobotPosition = item.getPOSITION();
 			logger.trace(item);
 			logger.trace(itemRoute);
 		}
