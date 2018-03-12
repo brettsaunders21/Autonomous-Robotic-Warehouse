@@ -2,6 +2,8 @@ package job;
 
 import routeplanning.Map;
 import interfaces.Action;
+
+import java.awt.font.NumericShaper.Range;
 import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import interfaces.Robot;
@@ -16,6 +18,7 @@ public class JobAssignment {
 	private Map map = Map.generateRealWarehouseMap();
 	private int time;
 	final static Logger logger = Logger.getLogger(JobAssignment.class);
+	private Point dropoff1 = new Point(2,4);
 	
 	public JobAssignment(ArrayList<Job> j, Robot[] r, int t) {
 		robotsArray = r;
@@ -62,6 +65,9 @@ public class JobAssignment {
 			logger.trace(item);
 			logger.trace(itemRoute);
 		}
+		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition, dropoff1, r.getCurrentPose(), new Route[] {},	time);
+		routes.add(dropoffRoute);
+		r.setCurrentPose(dropoffRoute.getFinalPose());
 		logger.debug(r.getCurrentPose());
 		logger.debug(routes);
 		return routes;
