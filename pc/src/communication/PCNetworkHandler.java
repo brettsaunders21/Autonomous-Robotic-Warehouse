@@ -25,6 +25,9 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 
 	// NXTInfo object which holds the robot's bluetooth address + other info
 	private NXTInfo nxtInfo;
+	
+	// boolean for whether the connection has failed after connection retries
+	boolean connectionFailed;
 
 	/**
 	 * The constructor
@@ -34,12 +37,13 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	 */
 	public PCNetworkHandler(NXTInfo _nxtInfo) {
 		nxtInfo = _nxtInfo;
+		connectionFailed = false;
 	}
 
 	@Override
 	public void run() {
 		// Amount of connection retries
-		final int MAX_CONNECTION_RETRIES = 10;
+		final int MAX_CONNECTION_RETRIES = 20;
 
 		// Time delay between attempting a reconnect
 		final int RETRY_DELAY = 1000;
@@ -69,7 +73,16 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 				}
 			}
 		}
-
+		
+		connectionFailed = true;
+		return;
+	}
+	
+	/*
+	 * Method for returning whether all retries have failed
+	 */
+	public boolean getConnectionFailed() {
+		return connectionFailed;
 	}
 	
 	/**
