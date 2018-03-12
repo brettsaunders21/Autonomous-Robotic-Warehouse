@@ -44,12 +44,6 @@ public abstract class AbstractSenderReceiver implements Runnable {
 		case "BACKWARD":
 			receivedAction = Action.BACKWARD;
 			break;
-		case "TURN_180":
-			receivedAction = Action.TURN_180;
-			break;
-		case "TURN_LEFT":
-			receivedAction = Action.TURN_LEFT;
-			break;
 		case "TURN_RIGHT":
 			receivedAction = Action.RIGHT;
 			break;
