@@ -60,7 +60,7 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 				logger.info("Successfully connected to: " + nxtInfo.name);
 				return;
 			} else {
-				logger.warn("Attempt " + i + " failed. Retrying in " + RETRY_DELAY + " seconds");
+				logger.warn("Attempt " + i + " failed. Retrying in " + RETRY_DELAY + " milliseconds");
 				try {
 					Thread.sleep(RETRY_DELAY);
 				} catch (InterruptedException e) {
