@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Set;
 import lejos.geom.Point;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 /*
  * @author Samuel Chorvat <sxc1101@student.bham.ac.uk>
@@ -34,6 +35,7 @@ public class JobSelection {
 
 	public JobSelection(HashMap<String, Double> betaValues) {
 		this.betaValuesFromTrainingSet = betaValues;
+		log4j.setLevel(Level.OFF);
 
 	}
 

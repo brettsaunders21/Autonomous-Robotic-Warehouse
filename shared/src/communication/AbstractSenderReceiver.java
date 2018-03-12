@@ -60,7 +60,7 @@ public abstract class AbstractSenderReceiver implements Runnable {
 			receivedAction = Action.SHUTDOWN;
 			break;
 		case "ACTION_COMPLETE":
-			receivedAction = Action.BACKWARD;
+			receivedAction = Action.ACTION_COMPLETE;
 			break;
 		default:
 			break;

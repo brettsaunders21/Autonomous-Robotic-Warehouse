@@ -8,19 +8,18 @@ import main.Configuration;
 import rp.systems.WheeledRobotSystem;
 
 public class Movement {
-	private final int adjustmentValue;
+	private final int MID_BOUND;
 	private  final LightSensor LEFT_SENSOR;
 	private final LightSensor RIGHT_SENSOR;
 	private final DifferentialPilot PILOT;
-	private final int CORRECTION = 7;
 	RobotInterface rI;
 	
-	public Movement(int _adjustmentValue, RobotInterface _rI) {
+	public Movement(int _lineValue, int _backgroundValue, RobotInterface _rI) {
 		PILOT = new WheeledRobotSystem(Configuration.CUSTOM_EXPRESS_BOT).getPilot();
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
-		adjustmentValue = _adjustmentValue;
-		PILOT.setTravelSpeed(0.2f);
+		MID_BOUND = (_lineValue + _backgroundValue) /2;
+		PILOT.setTravelSpeed(0.05f);
 		rI = _rI;
 	}
 	
@@ -74,7 +73,7 @@ public class Movement {
 		}
 		
 		while (!(isRightOnLine() && isLeftOnLine())) {
-			if (!PILOT.isMoving()) PILOT.forward();
+			PILOT.forward();
 			while (isLeftOnLine() && !isRightOnLine()) {
 				PILOT.rotateLeft();
 			}
@@ -86,7 +85,11 @@ public class Movement {
 	}
 	
 	public boolean isOnLine(int lightValue) {
-		return Math.abs(adjustmentValue - lightValue) > CORRECTION;
+		if (lightValue <= MID_BOUND) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public boolean isRightOnLine() {

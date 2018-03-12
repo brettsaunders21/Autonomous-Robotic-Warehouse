@@ -117,6 +117,7 @@ public class RobotInterface {
 **/
 	public void pickItems(int noOfItems) {
 		itemQuantity++;
+		System.out.println("Now: " + itemQuantity);
 	}
 
 	public void dropItems(int noOfItems) {
@@ -124,6 +125,7 @@ public class RobotInterface {
 		if (itemQuantity < 0) {
 			itemQuantity = 0;
 		}
+		System.out.println("Now: " + itemQuantity);
 	}
 
 	public void resetQuantity() {

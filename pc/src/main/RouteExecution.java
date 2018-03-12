@@ -13,7 +13,7 @@ import interfaces.Robot;
 import job.Item;
 import job.Job;
 
-public class RouteExecution extends Thread {
+public class RouteExecution {
 	private static final Logger rELogger = Logger.getLogger(RouteExecution.class);
 	private Robot robot;
 	private Job currentJob;
@@ -41,7 +41,7 @@ public class RouteExecution extends Thread {
 				if (currentCommand == interfaces.Action.PICKUP)
 					network.sendObject(ITEMS.get(0).getQUANTITY());
 				if (currentCommand == interfaces.Action.DROPOFF)
-					network.sendObject(itemsToDrop.peek());
+					network.sendObject(itemsToDrop.peek().getQUANTITY());
 				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
 					rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
 					robot.cancelJob();

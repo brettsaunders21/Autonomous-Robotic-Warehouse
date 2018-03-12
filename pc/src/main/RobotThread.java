@@ -42,7 +42,6 @@ public class RobotThread extends Thread{
 				rTLogger.debug("Assigned " + robot.getRobotName() + " job: " + robot.getActiveJob());
 			}
 			RouteExecution rE = new RouteExecution(robot, networker);
-			rE.setName(robot.getRobotName() + " : " + robot.getActiveJob());
 			rE.run();
 			rTLogger.debug("Executing robot job");
 		}
