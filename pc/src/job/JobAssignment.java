@@ -59,6 +59,7 @@ public class JobAssignment {
 			logger.trace(item);
 			logger.trace(itemRoute);
 		}
+		logger.debug(r.getCurrentPose());
 		logger.debug(routes);
 		return routes;
 	}
