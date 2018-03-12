@@ -35,7 +35,7 @@ public class RouteTest{
 		int myStartTime = 0;
 		coordinates.add(new Point(0,0));
 		directions.add(Action.WAIT);
-		new Route(coordinates, directions, startPose, myStartTime);
+		new Route(coordinates, directions, startPose, myStartTime, new Point(0,0));
 	}
 	
 	/*queues are of different length*/
@@ -46,7 +46,7 @@ public class RouteTest{
 		Pose startPose = Pose.POS_X;
 		int myStartTime = 0;
 		coordinates.add(new Point(0,0));
-		new Route(coordinates, directions, startPose, myStartTime);
+		new Route(coordinates, directions, startPose, myStartTime, new Point(0,0));
 	}
 	
 	/*conjunction constructor combines coordinates correctly*/

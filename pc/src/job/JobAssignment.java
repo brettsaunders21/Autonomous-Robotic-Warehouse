@@ -2,11 +2,7 @@ package job;
 
 import routeplanning.Map;
 import interfaces.Action;
-import interfaces.Pose;
 import java.util.ArrayList;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.log4j.Logger;
 import interfaces.Robot;
 import routeplanning.AStar;
@@ -63,7 +59,6 @@ public class JobAssignment {
 			logger.trace(item);
 			logger.trace(itemRoute);
 		}
-		logger.debug(currentPose);
 		logger.debug(routes);
 		return routes;
 	}

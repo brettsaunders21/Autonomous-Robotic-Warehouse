@@ -92,7 +92,7 @@ public class AStar {
 		BlockingQueue<Action> temp = generateDirectionsQueue(ti.getDirs());
 		temp.remove();
 		directions.addAll(temp);
-		return new Route(coordinates, directions, startingPose, myStartTime);
+		return new Route(coordinates, directions, startingPose, myStartTime, currentPosition);
 	}
 
 	/*

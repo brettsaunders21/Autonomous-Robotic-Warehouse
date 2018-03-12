@@ -1,12 +1,11 @@
+package warehouse_interface;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.Color;
-import java.awt.Dimension;
-
-import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -15,10 +14,13 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
 
 public class JobsInterface extends JFrame implements Runnable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2544507923658432619L;
 	private JPanel contentPane;
 	private JPanel cancelJobPane;
 	private Thread thread;

@@ -1,13 +1,16 @@
-import java.awt.Dimension;
+package warehouse_interface;
+
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Toolkit;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 public class WarehouseInterface extends JFrame implements Runnable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2909589395503239057L;
 	private Image bg = new ImageIcon("src/FullMap.jpg").getImage();
 	private Image robot1 = new ImageIcon("src/robotOne.png").getImage();
 	private Image robot2 = new ImageIcon("src/robotTwo.png").getImage();
