@@ -54,7 +54,7 @@ public class jobAssignmentTest {
 	public void checkJobAssigned() {
 		//robot1.setCurrentPosition(new Point(0,0));
 		System.out.println("test1");
-		System.out.println("before assign");
+		System.out.println("before assigning");
 		jAssignment.assignJobs(robot1);
 		assertEquals(10001, robot1.getActiveJob().getID());
 	}
