@@ -17,6 +17,7 @@ public class Robot {
 	private float reward;
 	private int jobsCompleted;
 	private NXTInfo nxtInfo;
+	private Pose currentPose;
 	
 	public Robot(String _robotName, String _btAddress, Point _startPostion){
 		this.robotName = this.nxtInfo.name = _robotName;
@@ -29,6 +30,7 @@ public class Robot {
 		this.reward = 0;
 		this.jobsCompleted = 0;
 		this.currentCoords = _startPostion;
+		this.setCurrentPose(Pose.POS_X);
 	}
 	
 	public void jobFinished() {
@@ -108,6 +110,14 @@ public class Robot {
 	
 	public int jobsCompleted() {
 		return jobsCompleted;
+	}
+
+	public Pose getCurrentPose() {
+		return currentPose;
+	}
+
+	public void setCurrentPose(Pose currentPose) {
+		this.currentPose = currentPose;
 	}
  
 }

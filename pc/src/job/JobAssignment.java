@@ -17,7 +17,6 @@ public class JobAssignment {
 	private Robot[] robotsArray;
 	private Map map = Map.generateRealWarehouseMap();
 	private int time;
-	private Pose currentPose = Pose.POS_X;
 	
 	public JobAssignment(ArrayList<Job> j, Robot[] r, int t) {
 		robotsArray = r;
@@ -52,9 +51,9 @@ public class JobAssignment {
 		AStar routeMaker = new AStar(map);
 		ArrayList<Route> routes = new ArrayList<Route>();
 		for (Item item : items) {
-			Route itemRoute = routeMaker.generateRoute(r.getCurrentPosition(), item.getPOSITION(), currentPose, new Route[] {}, time);
+			Route itemRoute = routeMaker.generateRoute(r.getCurrentPosition(), item.getPOSITION(), r.getCurrentPose(), new Route[] {}, time);
 			routes.add(itemRoute);
-			currentPose = itemRoute.getFinalPose();
+			r.setCurrentPose(itemRoute.getFinalPose()); 
 		}
 		return routes;
 	}
