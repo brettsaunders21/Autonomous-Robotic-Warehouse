@@ -42,7 +42,7 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 		final int MAX_CONNECTION_RETRIES = 10;
 
 		// Time delay between attempting a reconnect
-		final int RETRY_DELAY = 1000;
+		final int RETRY_DELAY = 500;
 
 		logger.info("Attempting to connect to: " + nxtInfo.name);
 		// Create an NXTComm object ready to connect using the bluetooth protocol

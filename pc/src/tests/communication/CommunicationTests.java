@@ -37,7 +37,7 @@ public class CommunicationTests {
 	}
 
 	// Test if a connection can be established
-	@Test(timeout = 11000)
+	@Test(timeout = 6000)
 	public void singleRobotConnectionTest() {
 		networkHandler.run();
 		assertTrue(networkHandler.isConnected());
