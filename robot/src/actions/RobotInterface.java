@@ -1,5 +1,7 @@
 package actions;
 
+import lejos.nxt.Button;
+
 //import job.Job;
 //import interfaces.Robot;
 //import lejos.nxt.Button;
@@ -70,15 +72,33 @@ public class RobotInterface {
 		}
 
 	}
+**/
+	public void waitForLoadingMessage(int amount){
+		System.out.println("Pick up: " + amount);
+		while (itemQuantity != amount) {
+	if (Button.waitForAnyPress() == Button.ID_LEFT){
+		pickItems(itemQuantity);
+		if (Button.waitForAnyPress() == Button.ID_RIGHT){
+			dropItems(itemQuantity);
+		}
+		
+		}
+		}
+	}
 
-	// public void waitForLoadingMessage(){
-
-	// }
-
-	// public void waitForUnloadingMessage(){
-
-	// }
-
+	public void waitForunLoadingMessage(int amount){
+		System.out.println("Drop off: " + itemQuantity);
+		while (itemQuantity != 0) {
+	if (Button.waitForAnyPress() == Button.ID_LEFT){
+		pickItems(itemQuantity);
+		if (Button.waitForAnyPress() == Button.ID_RIGHT){
+			dropItems(itemQuantity);
+		}
+		
+		}
+		}
+	}
+/**
 	public void loadItemsMessage() {
 		LCD.clear();
 		//LCD.drawString(robotInfo.getRobotName(), 1, 0);

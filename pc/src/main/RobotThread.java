@@ -16,12 +16,23 @@ public class RobotThread extends Thread{
 	}
 	
 	public void run() {
+		networker.run();
+		while (!networker.isConnected()) {
+			try {
+			sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		while(true) {
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
+				robot.jobNotFinished();
 				TASKER.assignJobs(robot);
 			}
 			RouteExecution rE = new RouteExecution(robot, networker);
 			rE.setName(robot.getRobotName() + " : " + robot.getActiveJob());
+			rE.run();
 		}
 	}
 	

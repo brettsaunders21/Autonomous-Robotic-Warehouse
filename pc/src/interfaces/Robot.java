@@ -20,13 +20,12 @@ public class Robot {
 	private Pose currentPose;
 	
 	public Robot(String _robotName, String _btAddress, Point _startPostion){
-		this.robotName = this.nxtInfo.name = _robotName;
-		this.nxtInfo.deviceAddress = _btAddress;
-		this.nxtInfo.protocol = NXTCommFactory.BLUETOOTH;
+		this.robotName = _robotName;
+		this.nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH,_robotName,_btAddress);
 		this.routeSet = false;
 		this.setWeight(0);
 		this.jobCancelled = false;
-		this.jobFinished = false;
+		this.jobFinished = true;
 		this.reward = 0;
 		this.jobsCompleted = 0;
 		this.currentCoords = _startPostion;
@@ -94,6 +93,9 @@ public class Robot {
 		return weight;
 	}
 
+	public void jobNotFinished() {
+		jobFinished = false;
+	}
 
 	/**
 	 * @param weight the weight to set
