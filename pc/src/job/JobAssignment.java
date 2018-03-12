@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.log4j.Logger;
+
 import interfaces.Robot;
 import routeplanning.AStar;
 import routeplanning.Route;
@@ -18,6 +21,7 @@ public class JobAssignment {
 	private Map map = Map.generateRealWarehouseMap();
 	private int time;
 	private Pose currentPose = Pose.POS_X;
+	final static Logger logger = Logger.getLogger(JobAssignment.class);
 	
 	public JobAssignment(ArrayList<Job> j, Robot[] r, int t) {
 		robotsArray = r;
@@ -36,6 +40,10 @@ public class JobAssignment {
 		job.assignCurrentroute(routeWithDropoff);
 		robot.setActiveJob(job);
 		jobs.remove(job);
+		logger.info(robot);
+		logger.info(routeWithDropoff);
+		logger.info(job);
+		logger.info(items);
 	
 	}
 
@@ -55,8 +63,13 @@ public class JobAssignment {
 			Route itemRoute = routeMaker.generateRoute(r.getCurrentPosition(), item.getPOSITION(), currentPose, new Route[] {}, time);
 			routes.add(itemRoute);
 			currentPose = itemRoute.getFinalPose();
+			logger.trace(item);
+			logger.trace(itemRoute);
 		}
+		logger.debug(currentPose);
+		logger.debug(routes);
 		return routes;
+
 	}
 	
 }

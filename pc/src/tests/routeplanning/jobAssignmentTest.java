@@ -1,4 +1,4 @@
-package tests.routeplanning;
+package tests;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -13,15 +13,21 @@ import job.Item;
 import job.Job;
 import job.JobAssignment;
 import lejos.geom.Point;
+import routeplanning.AStar;
+import tests.routeplanning.AStarTest;
 
 public class jobAssignmentTest {
 	//private final static Logger logger = Logger.getLogger(AssignmentTest.class);
 	private Robot robot1 = new Robot("terry1");
 	private Robot[] robotList = {robot1};
-	private JobAssignment jAssignment;
+	final static Logger logger = Logger.getLogger(jobAssignmentTest.class);
+	final static Logger jobAssignmentLogger = Logger.getLogger(JobAssignment.class);
+
 	
 	public jobAssignmentTest() {
-		//logger.setLevel(Level.DEBUG);
+		JobAssignment jAssignment = new JobAssignment(createJobList(), robotList, 0);
+		jobAssignmentLogger.setLevel(Level.OFF);
+		logger.setLevel(Level.DEBUG);
 	}
 	
 	private Job createJob(int jobId) {
@@ -52,7 +58,6 @@ public class jobAssignmentTest {
 	public void checkJobAssigned() {
 		robot1.setCurrentPosition(new Point(0,0));
 		System.out.println("test1");
-		jAssignment = new JobAssignment(createJobList(), robotList, 0);
 		System.out.println("before assign");
 		jAssignment.assignJobs(robot1);
 		Assertions.assertEquals(1, robot1.getActiveJob().getID());
