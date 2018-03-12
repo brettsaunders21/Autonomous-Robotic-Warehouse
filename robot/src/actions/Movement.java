@@ -30,6 +30,7 @@ public class Movement {
 			Delay.msDelay(100);
 			return;
 		case FORWARD:
+			PILOT.forward();
 			break;
 		case LEFT:
 			PILOT.rotate(10);
@@ -37,6 +38,7 @@ public class Movement {
 				PILOT.rotateLeft();
 			}
 			PILOT.rotate(10);
+			PILOT.forward();
 			break;
 		case RIGHT: 
 			PILOT.rotate(10);
@@ -44,14 +46,17 @@ public class Movement {
 				PILOT.rotateRight();
 			}
 			PILOT.rotate(10);
+			PILOT.forward();
 			break;
 		case BACKWARD: 
+			PILOT.stop();
 			PILOT.travel(-0.1);
 			PILOT.rotate(20);
 			while (!isLeftOnLine()) {
 				PILOT.rotateLeft();
 			}
 			PILOT.rotate(20);
+			PILOT.forward();
 			break;
 		case PICKUP:
 			rI.waitForLoadingMessage(pickAmount);
