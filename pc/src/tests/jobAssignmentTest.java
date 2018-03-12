@@ -14,8 +14,6 @@ import job.Item;
 import job.Job;
 import job.JobAssignment;
 import lejos.geom.Point;
-import routeplanning.AStar;
-import tests.routeplanning.AStarTest;
 
 public class jobAssignmentTest {
 	//private final static Logger logger = Logger.getLogger(AssignmentTest.class);
