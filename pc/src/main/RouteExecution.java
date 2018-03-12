@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import org.apache.log4j.Logger;
+
 import communication.PCNetworkHandler;
 import interfaces.Action;
 import interfaces.Robot;
@@ -11,7 +14,7 @@ import job.Item;
 import job.Job;
 
 public class RouteExecution extends Thread {
-
+	private static final Logger rELogger = Logger.getLogger(RouteExecution.class);
 	private Robot robot;
 	private Job currentJob;
 	private interfaces.Action currentCommand;
@@ -40,7 +43,7 @@ public class RouteExecution extends Thread {
 				if (currentCommand == interfaces.Action.DROPOFF)
 					network.sendObject(itemsToDrop.peek());
 				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
-					//Error
+					rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
 					robot.cancelJob();
 					break;
 				}
@@ -51,14 +54,17 @@ public class RouteExecution extends Thread {
 					robot.setWeight(robot.getWeight() + 0);
 					itemsToDrop.add(ITEMS.get(0));
 					ITEMS.remove(0);
+					rELogger.debug(robot.getRobotName() + " picked up items");
 				} else if (currentCommand.equals(interfaces.Action.DROPOFF)) {
 					robot.setWeight(robot.getWeight() - 0);
 					itemsToDrop.poll();
+					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward " + currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
 		robot.jobFinished();
 	}
 }

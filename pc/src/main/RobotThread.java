@@ -1,10 +1,13 @@
 package main;
 
+import org.apache.log4j.Logger;
+
 import communication.PCNetworkHandler;
 import interfaces.Robot;
 import job.JobAssignment;
 
 public class RobotThread extends Thread{
+	private static final Logger rTLogger = Logger.getLogger(RobotThread.class);
 	private Robot robot;
 	private final JobAssignment TASKER;
 	private final PCNetworkHandler networker;
@@ -27,7 +30,6 @@ public class RobotThread extends Thread{
 				e.printStackTrace();
 			}
 		}
-		
 		if (networker.getConnectionFailed()) {
 			// Print to logger that connection failed and return
 			return;
@@ -37,10 +39,12 @@ public class RobotThread extends Thread{
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
 				robot.jobNotFinished();
 				TASKER.assignJobs(robot);
+				rTLogger.debug("Assigned " + robot.getRobotName() + " job: " + robot.getActiveJob());
 			}
 			RouteExecution rE = new RouteExecution(robot, networker);
 			rE.setName(robot.getRobotName() + " : " + robot.getActiveJob());
 			rE.run();
+			rTLogger.debug("Executing robot job");
 		}
 	}
 	
