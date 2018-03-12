@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import communication.CommunicationData;
 import communication.PCNetworkHandler;
+import interfaces.Action;
 import interfaces.Robot;
 import job.Item;
 import job.Job;
@@ -39,7 +39,7 @@ public class RouteExecution extends Thread {
 					network.sendObject(ITEMS.get(0).getQUANTITY());
 				if (currentCommand == interfaces.Action.DROPOFF)
 					network.sendObject(itemsToDrop.peek());
-				if (!network.receiveObject(CommunicationData.STRING).equals("ACTION COMPLETE")) {
+				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
 					//Error
 					robot.cancelJob();
 					break;

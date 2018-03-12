@@ -1,7 +1,8 @@
 package tests;
 
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
+
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
@@ -17,6 +18,7 @@ import lejos.geom.Point;
 import routeplanning.AStar;
 import routeplanning.Route;
 import tests.routeplanning.AStarTest;
+
 
 public class jobAssignmentTest {
 	//private final static Logger logger = Logger.getLogger(AssignmentTest.class);
@@ -63,7 +65,7 @@ public class jobAssignmentTest {
 		System.out.println("test1");
 		System.out.println("before assign");
 		jAssignment.assignJobs(robot1);
-		Assertions.assertEquals(1, robot1.getActiveJob().getID());
+		assertEquals(1, robot1.getActiveJob().getID());
 	}
 	
 	@Test
