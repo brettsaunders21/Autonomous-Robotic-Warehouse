@@ -11,7 +11,7 @@ import lejos.geom.Point;
 
 public class PCController {
 	private static final Robot[] ROBOTS = {
-			new Robot("Jeremy", "0.0.0", new Point(0, 0))
+			new Robot("Spike", "0016530AA681", new Point(0, 0))
 	};
 	private static ArrayList<Job> orderedJobs;
 	private static RobotThread[] r;

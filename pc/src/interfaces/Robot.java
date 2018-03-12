@@ -70,12 +70,14 @@ public class Robot {
 
 	/*Sets the current position of the robot*/
 	public void setCurrentPosition(Point position){
+		currentCoords = position;
 		//need to check valid coordinate before assigning, not in wall, actually on map etc
 	}
 
 
 	/*Sets all information relating to the newly assigned job. */
 	public void setActiveJob(Job job){
+		activeJob = job;
 		//sets dropOffCoords, pickUpCoords and determines if more than one trip is necessary. Requests routes to be made
 	}
 

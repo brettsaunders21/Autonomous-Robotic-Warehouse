@@ -15,5 +15,6 @@ public enum Action {
 	PICKUP,		//Wait for correct number of items to be loaded onto robot
 	DROPOFF,	//Wait for correct number of items to be unloaded from robot
 	CANCEL,		//Cancel current job and dump items on job
-	SHUTDOWN	//Shutdown the robot
+	SHUTDOWN,	//Shutdown the robot
+	ACTION_COMPLETE 	//Report that the action has been complete
 }
