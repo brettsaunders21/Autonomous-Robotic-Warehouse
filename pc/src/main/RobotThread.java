@@ -1,33 +1,28 @@
 package main;
 
+import communication.PCNetworkHandler;
 import interfaces.Robot;
 import job.JobAssignment;
 
 public class RobotThread extends Thread{
 	private Robot robot;
 	private final JobAssignment TASKER;
-	private Robot[] otherRobots;
+	private final PCNetworkHandler networker;
 	
-	public RobotThread(Robot _robot, Robot[] _otherRobots, JobAssignment _tasker) {
+	public RobotThread(Robot _robot, JobAssignment _tasker) {
 		this.robot = _robot;
-		this.otherRobots = _otherRobots;
 		this.TASKER = _tasker;
+		networker = new PCNetworkHandler(robot.getNXTInfo());
 	}
 	
 	public void run() {
 		while(true) {
-			if (true) { //Get from tasker if current job equals cancelled
-				//Cancel job
-			}
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
-				//assign another job
-				//calculate route
+				TASKER.assignJobs(robot);
 			}
-			sendJob();
+			RouteExecution rE = new RouteExecution(robot, networker);
+			rE.setName(robot.getRobotName() + " : " + robot.getActiveJob());
 		}
 	}
 	
-	public void sendJob() {
-		
-	}
 }

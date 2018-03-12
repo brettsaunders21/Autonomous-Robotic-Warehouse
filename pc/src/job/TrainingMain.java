@@ -10,13 +10,13 @@ public class TrainingMain {
 		JobInput jb = new JobInput();
 		
 		HashMap<Integer, ArrayList<String>> availableOrders = jb.getTrainingJobs();
-		HashMap<String, ArrayList<Float>> itemRewardsWeights = jb.getItemRewardsWeights();
+		jb.getItemRewardsWeights();
 		ArrayList<String> itemNamesList = jb.itemNames();
 		
 		TrainingAlgorithm tA = new TrainingAlgorithm(itemNamesList,availableOrders);
 		
 		HashMap<String, Double> betaValuesFromTrainingSet = jb.getBetaValues();
-		TrainingAlgorithm tA1 = new TrainingAlgorithm(itemNamesList,availableOrders, betaValuesFromTrainingSet);
+		new TrainingAlgorithm(itemNamesList,availableOrders, betaValuesFromTrainingSet);
 		
 		
 		tA.train();

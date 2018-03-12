@@ -1,9 +1,11 @@
 package interfaces;
 
-// Commands
+/*
+ * Action class
+ * 
+ * Holds all possible actions for the robot
+ */
 
-// Note - coded as strings instead of ints as the robot will receive
-// an int value relating to the amount of a certain object it should pick up
 public enum Action {
 	LEFT,		//Move forwards then turn left
 	FORWARD,	//Move forwards
@@ -13,5 +15,6 @@ public enum Action {
 	PICKUP,		//Wait for correct number of items to be loaded onto robot
 	DROPOFF,	//Wait for correct number of items to be unloaded from robot
 	CANCEL,		//Cancel current job and dump items on job
-	SHUTDOWN	//Shutdown the robot
+	SHUTDOWN,	//Shutdown the robot
+	ACTION_COMPLETE 	//Report that the action has been complete
 }
