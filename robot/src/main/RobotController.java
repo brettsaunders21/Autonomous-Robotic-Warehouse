@@ -1,9 +1,8 @@
 package main;
 
 import java.io.IOException;
-
 import actions.Movement;
-import communication.CommunicationData;
+import actions.RobotInterface;
 import communication.RobotNetworkHandler;
 import interfaces.Action;
 import lejos.nxt.LightSensor;
@@ -16,11 +15,13 @@ public class RobotController implements StoppableRunnable {
 	private final LightSensor RIGHT_SENSOR;
 	private boolean running;
 	private RobotNetworkHandler networkHandler;
+	private RobotInterface rInterface;
 
 	public RobotController() {
+		rInterface = new RobotInterface();
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
-		move = new Movement(calibrate());
+		move = new Movement(calibrate(), rInterface);
 		running = true;
 		networkHandler = new RobotNetworkHandler();
 	}
@@ -33,12 +34,12 @@ public class RobotController implements StoppableRunnable {
 		while (running) {
 			try {
 				// Print message
-				currentCommand = (Action) networkHandler.receiveObject(CommunicationData.ACTION);
+				currentCommand = (Action) networkHandler.receiveAction();
 
 				if (currentCommand != null) {
 					// Print Message
 					if (currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)) {
-						pickAmount = (int) networkHandler.receiveObject(CommunicationData.INT);
+						pickAmount = (int) networkHandler.receiveInt();
 					}
 
 					move.nextAction(currentCommand, pickAmount);

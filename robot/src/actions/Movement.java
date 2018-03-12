@@ -13,13 +13,15 @@ public class Movement {
 	private final LightSensor RIGHT_SENSOR;
 	private final DifferentialPilot PILOT;
 	private final int CORRECTION = 7;
+	RobotInterface rI;
 	
-	public Movement(int _adjustmentValue) {
+	public Movement(int _adjustmentValue, RobotInterface _rI) {
 		PILOT = new WheeledRobotSystem(Configuration.CUSTOM_EXPRESS_BOT).getPilot();
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		adjustmentValue = _adjustmentValue;
 		PILOT.setTravelSpeed(0.2f);
+		rI = _rI;
 	}
 	
 	public void nextAction(Action command, int pickAmount) {
@@ -52,10 +54,11 @@ public class Movement {
 			PILOT.rotate(20);
 			break;
 		case PICKUP:
-			//Need interface code
+			rI.waitForLoadingMessage(pickAmount);
 			break;
 		case DROPOFF:
-			//Need interface code
+			rI.waitForunLoadingMessage(pickAmount);
+			rI.resetQuantity();
 			break;
 		case CANCEL:
 			break;
