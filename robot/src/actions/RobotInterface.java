@@ -6,6 +6,7 @@ import lejos.nxt.Button;
 //import lejos.util.Delay;
 //import lejos.nxt.ButtonListener;
 //import lejos.nxt.LCD;
+import lejos.nxt.LCD;
 
 public class RobotInterface {
 	
@@ -112,7 +113,7 @@ public class RobotInterface {
 		dropItems(itemQuantity);
 		if (Button.waitForAnyPress() == Button.ID_RIGHT){
 			pickItems(itemQuantity);
-		
+		/**
 			if(Button.waitForAnyPress() == Button.ID_ESCAPE){
 				LCD.clear();
 				System.out.println("You are cancelling the order. If you wish to confirm press ENTER. "
@@ -124,6 +125,7 @@ public class RobotInterface {
 					loadItemsMessage();
 				}
 			}
+			**/
 		}
 	}
 	}
@@ -136,9 +138,9 @@ public class RobotInterface {
 	public void waitForUnloadingMessage(int amount){
 		System.out.println("Drop off: " + itemQuantity);
 		while (itemQuantity != 0) {
-	if (Button.waitForAnyPress() == Button.ID_LEFT){
+	if (Button.waitForAnyPress() == Button.ID_RIGHT){
 		pickItems(itemQuantity);
-		if (Button.waitForAnyPress() == Button.ID_RIGHT){
+		if (Button.waitForAnyPress() == Button.ID_LEFT){
 			dropItems(itemQuantity);
 		}
 		

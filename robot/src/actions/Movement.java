@@ -66,7 +66,7 @@ public class Movement {
 			break;
 		case DROPOFF:
 			PILOT.travel(0.05);
-			rI.waitForunLoadingMessage(pickAmount);
+			rI.waitForUnloadingMessage(pickAmount);
 			rI.resetQuantity();
 			break;
 		case CANCEL:
