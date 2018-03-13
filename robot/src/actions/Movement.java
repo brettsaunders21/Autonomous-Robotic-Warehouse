@@ -20,6 +20,7 @@ public class Movement {
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		MID_BOUND = (_lineValue + _backgroundValue) /2;
 		PILOT.setTravelSpeed(0.05f);
+		PILOT.setRotateSpeed(10);
 		rI = _rI;
 	}
 	
@@ -29,22 +30,24 @@ public class Movement {
 			Delay.msDelay(100);
 			return;
 		case FORWARD:
-			PILOT.forward();
+			PILOT.travel(0.05);
 			break;
 		case LEFT:
-			PILOT.rotate(10);
-			while (!isLeftOnLine()) {
-				PILOT.rotateLeft();
+			PILOT.travel(0.05);
+			PILOT.rotate(-50);
+			while (!isRightOnLine()) {
+				PILOT.rotateRight();
 			}
 			PILOT.rotate(10);
 			PILOT.forward();
 			break;
 		case RIGHT: 
-			PILOT.rotate(10);
-			while (!isRightOnLine()) {
-				PILOT.rotateRight();
+			PILOT.travel(0.05);
+			PILOT.rotate(50);
+			while (!isLeftOnLine()) {
+				PILOT.rotateLeft();
 			}
-			PILOT.rotate(10);
+			PILOT.rotate(-10);
 			PILOT.forward();
 			break;
 		case BACKWARD: 
@@ -58,9 +61,11 @@ public class Movement {
 			PILOT.forward();
 			break;
 		case PICKUP:
+			PILOT.travel(0.05);
 			rI.waitForLoadingMessage(pickAmount);
 			break;
 		case DROPOFF:
+			PILOT.travel(0.05);
 			rI.waitForunLoadingMessage(pickAmount);
 			rI.resetQuantity();
 			break;
@@ -75,10 +80,10 @@ public class Movement {
 		while (!(isRightOnLine() && isLeftOnLine())) {
 			PILOT.forward();
 			while (isLeftOnLine() && !isRightOnLine()) {
-				PILOT.rotateLeft();
+				PILOT.rotateRight();
 			}
 			while (!isLeftOnLine() && isRightOnLine()) {
-				PILOT.rotateRight();
+				PILOT.rotateLeft();
 			}
 		}
 		PILOT.stop();
