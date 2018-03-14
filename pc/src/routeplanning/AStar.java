@@ -23,9 +23,9 @@ public class AStar {
 	 * Directions for route planning, for global directions see {@link
 	 * interfaces.Direction}
 	 */
-	private final static int NEG_X = 0;
+	private final static int NEG_X = 2;
 	private final static int NEG_Y = 1;
-	private final static int POS_X = 2;
+	private final static int POS_X = 0;
 	private final static int POS_Y = 3;
 	private final static int STILL = 4;
 
