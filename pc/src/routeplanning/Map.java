@@ -31,7 +31,7 @@ public class Map {
 		int width = map.getXSize();
 		int height = map.getYSize();
 		ArrayList<Point> obstructions = new ArrayList<Point>();
-		for (int x = 0; x < width; x++) {
+		for (int x = width-1; x>=0; x--) {
 			for (int y = 0; y < height; y++) {
 				if (map.isObstructed(x, y)) {
 					obstructions.add(new Point(x, y));

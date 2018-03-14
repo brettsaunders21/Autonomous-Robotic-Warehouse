@@ -10,10 +10,10 @@ import lejos.geom.Point;
 
 public class WarehouseInterface extends JFrame implements Runnable{
 
-	private Image bg = new ImageIcon("pc/src/warehouse_interface/FullMap.jpg").getImage();
-	private Image robot1 = new ImageIcon("pc/src/warehouse_interface/robotOne.png").getImage();
-	private Image robot2 = new ImageIcon("pc/src/warehouse_interface/robotTwo.png").getImage();
-	private Image robot3 = new ImageIcon("pc/src/warehouse_interface/robotThree.png").getImage();
+	private Image bg = new ImageIcon("src/warehouse_interface/FullMap.jpg").getImage();
+	private Image robot1 = new ImageIcon("src/warehouse_interface/robotOne.png").getImage();
+	private Image robot2 = new ImageIcon("src/warehouse_interface/robotTwo.png").getImage();
+	private Image robot3 = new ImageIcon("src/warehouse_interface/robotThree.png").getImage();
 	private Image[] arrayOfImages = {robot1, robot2, robot3};
 	private Thread thread;
 	private int zeroOnRobotXAxis = 60;

@@ -12,6 +12,7 @@ import interfaces.Action;
 import interfaces.Robot;
 import job.Item;
 import job.Job;
+import lejos.geom.Point;
 
 public class RouteExecution {
 	private static final Logger rELogger = Logger.getLogger(RouteExecution.class);
@@ -38,6 +39,8 @@ public class RouteExecution {
 			while (!currentDirections.isEmpty()) { 
 				currentCommand = currentDirections.poll();
 				network.sendObject(currentCommand);
+				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
+				rELogger.debug(whereImGoing);
 				if (currentCommand == interfaces.Action.PICKUP)
 					network.sendObject(ITEMS.get(0).getQUANTITY());
 				if (currentCommand == interfaces.Action.DROPOFF)
@@ -60,11 +63,12 @@ public class RouteExecution {
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
+				robot.setCurrentPosition(whereImGoing);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward " + currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
 		robot.jobFinished();
+		rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward " + currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
 	}
 }

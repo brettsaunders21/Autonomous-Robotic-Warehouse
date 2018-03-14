@@ -14,13 +14,13 @@ public class Movement {
 	private final DifferentialPilot PILOT;
 	RobotInterface rI;
 	
-	public Movement(int _lineValue, int _backgroundValue, RobotInterface _rI) {
+	public Movement(int _MID_BOUND, RobotInterface _rI) {
 		PILOT = new WheeledRobotSystem(Configuration.CUSTOM_EXPRESS_BOT).getPilot();
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
-		MID_BOUND = (_lineValue + _backgroundValue) /2;
-		PILOT.setTravelSpeed(0.05f);
-		PILOT.setRotateSpeed(10);
+		MID_BOUND = _MID_BOUND;
+		PILOT.setTravelSpeed(0.21f);
+		PILOT.setRotateSpeed(85);
 		rI = _rI;
 	}
 	
@@ -54,20 +54,19 @@ public class Movement {
 			PILOT.stop();
 			PILOT.travel(-0.1);
 			PILOT.rotate(20);
-			while (!isLeftOnLine()) {
+			while (!isRightOnLine()) {
 				PILOT.rotateLeft();
 			}
 			PILOT.rotate(20);
 			PILOT.forward();
 			break;
 		case PICKUP:
-			PILOT.travel(0.05);
+			PILOT.stop();
 			rI.waitForLoadingMessage(pickAmount);
 			break;
 		case DROPOFF:
-			PILOT.travel(0.05);
+			PILOT.stop();
 			rI.waitForUnloadingMessage(pickAmount);
-			rI.resetQuantity();
 			break;
 		case CANCEL:
 			break;
@@ -77,16 +76,21 @@ public class Movement {
 			break;
 		}
 		
+		if (!(command.equals(Action.PICKUP) || command.equals(Action.DROPOFF))) {
 		while (!(isRightOnLine() && isLeftOnLine())) {
 			PILOT.forward();
 			while (isLeftOnLine() && !isRightOnLine()) {
 				PILOT.rotateRight();
+				System.out.println("Is on left line");
 			}
 			while (!isLeftOnLine() && isRightOnLine()) {
 				PILOT.rotateLeft();
+				System.out.println("Is on right line");
 			}
 		}
+		}
 		PILOT.stop();
+		rI.resetQuantity();
 	}
 	
 	public boolean isOnLine(int lightValue) {
@@ -98,11 +102,11 @@ public class Movement {
 	}
 	
 	public boolean isRightOnLine() {
-		return isOnLine(RIGHT_SENSOR.readValue());
+		return isOnLine(RIGHT_SENSOR.getNormalizedLightValue());
 	}
 	
 	public boolean isLeftOnLine() {
-		return isOnLine(LEFT_SENSOR.readValue());
+		return isOnLine(LEFT_SENSOR.getNormalizedLightValue());
 	}
 
 }

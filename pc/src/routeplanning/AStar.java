@@ -319,14 +319,14 @@ public class AStar {
 				directions.add(action);
 				logger.debug(action);
 				switch (action) {
-				case LEFT: {
+				case RIGHT: {
 					startPose = startPose - 1;
 					if (startPose < 0) {
 						startPose = startPose + 4;
 					}
 					break;
 				}
-				case RIGHT: {
+				case LEFT: {
 					startPose = startPose + 1;
 					if (startPose > 3) {
 						startPose = startPose - 4;
@@ -356,7 +356,7 @@ public class AStar {
 			break;
 		}
 		case 1: {
-			dir = Action.LEFT;
+			dir = Action.RIGHT;
 			break;
 		}
 		case 2: {
@@ -364,7 +364,7 @@ public class AStar {
 			break;
 		}
 		case 3: {
-			dir = Action.RIGHT;
+			dir = Action.LEFT;
 			break;
 		}
 		}

@@ -3,10 +3,6 @@ package actions;
 //import job.Job;
 //import interfaces.Robot;
 import lejos.nxt.Button;
-//import lejos.util.Delay;
-//import lejos.nxt.ButtonListener;
-//import lejos.nxt.LCD;
-import lejos.nxt.LCD;
 
 public class RobotInterface {
 	
@@ -108,11 +104,24 @@ public class RobotInterface {
 	 */
 	public void waitForLoadingMessage(int amount){
 		System.out.println("Pick up: " + amount);
+		/**
 		while (itemQuantity != amount) {
-	if (Button.waitForAnyPress() == Button.ID_LEFT){
-		dropItems(itemQuantity);
-		if (Button.waitForAnyPress() == Button.ID_RIGHT){
-			pickItems(itemQuantity);
+			switch (Button.waitForAnyPress()) {
+			case Button.ID_LEFT:
+				dropItems(itemQuantity);
+				break;
+			case Button.ID_RIGHT:
+				pickItems(itemQuantity);
+				break;
+			}
+			**/
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 		/**
 			if(Button.waitForAnyPress() == Button.ID_ESCAPE){
 				LCD.clear();
@@ -126,27 +135,35 @@ public class RobotInterface {
 				}
 			}
 			**/
-		}
-	}
-	}
+		//}
 		
-		}
 	
 	/**
 	 * A method to pick items after the previous job has been unloaded.
 	 */
 	public void waitForUnloadingMessage(int amount){
 		System.out.println("Drop off: " + itemQuantity);
+		/**
+		itemQuantity = 1;
 		while (itemQuantity != 0) {
-	if (Button.waitForAnyPress() == Button.ID_RIGHT){
-		pickItems(itemQuantity);
-		if (Button.waitForAnyPress() == Button.ID_LEFT){
-			dropItems(itemQuantity);
-		}
+			switch (Button.waitForAnyPress()) {
+			case Button.ID_LEFT:
+				dropItems(itemQuantity);
+				break;
+			case Button.ID_RIGHT:
+				pickItems(itemQuantity);
+				break;
+			}
 		
 		}
+		**/
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-	}
+		}
 		
 	/**
 	 * Prints a message to tell the user to load items.
@@ -176,6 +193,7 @@ public class RobotInterface {
 	 */
 	public void pickItems(int noOfItems){
 		itemQuantity++;
+		System.out.println(itemQuantity);
 	}
 	
 	/**
@@ -184,6 +202,7 @@ public class RobotInterface {
 	 */
 	public void dropItems(int noOfItems){
 		itemQuantity--;
+		System.out.println(itemQuantity);
 		if(itemQuantity < 0){
 			itemQuantity = 0;
 		}

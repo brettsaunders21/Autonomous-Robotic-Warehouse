@@ -50,18 +50,18 @@ public class AStarTest {
 	
 	//Starts facing up and wants to travel left
 	@Test
-	public void orientationAdjustRight() {
+	public void orientationAdjustLeft() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_Y, new Route[] {}, 0);
-		assertEquals(Action.RIGHT,r.getDirections().peek());
+		assertEquals(Action.LEFT,r.getDirections().peek());
 	}
 	
 	//Starts facing down and wants to travel left
 	@Test
-	public void orientationAdjustLeft() {
+	public void orientationAdjustRight() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.POS_Y, new Route[] {}, 0);
-		assertEquals(Action.LEFT,r.getDirections().peek());
+		assertEquals(Action.RIGHT,r.getDirections().peek());
 	}
 	
 	//Starts facing right and wants to travel left
@@ -142,7 +142,7 @@ public class AStarTest {
 	public void directionsNoObstructionTurn() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(3,2), Pose.NEG_X, new Route[] {}, 0);
-		Action[] ds = new Action[] {Action.BACKWARD, Action.FORWARD, Action.RIGHT, Action.LEFT, Action.RIGHT};
+		Action[] ds = new Action[] {Action.BACKWARD, Action.FORWARD, Action.LEFT, Action.RIGHT, Action.LEFT};
 		assertArrayEquals(ds,r.getDirections().toArray());
 	}
 	
@@ -168,7 +168,7 @@ public class AStarTest {
 	public void directionsNoObstructionTurnReverse() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3,2), new Point(0,0), Pose.NEG_X, new Route[] {}, 0);
-		Action[] ds = new Action[] {Action.FORWARD, Action.RIGHT, Action.FORWARD, Action.LEFT, Action.FORWARD};
+		Action[] ds = new Action[] {Action.FORWARD, Action.LEFT, Action.FORWARD, Action.RIGHT, Action.FORWARD};
 		assertArrayEquals(ds,r.getDirections().toArray());
 	}
 	
