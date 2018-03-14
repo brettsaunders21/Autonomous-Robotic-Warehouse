@@ -12,8 +12,6 @@ import job.JobInput;
 import job.JobSelection;
 import lejos.geom.Point;
 import routeplanning.AStar;
-import warehouse_interface.JobsInterface;
-import warehouse_interface.WarehouseInterface;
 
 public class PCController {
 	private static final Logger controllerLogger = Logger.getLogger(PCController.class);
@@ -35,12 +33,11 @@ public class PCController {
 		jobAssLogger.setLevel(Level.ALL);
 		JobInput jI = new JobInput();
 		JobSelection jS = new JobSelection(jI.getBetaValues());
-		Counter counter = new Counter();
-		counter.run();
+		Counter counter = new Counter(ROBOTS);
 		orderedJobs = jS.prioritize();
 		JobAssignment jA = new JobAssignment(orderedJobs, ROBOTS, counter);
 		for (Robot rob : ROBOTS) {
-			r[numOfRobots] = new RobotThread(rob, jA);
+			r[numOfRobots] = new RobotThread(rob, jA, counter);
 			r[numOfRobots].setName(rob.getRobotName());
 			r[numOfRobots].start();
 			controllerLogger.debug("Started robot thread: " + rob.getRobotName());

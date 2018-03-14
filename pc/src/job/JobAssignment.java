@@ -2,8 +2,6 @@ package job;
 
 import routeplanning.Map;
 import interfaces.Action;
-
-import java.awt.font.NumericShaper.Range;
 import java.util.ArrayList;
 
 import org.apache.log4j.Level;
@@ -19,14 +17,14 @@ public class JobAssignment {
 	private ArrayList<Job> jobs;
 	private Robot[] robotsArray;
 	private Map map = Map.generateRealWarehouseMap();
-	private Counter time;
+	private Counter counter;
 	final static Logger logger = Logger.getLogger(JobAssignment.class);
 	private Point dropoff1 = new Point(2,4);
 	
-	public JobAssignment(ArrayList<Job> j, Robot[] r, Counter counter) {
+	public JobAssignment(ArrayList<Job> j, Robot[] r, Counter _counter) {
 		robotsArray = r;
 		jobs = j;
-		time = counter;
+		counter = _counter;
 		logger.setLevel(Level.OFF);
 	}
 
@@ -58,7 +56,7 @@ public class JobAssignment {
 	}
 
 	private ArrayList<Route> calculateRoute(Robot r, Map map, Job job, ArrayList<Item> items) {
-		int timeCount = time.getCounter();
+		int timeCount = counter.getTime();
 		System.out.println(timeCount);
 		Point currentRobotPosition = r.getCurrentPosition();
 		AStar routeMaker = new AStar(map);
@@ -70,7 +68,7 @@ public class JobAssignment {
 			currentRobotPosition = item.getPOSITION();
 			logger.trace(item);
 			logger.trace(itemRoute);
-			timeCount = time.getCounter();
+			timeCount = counter.getTime();
 		}
 		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition, dropoff1, r.getCurrentPose(), new Route[] {},timeCount);
 		routes.add(dropoffRoute);

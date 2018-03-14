@@ -1,21 +1,45 @@
 package main;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-public class Counter extends Thread {
-	 public static AtomicInteger counter = new AtomicInteger(0);
+import interfaces.Robot;
 
-	public void run() {
-		try {
-			Thread.sleep(1000);
-			counter.getAndIncrement();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+public class Counter {
+	private int time = 0;
+	private boolean[] readyToMove;
+	private ConcurrentMap<String, Integer> nameIndex = new ConcurrentHashMap<String, Integer>();
+	
+	public Counter(Robot[] ROBOTS) {
+		readyToMove = new boolean[ROBOTS.length];
+		int i=0;
+		for (Robot robot : ROBOTS) {
+			readyToMove[i] = false;
+			nameIndex.put(robot.getRobotName(), i++);
 		}
 	}
 	
-	public int getCounter() {
-		return counter.get();
+	public void readyToMove(String robotName) {
+		readyToMove[nameIndex.get(robotName)] = true;
+	}
+	
+	public boolean canMove() {
+		boolean flag = true;
+		for (boolean move : readyToMove) {
+			if (!move) {
+				flag=false;
+			}
+		}
+		if (flag) {
+			time++;
+			for (int i = 0; i<readyToMove.length; i++) {
+				readyToMove[i] = false;
+			}
+		}
+		return flag;
+	}
+	
+	public int getTime() {
+		return time;
 	}
 }

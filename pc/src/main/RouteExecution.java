@@ -23,11 +23,13 @@ public class RouteExecution {
 	private Queue<Item> itemsToDrop;
 	private Queue<interfaces.Action> currentDirections;
 	private PCNetworkHandler network;
+	private Counter counter;
 
-	public RouteExecution(Robot _robot, PCNetworkHandler _network) {
+	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter) {
 		this.robot = _robot;
 		this.network = _network;
 		itemsToDrop = new LinkedList<Item>();
+		counter = _counter;
 	}
 
 	public void run() {
@@ -39,6 +41,11 @@ public class RouteExecution {
 			while (!currentDirections.isEmpty()) { 
 				currentCommand = currentDirections.poll();
 				network.sendObject(currentCommand);
+				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF))) {
+					while (counter.canMove()) {
+						Thread.sleep(100);
+					}
+				}
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				rELogger.debug(whereImGoing);
 				if (currentCommand == interfaces.Action.PICKUP)
@@ -65,10 +72,11 @@ public class RouteExecution {
 				}
 				robot.setCurrentPosition(whereImGoing);
 			}
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		robot.jobFinished();
+		counter.readyToMove(robot.getRobotName());
 		rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward " + currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
 	}
 }

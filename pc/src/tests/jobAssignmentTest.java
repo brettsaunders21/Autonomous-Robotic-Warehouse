@@ -30,7 +30,7 @@ public class jobAssignmentTest {
 	private HashMap<String, Double> betaValues = jobInput.getBetaValues();
 	final static Logger logger = Logger.getLogger(jobAssignmentTest.class);
 	final static Logger jobAssignmentLogger = Logger.getLogger(JobAssignment.class);
-	Counter counter = new Counter();
+	Counter counter = new Counter(robotList);
 
 	
 	JobSelection jobSelection = new JobSelection(betaValues);
@@ -41,7 +41,6 @@ public class jobAssignmentTest {
 		jAssignment = new JobAssignment(createJobList(), robotList, counter);
 		jobAssignmentLogger.setLevel(Level.OFF);
 		logger.setLevel(Level.DEBUG);
-		counter.run();
 	}
 
 	
