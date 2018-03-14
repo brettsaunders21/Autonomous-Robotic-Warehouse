@@ -44,6 +44,11 @@ public class RobotController implements StoppableRunnable {
 
 					move.nextAction(currentCommand, pickAmount);
 
+					try {
+						networkHandler.sendObject(Action.ACTION_COMPLETE);
+					} catch (IOException e) {
+						System.out.println("Couldn't send object in RobotController" + e.getMessage());
+					}
 				} else {
 					System.out.println("Error: No command received");
 					break;
@@ -52,11 +57,6 @@ public class RobotController implements StoppableRunnable {
 				System.out.println("Couldn't receive object in RobotController" + e.getMessage());
 			}
 
-		}
-		try {
-			networkHandler.sendObject(Action.ACTION_COMPLETE);
-		} catch (IOException e) {
-			System.out.println("Couldn't send object in RobotController" + e.getMessage());
 		}
 	}
 

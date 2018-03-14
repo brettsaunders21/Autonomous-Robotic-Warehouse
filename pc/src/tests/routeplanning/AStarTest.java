@@ -6,13 +6,11 @@ import lejos.geom.Point;
 import routeplanning.AStar;
 import routeplanning.Map;
 import routeplanning.Route;
+import routeplanning.astarhelpers.BacktrackNeededException;
 import static org.junit.Assert.*;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
 import interfaces.Action;
-
 import interfaces.Pose;
 
 /**
@@ -41,7 +39,7 @@ public class AStarTest {
 	}
 
 	//Starts facing left and wants to travel left
-	@Test
+	@Test(timeout=1000)
 	public void orientationAdjustWait() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.POS_X, new Route[] {}, 0);
@@ -49,7 +47,7 @@ public class AStarTest {
 	}
 	
 	//Starts facing up and wants to travel left
-	@Test
+	@Test(timeout=1000)
 	public void orientationAdjustRight() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_Y, new Route[] {}, 0);
@@ -57,7 +55,7 @@ public class AStarTest {
 	}
 	
 	//Starts facing down and wants to travel left
-	@Test
+	@Test(timeout=1000)
 	public void orientationAdjustLeft() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.POS_Y, new Route[] {}, 0);
@@ -65,7 +63,7 @@ public class AStarTest {
 	}
 	
 	//Starts facing right and wants to travel left
-	@Test
+	@Test(timeout=1000)
 	public void orientationAdjust180() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
@@ -73,7 +71,7 @@ public class AStarTest {
 	}
 
 	//Starts facing negativeX
-	@Test
+	@Test(timeout=1000)
 	public void startPoseNegX() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
@@ -81,7 +79,7 @@ public class AStarTest {
 	}
 
 	//Starts facing positiveX
-	@Test
+	@Test(timeout=1000)
 	public void startPosePosX() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.POS_X, new Route[] {}, 0);
@@ -89,7 +87,7 @@ public class AStarTest {
 	}
 	
 	//Starts facing negativeY
-	@Test
+	@Test(timeout=1000)
 	public void startPoseNegY() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_Y, new Route[] {}, 0);
@@ -97,7 +95,7 @@ public class AStarTest {
 	}
 
 	//Starts facing positiveY
-	@Test
+	@Test(timeout=1000)
 	public void startPosePosY() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.POS_Y, new Route[] {}, 0);
@@ -105,7 +103,7 @@ public class AStarTest {
 	}
 
 	//travels between two points that share a common axis
-	@Test
+	@Test(timeout=1000)
 	public void routeLengthStraight() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
@@ -113,7 +111,7 @@ public class AStarTest {
 	}
 
 	//travels between two points that share a common axis
-	@Test
+	@Test(timeout=1000)
 	public void directionsStraight() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
@@ -122,15 +120,16 @@ public class AStarTest {
 	}
 	
 	//travels between two points that share a common axis
-	@Test
-	public void coordinatesStraight() {		logger.trace("");
+	@Test(timeout=1000)
+	public void coordinatesStraight() {	
+		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
 		Point[] ps = new Point[] {new Point(1,0), new Point(2,0), new Point(3,0), new Point(4,0), new Point(5,0)};
 		assertArrayEquals(ps,r.getCoordinates().toArray());
 	}
 
 	//travels between two points that are do not share a common axis
-	@Test
+	@Test(timeout=1000)
 	public void routeLengthNoObstructionTurn() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(3,2), Pose.NEG_X, new Route[] {}, 0);
@@ -138,7 +137,7 @@ public class AStarTest {
 	}
 
 	//travels between two points that are do not share a common axis
-	@Test
+	@Test(timeout=1000)
 	public void directionsNoObstructionTurn() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(3,2), Pose.NEG_X, new Route[] {}, 0);
@@ -147,7 +146,7 @@ public class AStarTest {
 	}
 	
 	//travels between two points that are do not share a common axis
-	@Test
+	@Test(timeout=1000)
 	public void coordinatesNoObstructionTurn() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(3,2), Pose.NEG_X, new Route[] {}, 0);
@@ -156,7 +155,7 @@ public class AStarTest {
 	}
 
 	//reverse route of routeLengthNoObstructionTurn
-	@Test
+	@Test(timeout=1000)
 	public void routeLengthNoObstructionTurnReverse() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3,2), new Point(0,0), Pose.NEG_X, new Route[] {}, 0);
@@ -164,7 +163,7 @@ public class AStarTest {
 	}
 
 	//reverse route of directionsNoObstructionTurn
-	@Test
+	@Test(timeout=1000)
 	public void directionsNoObstructionTurnReverse() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3,2), new Point(0,0), Pose.NEG_X, new Route[] {}, 0);
@@ -173,7 +172,7 @@ public class AStarTest {
 	}
 	
 	//reverse route of coordinatesNoObstructionTurn
-	@Test
+	@Test(timeout=1000)
 	public void coordinatesNoObstructionTurnReverse() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3,2), new Point(0,0), Pose.NEG_X, new Route[] {}, 0);
@@ -182,7 +181,7 @@ public class AStarTest {
 	}                      
 
 	//Route finding around an obstacle
-	@Test
+	@Test(timeout=1000)
 	public void coordinatesObstacleAvoid() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(2,6), Pose.NEG_X, new Route[] {}, 0);
@@ -190,6 +189,62 @@ public class AStarTest {
 		assertArrayEquals(ps,r.getCoordinates().toArray());
 	}
 
+	//tests that two robots will not occupy the same space
+	@Test(timeout=1000)
+	public void multiRobotRouteCoords1(){
+		Route r1 = aStar.generateRoute(new Point(3, 1), new Point(6,0), Pose.POS_X, new Route[] {}, 0);
+		Route[] rs = new Route[1];
+		rs[0] = r1;
+		Route r2 = aStar.generateRoute(new Point(2, 0), new Point(5,0), Pose.POS_X, rs, 0);
+		
+		
+		Point[] ps1 = new Point[] {new Point(3,0), new Point(4,0), new Point(5,0), new Point(6,0)};
+		assertArrayEquals(ps1,r1.getCoordinates().toArray());
+		
+		Point[] ps2 = new Point[] {new Point(2,0), new Point(3,0), new Point(4,0), new Point(5,0)};
+		assertArrayEquals(ps2,r2.getCoordinates().toArray());
+	}
+	
+	//tests that two robots will not occupy the same space, when three robots are present in the grid
+	@Test(timeout=1000)
+	public void multiRobotRouteCoords2(){
+		Route r1 = aStar.generateRoute(new Point(3, 1), new Point(6,0), Pose.POS_X, new Route[] {}, 0);
+		Route[] rs = new Route[1];
+		rs[0] = r1;
+		Route r2 = aStar.generateRoute(new Point(2, 0), new Point(5,0), Pose.POS_X, rs, 0);
+		rs = new Route[2];
+		rs[0] = r1;
+		rs[1] = r2;
+		Route r3 = aStar.generateRoute(new Point(1,0), new Point(4,0), Pose.POS_X, rs, 0);
+		
+		Point[] ps1 = new Point[] {new Point(3,0), new Point(4,0), new Point(5,0), new Point(6,0)};
+		assertArrayEquals(ps1,r1.getCoordinates().toArray());
+		
+		Point[] ps2 = new Point[] {new Point(2,0), new Point(3,0), new Point(4,0), new Point(5,0)};
+		assertArrayEquals(ps2,r2.getCoordinates().toArray());
+		
+		Point[] ps3 = new Point[] {new Point(1,0), new Point(2,0), new Point(3,0), new Point(4,0)};
+		assertArrayEquals(ps3,r3.getCoordinates().toArray());
+	}
+	
+	//tests that two robots will not occupy the same space
+	@Test(timeout=1000)
+	public void multiRobotRouteCoords3() {
+		aStarLogger.setLevel(Level.WARN);
+		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(1,0), Pose.POS_X, new Route[] {}, 0);
+		Route[] rs = new Route[1];
+		rs[0] = r1;
+		Route r2 = aStar.generateRoute(new Point(1, 0), new Point(0,1), Pose.POS_X, rs, 0);
+		
+		
+		Point[] ps1 = new Point[] {new Point(1,0)};
+		assertArrayEquals(ps1,r1.getCoordinates().toArray());
+		
+		Point[] ps2 = new Point[] {new Point(0,0)};
+		assertArrayEquals(ps2,r2.getCoordinates().toArray());
+		aStarLogger.setLevel(Level.OFF);
+	}
+	
 	@Ignore
 	@Test
 	public void whatAreCoords() {
