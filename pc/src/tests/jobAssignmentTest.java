@@ -17,6 +17,7 @@ import job.JobAssignment;
 import job.JobInput;
 import job.JobSelection;
 import lejos.geom.Point;
+import main.Counter;
 import routeplanning.Route;
 
 //Job input, job selection, job assignment, robot and route planning
@@ -29,6 +30,7 @@ public class jobAssignmentTest {
 	private HashMap<String, Double> betaValues = jobInput.getBetaValues();
 	final static Logger logger = Logger.getLogger(jobAssignmentTest.class);
 	final static Logger jobAssignmentLogger = Logger.getLogger(JobAssignment.class);
+	Counter counter = new Counter();
 
 	
 	JobSelection jobSelection = new JobSelection(betaValues);
@@ -36,9 +38,10 @@ public class jobAssignmentTest {
 
 	
 	public jobAssignmentTest() {
-		jAssignment = new JobAssignment(createJobList(), robotList, 0);
+		jAssignment = new JobAssignment(createJobList(), robotList, counter);
 		jobAssignmentLogger.setLevel(Level.OFF);
 		logger.setLevel(Level.DEBUG);
+		counter.run();
 	}
 
 	
