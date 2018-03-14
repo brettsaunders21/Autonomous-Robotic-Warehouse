@@ -37,7 +37,7 @@ public class PCController {
 		JobSelection jS = new JobSelection(jI.getBetaValues());
 		Counter counter = new Counter(ROBOTS);
 		orderedJobs = jS.prioritize();
-		JobAssignment jA = new JobAssignment(orderedJobs, ROBOTS, counter);
+		JobAssignment jA = new JobAssignment(orderedJobs, ROBOTS, counter, jI.getDrops());
 		for (Robot rob : ROBOTS) {
 			r[numOfRobots] = new RobotThread(rob, jA, counter);
 			r[numOfRobots].setName(rob.getRobotName());

@@ -6,8 +6,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.plaf.synth.SynthInternalFrameUI;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
+
+import lejos.geom.Point;
 
 /*
  * @author Samuel Chorvat <sxc1101@student.bham.ac.uk>
@@ -19,24 +24,27 @@ public class JobInput {
 	private HashMap<String, ArrayList<Float>> itemRewardsWeights = new HashMap<>();
 	private HashMap<String, ArrayList<Float>> itemLocations = new HashMap<>();
 	private HashMap<Integer, ArrayList<String>> availableOrders = new HashMap<>();
-	private HashMap<String, ArrayList<Integer>> drops = new HashMap<>();
 	private HashMap<String, Double> betaValuesFromTraining = new HashMap<>();
 	private HashMap<Integer, ArrayList<String>> trainingJobs = new HashMap<>();
+	private ArrayList<Point> dropoffPoints = new ArrayList<>();
 	
 
 
 
 	// Change this depending on your file path
-	String itemRewardsWeightsFile = "src/job/csv/items.csv";
-	String itemLocationsFile = "src/job/csv/locations.csv";
-	String availableOrdersFile = "src/job/csv/jobs.csv";
-	String dropsFile = "src/job/csv/drops.csv";
-	String betaValuesFromTrainingFile = "src/job/csv/betaValuesFromTraining.csv";
-	String trainingJobsFile = "src/job/csv/training_jobs.csv";
+	String filePath = "";
+	String itemRewardsWeightsFile =  filePath + "src/job/csv/items.csv";
+	String itemLocationsFile = filePath + "src/job/csv/locations.csv";
+	String availableOrdersFile = filePath +  "src/job/csv/jobs.csv";
+	String dropsFile = filePath +  "src/job/csv/drops.csv";
+	String betaValuesFromTrainingFile = filePath + "src/job/csv/betaValuesFromTraining.csv";
+	String trainingJobsFile = filePath +  "src/job/csv/training_jobs.csv";
 	
 
 	private String line = "";
 	private String csvSplitBy = ",";
+
+
 
 	public JobInput() {
 		log4j.setLevel(Level.OFF);
@@ -116,18 +124,14 @@ public class JobInput {
 
 	}
 	
-	public HashMap<String , ArrayList<Integer>> getDrops() {
+	public ArrayList<Point> getDrops() {
 		try (BufferedReader br = new BufferedReader(new FileReader(dropsFile))) {
 			int i = 1;
 			while ((line = br.readLine()) != null) {
                 
 				String[] data = line.split(csvSplitBy);
-				ArrayList<Integer> xy = new ArrayList<Integer>();
-
-				xy.add(Integer.parseInt(data[0]));
-				xy.add(Integer.parseInt(data[1]));
-				
-				drops.put("drop"+ i, xy);
+				Point dropOffPoint = new Point(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
+				dropoffPoints.add(dropOffPoint);
 				
 				i += 1;
 
@@ -137,9 +141,9 @@ public class JobInput {
 			e.printStackTrace();
 			log4j.debug("File not found");
 		}
-		log4j.debug("Drop point 1: " + drops.get("drop1").toString());
-		log4j.debug("Drop point 2: " + drops.get("drop2").toString());
-		return drops;
+		log4j.debug("Drop point 1: " + dropoffPoints.get(0).toString());
+		log4j.debug("Drop point 2: " + dropoffPoints.get(1).toString());
+		return dropoffPoints;
 	}
 	
 	

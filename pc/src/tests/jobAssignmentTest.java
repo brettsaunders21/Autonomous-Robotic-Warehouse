@@ -30,6 +30,7 @@ public class jobAssignmentTest {
 	final static Logger logger = Logger.getLogger(jobAssignmentTest.class);
 	final static Logger jobAssignmentLogger = Logger.getLogger(JobAssignment.class);
 	Counter counter = new Counter(robotList);
+	Job firstJobAssigned;
 
 	
 	JobSelection jobSelection = new JobSelection(betaValues);
@@ -37,7 +38,8 @@ public class jobAssignmentTest {
 
 	
 	public jobAssignmentTest() {
-		jAssignment = new JobAssignment(createJobList(), robotList, counter);
+		ArrayList<Point> drops = jobInput.getDrops();
+		jAssignment = new JobAssignment(createJobList(), robotList, counter, drops);
 		jobAssignmentLogger.setLevel(Level.OFF);
 		logger.setLevel(Level.DEBUG);
 	}
@@ -52,10 +54,9 @@ public class jobAssignmentTest {
 	@Test
 	public void checkJobAssigned() {
 		//robot1.setCurrentPosition(new Point(0,0));
-		System.out.println("test1");
-		System.out.println("before assigning");
 		jAssignment.assignJobs(robot1);
-		assertEquals(10001, robot1.getActiveJob().getID());
+		firstJobAssigned = jAssignment.currentProcessingJob;
+		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
 	}
 	
 	@Test

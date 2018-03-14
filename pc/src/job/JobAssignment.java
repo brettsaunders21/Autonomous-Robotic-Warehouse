@@ -3,6 +3,7 @@ package job;
 import routeplanning.Map;
 import interfaces.Action;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -20,16 +21,21 @@ public class JobAssignment {
 	private Counter counter;
 	final static Logger logger = Logger.getLogger(JobAssignment.class);
 	private Point dropoff1 = new Point(2,4);
+	public Job currentProcessingJob;
+	private ArrayList<Point> drops;
 	
-	public JobAssignment(ArrayList<Job> j, Robot[] r, Counter _counter) {
+	public JobAssignment(ArrayList<Job> j, Robot[] r, Counter _counter, ArrayList<Point> _drops) {
 		robotsArray = r;
 		jobs = j;
 		counter = _counter;
+		drops = _drops;
 		logger.setLevel(Level.OFF);
 	}
 
+
 	public void assignJobs(Robot robot) {
 		Job job = getClosestJob(robot);
+		currentProcessingJob = job;
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Route> routes = calculateRoute(robot, map, job, items);
 		ArrayList<Action> actions = calculateActions(routes);
@@ -45,7 +51,6 @@ public class JobAssignment {
 		logger.info(items);
 	
 	}
-
 
 	private ArrayList<Action> calculateActions(ArrayList<Route> routes) {
 		ArrayList<Action> actions = new ArrayList<Action>();
@@ -87,7 +92,7 @@ public class JobAssignment {
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
 		}
-		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition, dropoff1, r.getCurrentPose(), new Route[] {},timeCount);
+		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition, nearestDropPoint(currentRobotPosition), r.getCurrentPose(), new Route[] {},timeCount);
 		routes.add(dropoffRoute);
 		r.setCurrentPose(dropoffRoute.getFinalPose());
 		logger.debug(r.getCurrentPose());
@@ -95,4 +100,7 @@ public class JobAssignment {
 		return routes;
 	}
 	
+	private Point nearestDropPoint(Point currentLocation) {
+		return drops.get(0);
+	}
 }
