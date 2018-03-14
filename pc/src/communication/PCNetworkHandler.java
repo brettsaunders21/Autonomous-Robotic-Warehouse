@@ -25,6 +25,9 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 
 	// NXTInfo object which holds the robot's bluetooth address + other info
 	private NXTInfo nxtInfo;
+	
+	// boolean for whether the connection has failed after connection retries
+	boolean connectionFailed;
 
 	/**
 	 * The constructor
@@ -34,15 +37,16 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	 */
 	public PCNetworkHandler(NXTInfo _nxtInfo) {
 		nxtInfo = _nxtInfo;
+		connectionFailed = false;
 	}
 
 	@Override
 	public void run() {
 		// Amount of connection retries
-		final int MAX_CONNECTION_RETRIES = 10;
+		final int MAX_CONNECTION_RETRIES = 20;
 
 		// Time delay between attempting a reconnect
-		final int RETRY_DELAY = 500;
+		final int RETRY_DELAY = 1000;
 
 		logger.info("Attempting to connect to: " + nxtInfo.name);
 		// Create an NXTComm object ready to connect using the bluetooth protocol
@@ -60,7 +64,7 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 				logger.info("Successfully connected to: " + nxtInfo.name);
 				return;
 			} else {
-				logger.warn("Attempt " + i + " failed. Retrying in " + RETRY_DELAY + " seconds");
+				logger.warn("Attempt " + i + " failed. Retrying in " + RETRY_DELAY + " milliseconds");
 				try {
 					Thread.sleep(RETRY_DELAY);
 				} catch (InterruptedException e) {
@@ -69,7 +73,16 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 				}
 			}
 		}
-
+		
+		connectionFailed = true;
+		return;
+	}
+	
+	/*
+	 * Method for returning whether all retries have failed
+	 */
+	public boolean getConnectionFailed() {
+		return connectionFailed;
 	}
 	
 	/**
@@ -80,9 +93,10 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	public Action receiveAction() throws IOException {
 		try {
 			// Call parent method to receive the object
-			logger.info("Received Action " + " from " + nxtInfo.name);
+			Action receivedAction = super.receiveAction();
+			logger.info("Received Action: "+  receivedAction.name() + " from " + nxtInfo.name);
 			
-			return super.receiveAction();
+			return receivedAction;
 		} catch (IOException e) {
 			logger.error("IOException when trying to receive Action from " + nxtInfo.name + ": " + e.getMessage());
 			return null;
@@ -97,9 +111,10 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	public int receiveInt() throws IOException {
 		try {
 			// Call parent method to receive the object
-			logger.info("Received int " + " from " + nxtInfo.name);
+			int receivedInt = super.receiveInt();
+			logger.info("Received int: " + receivedInt + " from " + nxtInfo.name);
 			
-			return super.receiveInt();
+			return receivedInt;
 		} catch (IOException e) {
 			logger.error("IOException when trying to receive int from " + nxtInfo.name + ": " + e.getMessage());
 			return -1;
@@ -114,9 +129,10 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	public String receiveString() throws IOException {
 		try {
 			// Call parent method to receive the object
-			logger.info("Received string " + " from " + nxtInfo.name);
+			String receivedString= super.receiveString();
+			logger.info("Received string: " + receivedString + " from " + nxtInfo.name);
 			
-			return super.receiveString();
+			return receivedString;
 		} catch (IOException e) {
 			logger.error("IOException when trying to receive string from " + nxtInfo.name + ": " + e.getMessage());
 			return null;
@@ -131,9 +147,10 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	public double receiveDouble() throws IOException {
 		try {
 			// Call parent method to receive the object
-			logger.info("Received double " + " from " + nxtInfo.name);
+			double receivedDouble = super.receiveDouble();
+			logger.info("Received double: " + receivedDouble + " from " + nxtInfo.name);
 			
-			return super.receiveDouble();
+			return receivedDouble;
 		} catch (IOException e) {
 			logger.error("IOException when trying to receive double from " + nxtInfo.name + ": " + e.getMessage());
 			return -1;
@@ -148,9 +165,10 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	public float receiveFloat() throws IOException {
 		try {
 			// Call parent method to receive the object
-			logger.info("Received float " + " from " + nxtInfo.name);
+			float receivedFloat = super.receiveFloat();
+			logger.info("Received float: " + receivedFloat + " from " + nxtInfo.name);
 			
-			return super.receiveFloat();
+			return receivedFloat;
 		} catch (IOException e) {
 			logger.error("IOException when trying to receive float from " + nxtInfo.name + ": " + e.getMessage());
 			return -1;
@@ -169,7 +187,7 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 			// Call parent method to send the object
 			super.sendObject(inputObject);
 
-			logger.info("Sent object of type" + inputObject.getClass() + " to " + nxtInfo.name);
+			logger.info("Sent object of type" + inputObject.getClass() + " to " + nxtInfo.name + " Contents: " + inputObject.toString());
 		} catch (IOException e) {
 			logger.error("IOException when trying to send object to " + nxtInfo.name + ": " + e.getMessage());
 		}

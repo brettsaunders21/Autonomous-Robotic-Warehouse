@@ -5,6 +5,8 @@ import interfaces.Action;
 
 import java.awt.font.NumericShaper.Range;
 import java.util.ArrayList;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import interfaces.Robot;
 import lejos.geom.Point;
@@ -24,6 +26,7 @@ public class JobAssignment {
 		robotsArray = r;
 		jobs = j;
 		time = t;
+		logger.setLevel(Level.OFF);
 	}
 
 	public void assignJobs(Robot robot) {

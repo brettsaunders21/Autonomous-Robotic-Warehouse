@@ -6,6 +6,7 @@ import rp.robotics.mapping.MapUtils;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -25,6 +26,7 @@ public class Map {
 	/**Creates the map that will be used on the robot warehouse assignment
 	 * @return the warehouse assignment map in the format required by AStar class*/
 	public static Map generateRealWarehouseMap() {
+		logger.setLevel(Level.OFF);
 		GridMap map = MapUtils.createRealWarehouse();
 		int width = map.getXSize();
 		int height = map.getYSize();

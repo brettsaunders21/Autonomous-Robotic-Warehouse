@@ -25,7 +25,7 @@ public class Robot {
 		this.routeSet = false;
 		this.setWeight(0);
 		this.jobCancelled = false;
-		this.jobFinished = false;
+		this.jobFinished = true;
 		this.reward = 0;
 		this.jobsCompleted = 0;
 		this.currentCoords = _startPostion;
@@ -93,6 +93,9 @@ public class Robot {
 		return weight;
 	}
 
+	public void jobNotFinished() {
+		jobFinished = false;
+	}
 
 	/**
 	 * @param weight the weight to set

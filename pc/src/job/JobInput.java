@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /*
@@ -36,6 +38,10 @@ public class JobInput {
 	private String line = "";
 	private String csvSplitBy = ",";
 
+	public JobInput() {
+		log4j.setLevel(Level.OFF);
+	}
+	
 	public HashMap<String, ArrayList<Float>> getItemRewardsWeights() {
 
 		try (BufferedReader br = new BufferedReader(new FileReader(itemRewardsWeightsFile))) {

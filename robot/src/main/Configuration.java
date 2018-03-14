@@ -11,6 +11,5 @@ public class Configuration {
 	
 	public static final SensorPort LEFT_LIGHT_SENSOR = SensorPort.S1;
 	public static final SensorPort RIGHT_LIGHT_SENSOR = SensorPort.S3;
-	public static final SensorPort FRONT_ULTRASONIC_SENSOR = SensorPort.S2;
 	
 }

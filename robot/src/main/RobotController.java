@@ -5,8 +5,8 @@ import actions.Movement;
 import actions.RobotInterface;
 import communication.RobotNetworkHandler;
 import interfaces.Action;
+import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
-import lejos.util.Delay;
 import rp.systems.StoppableRunnable;
 
 public class RobotController implements StoppableRunnable {
@@ -16,21 +16,31 @@ public class RobotController implements StoppableRunnable {
 	private boolean running;
 	private RobotNetworkHandler networkHandler;
 	private RobotInterface rInterface;
+	private int lineValue;
+	private int backgroundValue;
 
 	public RobotController() {
 		rInterface = new RobotInterface();
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
-		move = new Movement(calibrate(), rInterface);
 		running = true;
 		networkHandler = new RobotNetworkHandler();
 	}
 
 	@Override
 	public void run() {
+		System.out.println("On Line");
+		Button.waitForAnyPress();
+		lineValue = calibrate();
+		System.out.println("Off Line");
+		Button.waitForAnyPress();
+		backgroundValue = calibrate();
+		Button.waitForAnyPress();
+		move = new Movement(lineValue, backgroundValue, rInterface);
 		networkHandler.run();
 		Action currentCommand = null;
 		int pickAmount = 0;
+		System.out.println("Starting receiveing commands");
 		while (running) {
 			try {
 				// Print message
@@ -48,15 +58,10 @@ public class RobotController implements StoppableRunnable {
 					System.out.println("Error: No command received");
 					break;
 				}
+				networkHandler.sendObject(Action.ACTION_COMPLETE);
 			} catch (IOException e) {
 				System.out.println("Couldn't receive object in RobotController" + e.getMessage());
 			}
-
-		}
-		try {
-			networkHandler.sendObject(Action.ACTION_COMPLETE);
-		} catch (IOException e) {
-			System.out.println("Couldn't send object in RobotController" + e.getMessage());
 		}
 	}
 
@@ -67,7 +72,6 @@ public class RobotController implements StoppableRunnable {
 	}
 
 	public int calibrate() {
-		Delay.msDelay(500);
 		return (LEFT_SENSOR.readValue() + RIGHT_SENSOR.readValue()) / 2;
 	}
 

@@ -17,9 +17,7 @@ import job.JobAssignment;
 import job.JobInput;
 import job.JobSelection;
 import lejos.geom.Point;
-import routeplanning.AStar;
 import routeplanning.Route;
-import tests.routeplanning.AStarTest;
 
 //Job input, job selection, job assignment, robot and route planning
 public class jobAssignmentTest {

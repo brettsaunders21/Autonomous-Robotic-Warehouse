@@ -1,4 +1,4 @@
-package tests.communication;
+
 
 import static org.junit.Assert.*;
 
@@ -37,7 +37,7 @@ public class CommunicationTests {
 	}
 
 	// Test if a connection can be established
-	@Test(timeout = 6000)
+	@Test(timeout = 11000)
 	public void singleRobotConnectionTest() {
 		networkHandler.run();
 		assertTrue(networkHandler.isConnected());
