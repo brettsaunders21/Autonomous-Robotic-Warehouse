@@ -26,6 +26,7 @@ public class PCController {
 	private static ArrayList<Job> orderedJobs;
 	private static int numOfRobots = 0;
 	private static RobotThread[] r = new RobotThread[numOfRobots+1];
+
 	
 	public static void main(String[] args) {
 		controllerLogger.setLevel(Level.ALL);
@@ -34,8 +35,10 @@ public class PCController {
 		jobAssLogger.setLevel(Level.ALL);
 		JobInput jI = new JobInput();
 		JobSelection jS = new JobSelection(jI.getBetaValues());
+		Counter counter = new Counter();
+		counter.run();
 		orderedJobs = jS.prioritize();
-		JobAssignment jA = new JobAssignment(orderedJobs, ROBOTS, 0);
+		JobAssignment jA = new JobAssignment(orderedJobs, ROBOTS, counter);
 		for (Robot rob : ROBOTS) {
 			r[numOfRobots] = new RobotThread(rob, jA);
 			r[numOfRobots].setName(rob.getRobotName());
