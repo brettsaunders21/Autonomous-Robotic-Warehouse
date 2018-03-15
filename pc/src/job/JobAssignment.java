@@ -47,6 +47,9 @@ public class JobAssignment {
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
 		Route routeWithDropoff = new Route(routeForAllItems, Action.DROPOFF);
+		for (Action action : routeWithDropoff.getDirectionArray()) {
+			System.out.println(action);
+		}
 		job.assignCurrentroute(routeWithDropoff);
 		robot.setActiveJob(job);
 		jobs.remove(job);
@@ -119,6 +122,7 @@ public class JobAssignment {
 	}
 	
 	private ArrayList<Item> orderItems(ArrayList<Item> items, Robot robot, Job job) {
+		Pose prePose = robot.getCurrentPose();
 		ArrayList<Item> orderedItems = new ArrayList<>();
 		ArrayList<Item> originalItems = new ArrayList<>(items);
 		Item closestItem = new Item(null, 0, 0, robot.getCurrentPosition(), 0);
@@ -129,6 +133,7 @@ public class JobAssignment {
 		}
 		Route testroute = new Route(calculateRoute(robot, map, job, orderedItems));
 		Route normalRoute = new Route(calculateRoute(robot, map, job, originalItems));
+		robot.setCurrentPose(prePose);
 		logger.trace("Route optimised from " + normalRoute.getLength() + " to " + testroute.getLength());
 		return orderedItems;
 	}
