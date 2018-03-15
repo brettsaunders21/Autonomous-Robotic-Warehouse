@@ -2,8 +2,11 @@ package job;
 
 import routeplanning.Map;
 import interfaces.Action;
+import interfaces.Pose;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -23,6 +26,8 @@ public class JobAssignment {
 	private Point dropoff1 = new Point(2,4);
 	public Job currentProcessingJob;
 	private ArrayList<Point> drops;
+	private AStar routeMaker = new AStar(map);
+	private Robot currentRobot;
 	
 	public JobAssignment(ArrayList<Job> j, Robot[] r, Counter _counter, ArrayList<Point> _drops) {
 		robotsArray = r;
@@ -34,12 +39,13 @@ public class JobAssignment {
 
 
 	public void assignJobs(Robot robot) {
+		currentRobot = robot;
 		Job job = getClosestJob(robot);
 		currentProcessingJob = job;
 		ArrayList<Item> items = job.getITEMS();
-		ArrayList<Route> routes = calculateRoute(robot, map, job, items);
+		ArrayList<Item> orderedItems = orderItems(items);
+		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
-		
 		Route routeForAllItems = new Route(routes, actions);
 		Route routeWithDropoff = new Route(routeForAllItems, Action.DROPOFF);
 		job.assignCurrentroute(routeWithDropoff);
@@ -81,7 +87,6 @@ public class JobAssignment {
 		int timeCount = counter.getTime();
 		System.out.println(timeCount);
 		Point currentRobotPosition = r.getCurrentPosition();
-		AStar routeMaker = new AStar(map);
 		ArrayList<Route> routes = new ArrayList<Route>();
 		for (Item item : items) {
 			Route itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), r.getCurrentPose(), new Route[] {}, timeCount);
@@ -92,7 +97,9 @@ public class JobAssignment {
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
 		}
-		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition, nearestDropPoint(currentRobotPosition), r.getCurrentPose(), new Route[] {},timeCount);
+		Point nearestDropoff = nearestDropPoint(currentRobotPosition);
+		//System.out.println(nearestDropoff);
+		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , r.getCurrentPose(), new Route[] {},timeCount);
 		routes.add(dropoffRoute);
 		r.setCurrentPose(dropoffRoute.getFinalPose());
 		logger.debug(r.getCurrentPose());
@@ -101,6 +108,101 @@ public class JobAssignment {
 	}
 	
 	private Point nearestDropPoint(Point currentLocation) {
-		return drops.get(0);
+		int routeToDrop1 = routeMaker.generateRoute(currentLocation, drops.get(0), currentRobot.getCurrentPose(), new Route[] {}, 0).getLength();
+		int routeToDrop2 = routeMaker.generateRoute(currentLocation, drops.get(1), currentRobot.getCurrentPose(), new Route[] {}, 0).getLength();
+		if (routeToDrop1 > routeToDrop2) {
+			return drops.get(1);
+		}else {
+			return drops.get(0);
+		}
 	}
+	
+	private ArrayList<Item> orderItems(ArrayList<Item> items) {
+		ArrayList<Item> orderedItems = new ArrayList<>();
+		ArrayList<Item> originalItems = new ArrayList<>(items);
+		Item closestItem = new Item(null, 0, 0, currentRobot.getCurrentPosition(), 0);
+		while (!items.isEmpty()) {
+			closestItem = nearestItemToPoint(closestItem.getPOSITION(), items);
+			items.remove(closestItem);
+			orderedItems.add(closestItem);
+		}
+		Route testroute = new Route(calculateRoute(currentRobot, map, currentProcessingJob, orderedItems));
+		Route normalRoute = new Route(calculateRoute(currentRobot, map, currentProcessingJob, originalItems));
+		System.out.println("Optimised route " + testroute.getLength());
+		System.out.println("Non-Optimised route " + normalRoute.getLength());
+		System.out.println("Orderded size " + orderedItems.size());
+		System.out.println("NonOrderded size " +originalItems.size());
+		return orderedItems;
+	}
+	
+	/*private ArrayList<Item> orderItems(ArrayList<Item> items) {
+		ArrayList<Item> orderedItems = new ArrayList<>();
+		ArrayList<Item> originalItems = new ArrayList<>(items);
+ 		Item closestItem = nearestItemToPoint(currentRobot.getCurrentPosition(), items);
+		items.remove(closestItem);
+		orderedItems.add(closestItem);
+		while (!items.isEmpty()) {
+			closestItem = nearestItemToPoint(closestItem.getPOSITION(), items);
+			items.remove(closestItem);
+			int indexOfOptimalPosition = findOptimalIndex(closestItem,orderedItems);
+			orderedItems.add(indexOfOptimalPosition, closestItem);
+		}
+		Route testroute = new Route(calculateRoute(currentRobot, map, currentProcessingJob, orderedItems));
+		Route normalRoute = new Route(calculateRoute(currentRobot, map, currentProcessingJob, originalItems));
+		System.out.println("Optimised route " + testroute.getLength());
+		System.out.println("Non-Optimised route " + normalRoute.getLength());
+		System.out.println("Orderded size " + orderedItems.size());
+		System.out.println("NonOrderded size " +originalItems.size());
+		return orderedItems;
+	}*/
+	
+	private int findOptimalIndex(Item closestItem, ArrayList<Item> orderedItems) {
+		// TODO Auto-generated method stub
+		int shortestRoute = Integer.MAX_VALUE;
+		int insertedAt = 0;
+		ArrayList<Item> bestOrdering = new ArrayList<>();
+		ArrayList<Item> lastOrdering = new ArrayList<>(orderedItems);
+		Point currentPosition = currentRobot.getCurrentPosition();
+		System.out.println();
+		System.out.println(orderedItems.size());
+		System.out.println(lastOrdering.size());
+		for (int i = 0; i < lastOrdering.size(); i++) {
+			System.out.println("I = " + i);
+			System.out.println();
+			ArrayList<Route> routes = new ArrayList<>();
+			lastOrdering.add(insertedAt, closestItem);
+			for (Item item : lastOrdering) {
+				System.out.println("From " + currentPosition + " to " + item.getPOSITION());
+				Route route = routeMaker.generateRoute(currentPosition, item.getPOSITION(), Pose.POS_X	, new Route[] {}, 0);
+				routes.add(route);
+				currentPosition = item.getPOSITION();
+			}
+			Route madeRoute = new Route(routes);
+			int lengthRoute = madeRoute.getLength();
+			if (lengthRoute < shortestRoute) {
+				shortestRoute = lengthRoute;
+				bestOrdering = new ArrayList<>(lastOrdering);
+				lastOrdering.remove(closestItem);
+				insertedAt = i;
+				System.out.println("Best so far is when inserted at " + insertedAt);
+				System.out.println("Route length was " + lengthRoute);
+			}
+		}
+		return insertedAt;
+	}
+
+
+	private Item nearestItemToPoint(Point point,  ArrayList<Item> items) {
+		Item nearestItemSoFar = items.get(0);
+		int smallestDistance = Integer.MAX_VALUE ;
+		for (Item item : items) {
+			int distance = routeMaker.generateRoute(point, item.getPOSITION(), Pose.POS_X,  new Route[] {}, 0).getLength();
+			if (distance < smallestDistance) {
+				nearestItemSoFar = item;
+				smallestDistance = distance;
+			}
+		}
+		return nearestItemSoFar;
+	}
+	
 }

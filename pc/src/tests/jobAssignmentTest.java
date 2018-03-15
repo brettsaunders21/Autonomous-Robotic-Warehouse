@@ -17,6 +17,7 @@ import job.JobInput;
 import job.JobSelection;
 import lejos.geom.Point;
 import main.Counter;
+import routeplanning.AStar;
 import routeplanning.Route;
 
 //Job input, job selection, job assignment, robot and route planning
@@ -29,6 +30,8 @@ public class jobAssignmentTest {
 	private HashMap<String, Double> betaValues = jobInput.getBetaValues();
 	final static Logger logger = Logger.getLogger(jobAssignmentTest.class);
 	final static Logger jobAssignmentLogger = Logger.getLogger(JobAssignment.class);
+	final static Logger AStarLogger = Logger.getLogger(AStar.class);
+	final static Logger routeLog = Logger.getLogger(Route.class);
 	Counter counter = new Counter(robotList);
 	Job firstJobAssigned;
 
@@ -41,7 +44,10 @@ public class jobAssignmentTest {
 		ArrayList<Point> drops = jobInput.getDrops();
 		jAssignment = new JobAssignment(createJobList(), robotList, counter, drops);
 		jobAssignmentLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.DEBUG);
+		//logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.OFF);
+		AStarLogger.setLevel(Level.OFF);
+		routeLog.setLevel(Level.OFF);
 	}
 
 	
@@ -56,6 +62,19 @@ public class jobAssignmentTest {
 		//robot1.setCurrentPosition(new Point(0,0));
 		jAssignment.assignJobs(robot1);
 		firstJobAssigned = jAssignment.currentProcessingJob;
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
 		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
 	}
 	
