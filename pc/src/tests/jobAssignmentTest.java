@@ -62,20 +62,21 @@ public class jobAssignmentTest {
 		//robot1.setCurrentPosition(new Point(0,0));
 		jAssignment.assignJobs(robot1);
 		firstJobAssigned = jAssignment.currentProcessingJob;
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
 		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
+	}
+	
+	@Test
+	public void checkTSP() {
+		//robot1.setCurrentPosition(new Point(0,0));
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		assertEquals(true,true);
 	}
 	
 	@Test

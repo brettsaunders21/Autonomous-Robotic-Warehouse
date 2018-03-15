@@ -5,6 +5,7 @@ import interfaces.Action;
 import interfaces.Pose;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -85,7 +86,7 @@ public class JobAssignment {
 
 	private ArrayList<Route> calculateRoute(Robot r, Map map, Job job, ArrayList<Item> items) {
 		int timeCount = counter.getTime();
-		System.out.println(timeCount);
+		//System.out.println(timeCount);
 		Point currentRobotPosition = r.getCurrentPosition();
 		ArrayList<Route> routes = new ArrayList<Route>();
 		for (Item item : items) {
@@ -128,10 +129,14 @@ public class JobAssignment {
 		}
 		Route testroute = new Route(calculateRoute(currentRobot, map, currentProcessingJob, orderedItems));
 		Route normalRoute = new Route(calculateRoute(currentRobot, map, currentProcessingJob, originalItems));
-		System.out.println("Optimised route " + testroute.getLength());
+		System.out.println("\nOptimised route " + testroute.getLength());
 		System.out.println("Non-Optimised route " + normalRoute.getLength());
-		System.out.println("Orderded size " + orderedItems.size());
-		System.out.println("NonOrderded size " +originalItems.size());
+		/*System.out.println("Orderded size " + orderedItems.size());
+		System.out.println("NonOrderded size " +originalItems.size());*/
+		//System.out.println(testroute.getLength() < normalRoute.getLength());
+		//System.out.println(normalRoute.getLength() - testroute.getLength());
+		System.out.println(Arrays.toString(originalItems.toArray()));
+		System.out.println(Arrays.toString(orderedItems.toArray()));
 		return orderedItems;
 	}
 	
@@ -157,22 +162,15 @@ public class JobAssignment {
 	}*/
 	
 	private int findOptimalIndex(Item closestItem, ArrayList<Item> orderedItems) {
-		// TODO Auto-generated method stub
 		int shortestRoute = Integer.MAX_VALUE;
 		int insertedAt = 0;
 		ArrayList<Item> bestOrdering = new ArrayList<>();
 		ArrayList<Item> lastOrdering = new ArrayList<>(orderedItems);
 		Point currentPosition = currentRobot.getCurrentPosition();
-		System.out.println();
-		System.out.println(orderedItems.size());
-		System.out.println(lastOrdering.size());
 		for (int i = 0; i < lastOrdering.size(); i++) {
-			System.out.println("I = " + i);
-			System.out.println();
 			ArrayList<Route> routes = new ArrayList<>();
 			lastOrdering.add(insertedAt, closestItem);
 			for (Item item : lastOrdering) {
-				System.out.println("From " + currentPosition + " to " + item.getPOSITION());
 				Route route = routeMaker.generateRoute(currentPosition, item.getPOSITION(), Pose.POS_X	, new Route[] {}, 0);
 				routes.add(route);
 				currentPosition = item.getPOSITION();
@@ -184,8 +182,8 @@ public class JobAssignment {
 				bestOrdering = new ArrayList<>(lastOrdering);
 				lastOrdering.remove(closestItem);
 				insertedAt = i;
-				System.out.println("Best so far is when inserted at " + insertedAt);
-				System.out.println("Route length was " + lengthRoute);
+				//System.out.println("Best so far is when inserted at " + insertedAt);
+				//System.out.println("Route length was " + lengthRoute);
 			}
 		}
 		return insertedAt;
