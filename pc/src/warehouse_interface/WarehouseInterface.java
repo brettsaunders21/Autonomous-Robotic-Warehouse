@@ -22,6 +22,7 @@ public class WarehouseInterface extends JFrame implements Runnable{
 	private int moveByYAxis = -93;
 	private Robot[] robots;
 	
+	
 	//Constructor that takes a list of robots as a parameter
 	public WarehouseInterface(Robot[] robots){
 		setFrame();		
@@ -70,6 +71,7 @@ public class WarehouseInterface extends JFrame implements Runnable{
 			}
 		}
 	}	
+	
 }
 
 
