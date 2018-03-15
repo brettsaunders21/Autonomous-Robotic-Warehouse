@@ -61,7 +61,7 @@ public class jobAssignmentTest {
 	public void checkJobAssigned() {
 		//robot1.setCurrentPosition(new Point(0,0));
 		jAssignment.assignJobs(robot1);
-		firstJobAssigned = jAssignment.currentProcessingJob;
+		firstJobAssigned = jAssignment.getCurrentJob(robot1);
 		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
 	}
 	

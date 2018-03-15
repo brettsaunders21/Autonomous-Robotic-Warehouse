@@ -1,9 +1,5 @@
-/tests/
 /communication/
-/main/
 /job/
-/interfaces/
-/log4j.properties~7f797ee2388cdade15f033f1232e8ec9782bd5a3
-/log4j.properties~7f797ee2388cdade15f033f1232e8ec9782bd5a3_0
+/main/
 /routeplanning/
-/warehouse_interface/
+/tests/

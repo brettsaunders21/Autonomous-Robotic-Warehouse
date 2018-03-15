@@ -40,11 +40,9 @@ public class JobAssignment {
 
 
 	public void assignJobs(Robot robot) {
-		currentRobot = robot;
 		Job job = getClosestJob(robot);
-		currentProcessingJob = job;
 		ArrayList<Item> items = job.getITEMS();
-		ArrayList<Item> orderedItems = orderItems(items);
+		ArrayList<Item> orderedItems = orderItems(items,robot,job);
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
@@ -98,7 +96,7 @@ public class JobAssignment {
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
 		}
-		Point nearestDropoff = nearestDropPoint(currentRobotPosition);
+		Point nearestDropoff = nearestDropPoint(currentRobotPosition,r.getCurrentPose(), drops);
 		//System.out.println(nearestDropoff);
 		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , r.getCurrentPose(), new Route[] {},timeCount);
 		routes.add(dropoffRoute);
@@ -108,27 +106,30 @@ public class JobAssignment {
 		return routes;
 	}
 	
-	private Point nearestDropPoint(Point currentLocation) {
-		int routeToDrop1 = routeMaker.generateRoute(currentLocation, drops.get(0), currentRobot.getCurrentPose(), new Route[] {}, 0).getLength();
-		int routeToDrop2 = routeMaker.generateRoute(currentLocation, drops.get(1), currentRobot.getCurrentPose(), new Route[] {}, 0).getLength();
-		if (routeToDrop1 > routeToDrop2) {
-			return drops.get(1);
-		}else {
-			return drops.get(0);
+	private Point nearestDropPoint(Point currentLocation, Pose pose, ArrayList<Point> dropoffs) {
+		Point closestPoint = dropoffs.get(0);
+		int closestPointDistance = Integer.MAX_VALUE;
+		for (Point point : dropoffs) {
+			int routeToDrop1 = routeMaker.generateRoute(currentLocation, point, pose, new Route[] {}, 0).getLength();
+			if (routeToDrop1 < closestPointDistance) {
+				closestPointDistance = routeToDrop1;
+				closestPoint = point;
+			}
 		}
+		return closestPoint;
 	}
 	
-	private ArrayList<Item> orderItems(ArrayList<Item> items) {
+	private ArrayList<Item> orderItems(ArrayList<Item> items, Robot robot, Job job) {
 		ArrayList<Item> orderedItems = new ArrayList<>();
 		ArrayList<Item> originalItems = new ArrayList<>(items);
-		Item closestItem = new Item(null, 0, 0, currentRobot.getCurrentPosition(), 0);
+		Item closestItem = new Item(null, 0, 0, robot.getCurrentPosition(), 0);
 		while (!items.isEmpty()) {
 			closestItem = nearestItemToPoint(closestItem.getPOSITION(), items);
 			items.remove(closestItem);
 			orderedItems.add(closestItem);
 		}
-		Route testroute = new Route(calculateRoute(currentRobot, map, currentProcessingJob, orderedItems));
-		Route normalRoute = new Route(calculateRoute(currentRobot, map, currentProcessingJob, originalItems));
+		Route testroute = new Route(calculateRoute(robot, map, job, orderedItems));
+		Route normalRoute = new Route(calculateRoute(robot, map, job, originalItems));
 		System.out.println("\nOptimised route " + testroute.getLength());
 		System.out.println("Non-Optimised route " + normalRoute.getLength());
 		/*System.out.println("Orderded size " + orderedItems.size());
@@ -201,6 +202,12 @@ public class JobAssignment {
 			}
 		}
 		return nearestItemSoFar;
+	}
+
+
+	public Job getCurrentJob(Robot robot1) {
+		// TODO Auto-generated method stub
+		return robot1.getActiveJob();
 	}
 	
 }
