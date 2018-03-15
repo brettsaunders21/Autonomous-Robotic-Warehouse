@@ -22,7 +22,7 @@ import routeplanning.Route;
 
 //Job input, job selection, job assignment, robot and route planning
 public class jobAssignmentTest {
-	//private final static Logger logger = Logger.getLogger(AssignmentTest.class);
+	//private final static Logger logger = Logger.getLogger(AssignmentTest.class);;
 	JobInput jobInput =  new JobInput();
 	private Robot robot1 = new Robot("Spike", "0016530AA681", new Point(0,0));
 	private Robot[] robotList = {robot1};

@@ -35,7 +35,7 @@ public class JobAssignment {
 		jobs = j;
 		counter = _counter;
 		drops = _drops;
-		logger.setLevel(Level.OFF);
+		logger.setLevel(Level.DEBUG);
 	}
 
 
