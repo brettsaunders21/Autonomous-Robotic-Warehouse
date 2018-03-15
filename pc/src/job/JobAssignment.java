@@ -47,9 +47,6 @@ public class JobAssignment {
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
 		Route routeWithDropoff = new Route(routeForAllItems, Action.DROPOFF);
-		for (Action action : routeWithDropoff.getDirectionArray()) {
-			System.out.println(action);
-		}
 		job.assignCurrentroute(routeWithDropoff);
 		robot.setActiveJob(job);
 		jobs.remove(job);
