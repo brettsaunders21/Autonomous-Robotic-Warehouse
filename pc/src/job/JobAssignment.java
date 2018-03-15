@@ -2,14 +2,7 @@ package job;
 
 import routeplanning.Map;
 import interfaces.Action;
-import interfaces.Pose;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import interfaces.Robot;
 import lejos.geom.Point;
@@ -20,29 +13,24 @@ import routeplanning.Route;
 public class JobAssignment {
 	
 	private ArrayList<Job> jobs;
-	private Robot[] robotsArray;
 	private Map map = Map.generateRealWarehouseMap();
 	private Counter counter;
 	final static Logger logger = Logger.getLogger(JobAssignment.class);
-	private Point dropoff1 = new Point(2,4);
-	public Job currentProcessingJob;
 	private ArrayList<Point> drops;
 	private AStar routeMaker = new AStar(map);
-	private Robot currentRobot;
+	private TSP tsp = new TSP(drops);
 	
-	public JobAssignment(ArrayList<Job> j, Robot[] r, Counter _counter, ArrayList<Point> _drops) {
-		robotsArray = r;
+	public JobAssignment(ArrayList<Job> j, Counter _counter, ArrayList<Point> _drops) {
 		jobs = j;
 		counter = _counter;
 		drops = _drops;
-		logger.setLevel(Level.DEBUG);
 	}
 
 
 	public void assignJobs(Robot robot) {
 		Job job = getClosestJob(robot);
 		ArrayList<Item> items = job.getITEMS();
-		ArrayList<Item> orderedItems = orderItems(items,robot,job);
+		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
@@ -95,7 +83,7 @@ public class JobAssignment {
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
 		}
-		Point nearestDropoff = nearestDropPoint(currentRobotPosition,r.getCurrentPose(), drops);
+		Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
 		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , r.getCurrentPose(), new Route[] {},timeCount);
 		routes.add(dropoffRoute);
 		r.setCurrentPose(dropoffRoute.getFinalPose());
@@ -103,55 +91,5 @@ public class JobAssignment {
 		logger.debug(routes);
 		return routes;
 	}
-	
-	private Point nearestDropPoint(Point currentLocation, Pose pose, ArrayList<Point> dropoffs) {
-		Point closestPoint = dropoffs.get(0);
-		int closestPointDistance = Integer.MAX_VALUE;
-		for (Point point : dropoffs) {
-			int routeToDrop1 = routeMaker.generateRoute(currentLocation, point, pose, new Route[] {}, 0).getLength();
-			if (routeToDrop1 < closestPointDistance) {
-				closestPointDistance = routeToDrop1;
-				closestPoint = point;
-			}
-		}
-		logger.debug("Closest dropoff point to " + currentLocation + " is "+ closestPoint);
-		return closestPoint;
-	}
-	
-	private ArrayList<Item> orderItems(ArrayList<Item> items, Robot robot, Job job) {
-		Pose prePose = robot.getCurrentPose();
-		ArrayList<Item> orderedItems = new ArrayList<>();
-		ArrayList<Item> originalItems = new ArrayList<>(items);
-		Item closestItem = new Item(null, 0, 0, robot.getCurrentPosition(), 0);
-		while (!items.isEmpty()) {
-			closestItem = nearestItemToPoint(closestItem.getPOSITION(), items);
-			items.remove(closestItem);
-			orderedItems.add(closestItem);
-		}
-		Route testroute = new Route(calculateRoute(robot, map, job, orderedItems));
-		Route normalRoute = new Route(calculateRoute(robot, map, job, originalItems));
-		robot.setCurrentPose(prePose);
-		logger.trace("Route optimised from " + normalRoute.getLength() + " to " + testroute.getLength());
-		return orderedItems;
-	}
-	
-	private Item nearestItemToPoint(Point point,  ArrayList<Item> items) {
-		Item nearestItemSoFar = items.get(0);
-		int smallestDistance = Integer.MAX_VALUE ;
-		for (Item item : items) {
-			int distance = routeMaker.generateRoute(point, item.getPOSITION(), Pose.POS_X,  new Route[] {}, 0).getLength();
-			if (distance < smallestDistance) {
-				nearestItemSoFar = item;
-				smallestDistance = distance;
-			}
-		}
-		return nearestItemSoFar;
-	}
-
-
-	public Job getCurrentJob(Robot robot1) {
-		// TODO Auto-generated method stub
-		return robot1.getActiveJob();
-	}
-	
+		
 }

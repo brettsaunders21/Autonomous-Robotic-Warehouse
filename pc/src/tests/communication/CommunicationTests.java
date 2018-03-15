@@ -1,4 +1,4 @@
-
+package tests.communication;
 
 import static org.junit.Assert.*;
 
