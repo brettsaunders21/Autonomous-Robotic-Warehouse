@@ -17,23 +17,29 @@ public class Robot {
 	private float reward;
 	private int jobsCompleted;
 	private NXTInfo nxtInfo;
+	private Pose currentPose;
 	
-	public Robot(String _robotName, String _btAddress){
-		this.robotName = this.nxtInfo.name = _robotName;
-		this.nxtInfo.deviceAddress = _btAddress;
-		this.nxtInfo.protocol = NXTCommFactory.BLUETOOTH;
+	public Robot(String _robotName, String _btAddress, Point _startPostion){
+		this.robotName = _robotName;
+		this.nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH,_robotName,_btAddress);
 		this.routeSet = false;
 		this.setWeight(0);
 		this.jobCancelled = false;
-		this.jobFinished = false;
+		this.jobFinished = true;
 		this.reward = 0;
 		this.jobsCompleted = 0;
+		this.currentCoords = _startPostion;
+		this.setCurrentPose(Pose.POS_X);
 	}
 	
 	public void jobFinished() {
 		jobFinished = true;
 		reward += activeJob.getREWARD();
 		jobsCompleted += 1;
+	}
+	
+	public NXTInfo getNXTInfo() {
+		return nxtInfo;
 	}
 	
 	public void cancelJob() {
@@ -63,12 +69,14 @@ public class Robot {
 
 	/*Sets the current position of the robot*/
 	public void setCurrentPosition(Point position){
+		currentCoords = position;
 		//need to check valid coordinate before assigning, not in wall, actually on map etc
 	}
 
 
 	/*Sets all information relating to the newly assigned job. */
 	public void setActiveJob(Job job){
+		activeJob = job;
 		//sets dropOffCoords, pickUpCoords and determines if more than one trip is necessary. Requests routes to be made
 	}
 
@@ -85,6 +93,9 @@ public class Robot {
 		return weight;
 	}
 
+	public void jobNotFinished() {
+		jobFinished = false;
+	}
 
 	/**
 	 * @param weight the weight to set
@@ -104,5 +115,12 @@ public class Robot {
 	public int jobsCompleted() {
 		return jobsCompleted;
 	}
- 
+
+	public Pose getCurrentPose() {
+		return currentPose;
+	}
+
+	public void setCurrentPose(Pose currentPose) {
+		this.currentPose = currentPose;
+	}
 }

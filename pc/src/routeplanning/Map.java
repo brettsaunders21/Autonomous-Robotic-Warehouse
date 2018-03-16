@@ -6,6 +6,7 @@ import rp.robotics.mapping.MapUtils;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -25,11 +26,12 @@ public class Map {
 	/**Creates the map that will be used on the robot warehouse assignment
 	 * @return the warehouse assignment map in the format required by AStar class*/
 	public static Map generateRealWarehouseMap() {
+		logger.setLevel(Level.OFF);
 		GridMap map = MapUtils.createRealWarehouse();
 		int width = map.getXSize();
 		int height = map.getYSize();
 		ArrayList<Point> obstructions = new ArrayList<Point>();
-		for (int x = 0; x < width; x++) {
+		for (int x = width-1; x>=0; x--) {
 			for (int y = 0; y < height; y++) {
 				if (map.isObstructed(x, y)) {
 					obstructions.add(new Point(x, y));
@@ -160,17 +162,8 @@ public class Map {
 	}
 
 	/** @return a clone of the current object */
+	@Override
 	public Map clone() {
-		return new Map(passable);
-	}
-	
-	/**@param p a previously unknown point that is non-passable 
-	 * @return a clone of the current object, with the point specified marked as non-passable */
-	public Map clone(Point p) {
-		if (!withinMapBounds(p)) {
-			throw new IllegalArgumentException();
-		}
-		passable[(int)p.x][(int)p.y] = false;
 		return new Map(passable);
 	}
 

@@ -5,6 +5,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import interfaces.Action;
 import interfaces.Pose;
@@ -36,6 +38,7 @@ public class AStar {
 	 *            the map that route finding will be carried out on
 	 */
 	public AStar(Map map) {
+		logger.setLevel(Level.OFF);
 		this.map = map;
 	}
 
@@ -426,14 +429,14 @@ public class AStar {
 				directions.add(action);
 				logger.debug(action);
 				switch (action) {
-				case LEFT: {
+				case RIGHT: {
 					startPose = startPose - 1;
 					if (startPose < 0) {
 						startPose = startPose + 4;
 					}
 					break;
 				}
-				case RIGHT: {
+				case LEFT: {
 					startPose = startPose + 1;
 					if (startPose > 3) {
 						startPose = startPose - 4;
@@ -465,7 +468,7 @@ public class AStar {
 			break;
 		}
 		case 1: {
-			dir = Action.LEFT;
+			dir = Action.RIGHT;
 			break;
 		}
 		case 2: {
@@ -473,7 +476,7 @@ public class AStar {
 			break;
 		}
 		case 3: {
-			dir = Action.RIGHT;
+			dir = Action.LEFT;
 			break;
 		}
 		}

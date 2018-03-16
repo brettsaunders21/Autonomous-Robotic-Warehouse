@@ -4,6 +4,9 @@ package job;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import lejos.geom.Point;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -37,11 +40,11 @@ public class JobInputTest {
 		assertEquals("ej", availableOrders.get(10000).get(6));
 		assertEquals(1, Integer.parseInt(availableOrders.get(10000).get(7)), 0);
 
-		HashMap<String, ArrayList<Integer>> drops = jI.getDrops();
-		assertEquals(true, drops.containsKey("drop1"));
+		ArrayList<Point> drops = jI.getDrops();
+		assertEquals(false, drops.isEmpty());
 		
-		assertEquals(4, drops.get("drop1").get(0), 0);
-		assertEquals(7, drops.get("drop1").get(1), 0);
+		assertEquals(4, drops.get(0).x, 0);
+		assertEquals(7, drops.get(1).y, 0);
 		
 		
 		

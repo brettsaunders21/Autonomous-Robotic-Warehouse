@@ -30,7 +30,7 @@ public abstract class AbstractSenderReceiver implements Runnable {
 		Action receivedAction = null;
 		// Convert the string into an Action object
 		
-		//NOTE - Can't use valueOf as this crashes lejos!
+		//NOTE - Can't use valueOf as this crashes lejos! Have to use this sub-optimal method instead
 		switch (receivedString) {
 		case "LEFT":
 			receivedAction = Action.LEFT;
@@ -43,9 +43,6 @@ public abstract class AbstractSenderReceiver implements Runnable {
 			break;
 		case "BACKWARD":
 			receivedAction = Action.BACKWARD;
-			break;
-		case "TURN_RIGHT":
-			receivedAction = Action.RIGHT;
 			break;
 		case "WAIT":
 			receivedAction = Action.WAIT;
@@ -63,7 +60,7 @@ public abstract class AbstractSenderReceiver implements Runnable {
 			receivedAction = Action.SHUTDOWN;
 			break;
 		case "ACTION_COMPLETE":
-			receivedAction = Action.BACKWARD;
+			receivedAction = Action.ACTION_COMPLETE;
 			break;
 		default:
 			break;
