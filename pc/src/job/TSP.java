@@ -46,7 +46,7 @@ public class TSP {
 	}
 	
 	@SuppressWarnings("unused")
-	private int calculateJobDistance(Job job) {
+	public int calculateJobDistance(Job job, Robot robot) {
 		ArrayList<Item> tempItems = new ArrayList<Item>(job.getITEMS());
 		Robot tempR = new Robot("temp", "000", new Point(0,0));
 		tempItems = orderItems(tempItems, tempR);
