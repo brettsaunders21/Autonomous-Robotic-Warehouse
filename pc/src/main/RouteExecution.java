@@ -37,6 +37,8 @@ public class RouteExecution {
 		ITEMS = currentJob.getITEMS();
 		currentDirections = currentJob.getCurrentroute().getDirections();
 
+		rELogger.debug(currentDirections);
+		rELogger.debug(ITEMS);
 		try {
 			while (!currentDirections.isEmpty()) { 
 				currentCommand = currentDirections.poll();
@@ -48,8 +50,10 @@ public class RouteExecution {
 				}
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				rELogger.debug(whereImGoing);
-				if (currentCommand == interfaces.Action.PICKUP)
+				if (currentCommand == interfaces.Action.PICKUP) {
+					rELogger.debug(ITEMS.get(0) + " " + ITEMS.get(0).getQUANTITY());
 					network.sendObject(ITEMS.get(0).getQUANTITY());
+				}
 				if (currentCommand == interfaces.Action.DROPOFF)
 					network.sendObject(itemsToDrop.peek().getQUANTITY());
 				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {

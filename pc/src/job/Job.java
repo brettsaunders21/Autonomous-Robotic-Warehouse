@@ -11,7 +11,7 @@ import routeplanning.Route;
  */
 public class Job {
 	private final int ID;
-	private final ArrayList<Item> ITEMS;
+	private ArrayList<Item> ITEMS;
 	private final float WEIGHT;
 	private final float REWARD;
 	private Point dropLocation;
@@ -100,5 +100,9 @@ public class Job {
 
 	public void setCanceled(boolean canceled) {
 		this.canceled = canceled;
+	}
+	
+	public void setItems(ArrayList<Item> i ) {
+		this.ITEMS = i;
 	}
 }

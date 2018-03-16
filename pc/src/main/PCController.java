@@ -12,6 +12,8 @@ import job.JobInput;
 import job.JobSelection;
 import lejos.geom.Point;
 import routeplanning.AStar;
+import warehouse_interface.JobsInterface;
+import warehouse_interface.WarehouseInterface;
 
 public class PCController {
 	private static final Logger controllerLogger = Logger.getLogger(PCController.class);
@@ -19,9 +21,8 @@ public class PCController {
 	private static final Logger routeExeLogger = Logger.getLogger(RouteExecution.class);
 	private static final Logger jobAssLogger = Logger.getLogger(JobAssignment.class);
 	private static final Robot[] ROBOTS = {
-			new Robot("Spike", "0016530AA681", new Point(0, 0)),
-			new Robot("Jeremy", "00165308E37C", new Point(5, 5)),
-			new Robot("Marco", "00165315678E", new Point(10, 10))
+			new Robot("Spike", "0016530AA681", new Point(5, 6)),
+			new Robot("Marco", "00165315678E", new Point(0, 0))
 	};
 	private static ArrayList<Job> orderedJobs;
 	private static int numOfRobots = 0;
@@ -38,6 +39,8 @@ public class PCController {
 		Counter counter = new Counter(ROBOTS);
 		orderedJobs = jS.prioritize();
 		JobAssignment jA = new JobAssignment(orderedJobs, counter, jI.getDrops());
+		//new WarehouseInterface(ROBOTS);
+		//new JobsInterface(ROBOTS);
 		for (Robot rob : ROBOTS) {
 			r[numOfRobots] = new RobotThread(rob, jA, counter);
 			r[numOfRobots].setName(rob.getRobotName());

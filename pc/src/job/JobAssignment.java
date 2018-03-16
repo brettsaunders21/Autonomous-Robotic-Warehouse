@@ -18,19 +18,21 @@ public class JobAssignment {
 	final static Logger logger = Logger.getLogger(JobAssignment.class);
 	private ArrayList<Point> drops;
 	private AStar routeMaker = new AStar(map);
-	private TSP tsp = new TSP(drops);
+	private TSP tsp;
 	
 	public JobAssignment(ArrayList<Job> j, Counter _counter, ArrayList<Point> _drops) {
 		jobs = j;
 		counter = _counter;
 		drops = _drops;
+		tsp = new TSP(drops);
 	}
 
 
 	public void assignJobs(Robot robot) {
-		Job job = getClosestJob(robot);
+		Job job = jobs.get(0);
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
+		job.setItems(orderedItems);
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
@@ -51,23 +53,6 @@ public class JobAssignment {
 			actions.add(Action.PICKUP);
 		}
 		return actions;
-	}
-	
-	//Brett
-	private Job getClosestJob(Robot r) {
-		Point currentRobotPosition = r.getCurrentPosition();
-		AStar routeMaker = new AStar(map);
-		Job closestJob = null;
-		int shortestDistance = Integer.MAX_VALUE;
-		for (int i =0; i < 3; i++) {
-			Job tempJob = jobs.get(i);
-			int tempDistance = routeMaker.generateRoute(currentRobotPosition, tempJob.getITEMS().get(0).getPOSITION(), r.getCurrentPose(), new Route[] {}, 0).getLength();
-			if (tempDistance < shortestDistance) {
-				closestJob = tempJob;
-				shortestDistance = tempDistance;
-			}
-		}
-		return closestJob;
 	}
 
 	private ArrayList<Route> calculateRoute(Robot r, Map map, Job job, ArrayList<Item> items) {

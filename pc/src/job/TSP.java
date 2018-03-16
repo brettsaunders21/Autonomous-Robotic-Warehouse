@@ -46,9 +46,9 @@ public class TSP {
 	}
 	
 	@SuppressWarnings("unused")
-	private int calculateJobDistance(Job job) {
+	private int calculateJobDistance(Job job, Robot robot) {
 		ArrayList<Item> tempItems = new ArrayList<Item>(job.getITEMS());
-		Robot tempR = new Robot("temp", "000", new Point(0,0));
+		Robot tempR = robot;
 		tempItems = orderItems(tempItems, tempR);
 		tempItems = addDropPoints(tempItems);
 		int distance = 0;
