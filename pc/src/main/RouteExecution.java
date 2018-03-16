@@ -36,7 +36,6 @@ public class RouteExecution {
 		currentJob = robot.getActiveJob();
 		ITEMS = currentJob.getITEMS();
 		currentDirections = currentJob.getCurrentroute().getDirections();
-
 		rELogger.debug(currentDirections);
 		rELogger.debug(ITEMS);
 		try {

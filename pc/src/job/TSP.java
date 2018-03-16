@@ -45,8 +45,7 @@ public class TSP {
 		return withDrops;
 	}
 	
-	@SuppressWarnings("unused")
-	private int calculateJobDistance(Job job, Robot robot) {
+	public int calculateJobDistance(Job job, Robot robot) {
 		ArrayList<Item> tempItems = new ArrayList<Item>(job.getITEMS());
 		Robot tempR = robot;
 		tempItems = orderItems(tempItems, tempR);
@@ -57,6 +56,7 @@ public class TSP {
 		}
 		return distance;
 	}
+	
 	
 	private Item nearestItemToPoint(Point point,  ArrayList<Item> items) {
 		Item nearestItemSoFar = items.get(0);

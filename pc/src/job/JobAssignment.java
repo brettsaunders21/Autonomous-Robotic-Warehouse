@@ -19,20 +19,23 @@ public class JobAssignment {
 	private ArrayList<Point> drops;
 	private AStar routeMaker = new AStar(map);
 	private TSP tsp;
+	private JobSelection jS;
 	
-	public JobAssignment(ArrayList<Job> j, Counter _counter, ArrayList<Point> _drops) {
+	public JobAssignment(ArrayList<Job> j, Counter _counter, ArrayList<Point> _drops, JobSelection _jS) {
 		jobs = j;
 		counter = _counter;
 		drops = _drops;
 		tsp = new TSP(drops);
+		jS = _jS;
 	}
 
 
 	public void assignJobs(Robot robot) {
-		Job job = jobs.get(0);
+		Job job = jS.getJob(jobs, robot);
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
 		job.setItems(orderedItems);
+		//Add weight droppoints
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
