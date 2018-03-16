@@ -70,7 +70,7 @@ public class RouteTest{
 	/*conjunction constructor combines coordinates correctly*/
 	@Test
 	public void conjunctionConstructorDirectionsTest1() {
-		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.RIGHT, Action.FORWARD};
+		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.LEFT, Action.FORWARD};
 		Route r1 = aStar.generateRoute(new Point(0,0), new Point(2,0), Pose.POS_X, new Route[] {}, 0);
 		Route r2 = aStar.generateRoute(new Point(2,0), new Point(2,2), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = new Route(r1, r2);
@@ -101,7 +101,7 @@ public class RouteTest{
 	/*conjunction constructor combines coordinates correctly*/
 	@Test
 	public void conjunctionConstructorDirectionsTest3() {
-		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.LEFT, Action.FORWARD};
+		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.RIGHT, Action.FORWARD};
 		Route r1 = aStar.generateRoute(new Point(2,2), new Point(2,0), Pose.NEG_Y, new Route[] {}, 0);
 		Route r2 = aStar.generateRoute(new Point(2,0), new Point(0,0), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = new Route(r1, r2);
@@ -144,7 +144,7 @@ public class RouteTest{
 	/*conjunction constructor combines coordinates and additional instruction correctly*/
 	@Test
 	public void conjunctionActionConstructorDirectionsTest1() {
-		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.PICKUP, Action.RIGHT, Action.FORWARD};
+		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.PICKUP, Action.LEFT, Action.FORWARD};
 		Route r1 = aStar.generateRoute(new Point(0,0), new Point(2,0), Pose.POS_X, new Route[] {}, 0);
 		Route r2 = aStar.generateRoute(new Point(2,0), new Point(2,2), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = new Route(r1, r2, Action.PICKUP);
@@ -175,7 +175,7 @@ public class RouteTest{
 	/*conjunction constructor combines coordinates and additional instruction correctly*/
 	@Test
 	public void conjunctionActionConstructorDirectionsTest3() {
-		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.CANCEL, Action.LEFT, Action.FORWARD};
+		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.CANCEL, Action.RIGHT, Action.FORWARD};
 		Route r1 = aStar.generateRoute(new Point(2,2), new Point(2,0), Pose.NEG_Y, new Route[] {}, 0);
 		Route r2 = aStar.generateRoute(new Point(2,0), new Point(0,0), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = new Route(r1, r2, Action.CANCEL);
@@ -235,7 +235,7 @@ public class RouteTest{
 	/*conjunction constructor combines coordinates and additional instruction correctly*/
 	@Test
 	public void conjunctionArrayList() {
-		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.BACKWARD, Action.FORWARD, Action.LEFT, Action.FORWARD};
+		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.BACKWARD, Action.FORWARD, Action.RIGHT, Action.FORWARD};
 		Route r1 = aStar.generateRoute(new Point(0,0), new Point(2,0), Pose.POS_X, new Route[] {}, 0);
 		Route r2 = aStar.generateRoute(new Point(2,0), new Point(0,0), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = aStar.generateRoute(new Point(0,0), new Point(0,2), Pose.POS_X, new Route[] {}, 0);
@@ -264,7 +264,7 @@ public class RouteTest{
 	/*conjunction constructor combines coordinates and additional instruction correctly*/
 	@Test
 	public void conjunctionActionArrayList() {
-		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.PICKUP, Action.BACKWARD, Action.FORWARD, Action.DROPOFF, Action.LEFT, Action.FORWARD};
+		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.PICKUP, Action.BACKWARD, Action.FORWARD, Action.DROPOFF, Action.RIGHT, Action.FORWARD};
 		Route r1 = aStar.generateRoute(new Point(0,0), new Point(2,0), Pose.POS_X, new Route[] {}, 0);
 		Route r2 = aStar.generateRoute(new Point(2,0), new Point(0,0), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = aStar.generateRoute(new Point(0,0), new Point(0,2), Pose.POS_X, new Route[] {}, 0);

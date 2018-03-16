@@ -231,6 +231,7 @@ public class AStarTest {
 	@Test(timeout=1000)
 	public void multiRobotRouteCoords3() {
 		aStarLogger.setLevel(Level.WARN);
+		logger.setLevel(Level.DEBUG);
 		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(1,0), Pose.POS_X, new Route[] {}, 0);
 		Route[] rs = new Route[1];
 		rs[0] = r1;
@@ -240,9 +241,11 @@ public class AStarTest {
 		Point[] ps1 = new Point[] {new Point(1,0)};
 		assertArrayEquals(ps1,r1.getCoordinates().toArray());
 		
-		Point[] ps2 = new Point[] {new Point(0,0)};
-		assertArrayEquals(ps2,r2.getCoordinates().toArray());
+		Point[] ps2 = new Point[] {new Point(0,0), new Point(0,1)};
+		
+		assertArrayEquals(ps2, r2.getCoordinates().toArray());
 		aStarLogger.setLevel(Level.OFF);
+		logger.setLevel(Level.OFF);
 	}
 	
 	@Ignore
