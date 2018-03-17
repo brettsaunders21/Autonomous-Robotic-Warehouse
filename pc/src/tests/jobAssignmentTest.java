@@ -38,6 +38,7 @@ public class jobAssignmentTest {
 	
 	JobSelection jobSelection = new JobSelection(betaValues);
 	
+	
 
 	
 	public jobAssignmentTest() {

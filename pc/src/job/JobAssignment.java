@@ -42,7 +42,7 @@ public class JobAssignment {
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
 		job.setItems(orderedItems);
-		//Add weight droppoints
+		//Add weight drop points
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
