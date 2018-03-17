@@ -33,14 +33,17 @@ public class MultipleRobotCommunicationTests {
 
 	// Set up the bluetooth connection before any tests
 	@BeforeClass
-	public static void setup() {
+	public static void setup() throws InterruptedException {
 		nxtInfo1 = new NXTInfo(NXTCommFactory.BLUETOOTH, "Spike", "0016530AA681");
-		nxtInfo2 = new NXTInfo(NXTCommFactory.BLUETOOTH, "Marco", "00165315678E");
+		nxtInfo2 = new NXTInfo(NXTCommFactory.BLUETOOTH, "Marco", "00165317976F");
 		nxtInfo3 = new NXTInfo(NXTCommFactory.BLUETOOTH, "Jeremy", "00165308E37C");
 
 		networkHandler1 = new PCNetworkHandler(nxtInfo1);
+		Thread.sleep(3000);
 		networkHandler2 = new PCNetworkHandler(nxtInfo2);
-		networkHandler2 = new PCNetworkHandler(nxtInfo3);
+		Thread.sleep(3000);
+		networkHandler3 = new PCNetworkHandler(nxtInfo3);
+		Thread.sleep(3000);
 	}
 
 	// Test if a connection can be established,
@@ -71,7 +74,7 @@ public class MultipleRobotCommunicationTests {
 	// Test if a double can be sent and received
 	@Test(timeout = 3000)
 	public void multiRobotSendReceiveDoubleTest() throws IOException {
-		double testObject = 0.97338474f;
+		double testObject = 0.973f;
 		networkHandler1.sendObject(testObject);
 		networkHandler2.sendObject(testObject);
 		networkHandler3.sendObject(testObject);
@@ -87,7 +90,7 @@ public class MultipleRobotCommunicationTests {
 	// Test if a float can be sent and received
 	@Test(timeout = 3000)
 	public void multiRobotSendReceiveFloatTest() throws IOException {
-		float testObject = 0.56443f;
+		float testObject = 0.564f;
 		networkHandler1.sendObject(testObject);
 		networkHandler2.sendObject(testObject);
 		networkHandler3.sendObject(testObject);

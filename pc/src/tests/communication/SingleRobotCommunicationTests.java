@@ -31,7 +31,7 @@ public class SingleRobotCommunicationTests {
 	@BeforeClass
 	public static void setup() {
 		// Robot: Spike - 0016530AA681
-		nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "Spike", "0016530AA681");
+		nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "Marco", "00165317976F");
 
 		networkHandler = new PCNetworkHandler(nxtInfo);
 	}
