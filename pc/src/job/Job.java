@@ -11,7 +11,7 @@ import routeplanning.Route;
  */
 public class Job {
 	private final int ID;
-	private final ArrayList<Item> ITEMS;
+	private ArrayList<Item> ITEMS;
 	private final float WEIGHT;
 	private final float REWARD;
 	private Point dropLocation;
@@ -70,6 +70,10 @@ public class Job {
 			reward += i.getTOTAL_REWARD();
 		}
 		return reward;
+	}
+	
+	public void setItems(ArrayList<Item> orderedItems) {
+		ITEMS = orderedItems;
 	}
 
 	/**

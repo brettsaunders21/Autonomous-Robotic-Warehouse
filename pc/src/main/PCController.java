@@ -21,8 +21,7 @@ public class PCController {
 	private static final Logger routeExeLogger = Logger.getLogger(RouteExecution.class);
 	private static final Logger jobAssLogger = Logger.getLogger(JobAssignment.class);
 	private static final Robot[] ROBOTS = {
-			new Robot("Spike", "0016530AA681", new Point(0, 0)),
-			new Robot("Jeremy", "00165308E37C", new Point(5, 6))
+			new Robot("Spike", "0016530AA681", new Point(0, 0))
 	};
 	private static ArrayList<Job> orderedJobs;
 	private static int numOfRobots = ROBOTS.length;

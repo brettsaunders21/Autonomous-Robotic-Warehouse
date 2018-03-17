@@ -34,11 +34,8 @@ public class JobAssignment {
 
 	public void assignJobs(Robot robot) {
 		Job job;
-		if (!jobs.isEmpty()) {
-			job = jS.getJob(jobs, robot);
-		}else{
-			return;
-		}
+		job = jS.getJob(jobs, robot);
+		jobs.remove(job);
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
 		job.setItems(orderedItems);
@@ -50,7 +47,6 @@ public class JobAssignment {
 		job.assignCurrentroute(routeWithDropoff);
 		robot.setActiveJob(job);
 		recentJob = job;
-		jobs.remove(job);
 		logger.info(robot);
 		logger.info(routeWithDropoff);
 		logger.info(job);

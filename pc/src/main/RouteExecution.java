@@ -37,9 +37,7 @@ public class RouteExecution {
 		ITEMS = currentJob.getITEMS();
 		currentDirections = currentJob.getCurrentroute().getDirections();
 		rELogger.debug(currentDirections);
-		rELogger.debug(currentJob.getCurrentroute().getCoordinates());
 		rELogger.debug(ITEMS);
-		
 		try {
 			while (!currentDirections.isEmpty()) { 
 				currentCommand = currentDirections.poll();
