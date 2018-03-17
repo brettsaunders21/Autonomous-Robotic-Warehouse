@@ -6,7 +6,6 @@ import lejos.geom.Point;
 import routeplanning.AStar;
 import routeplanning.Map;
 import routeplanning.Route;
-import routeplanning.astarhelpers.BacktrackNeededException;
 import static org.junit.Assert.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -35,7 +34,7 @@ public class AStarTest {
 	public AStarTest() {
 		aStar = new AStar(map);
 		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.OFF);
 	}
 
 	//Starts facing left and wants to travel left
@@ -230,8 +229,8 @@ public class AStarTest {
 	//tests that two robots will not occupy the same space
 	@Test(timeout=1000)
 	public void multiRobotRouteCoords3() {
-		aStarLogger.setLevel(Level.WARN);
-		logger.setLevel(Level.DEBUG);
+		aStarLogger.setLevel(Level.OFF);
+		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(1,0), Pose.POS_X, new Route[] {}, 0);
 		Route[] rs = new Route[1];
 		rs[0] = r1;
@@ -261,5 +260,56 @@ public class AStarTest {
 			}
 		}
 		assertTrue(map.withinMapBounds(new Point(11,7)));
+	}
+
+	@Test
+	public void test1(){
+		aStarLogger.setLevel(Level.OFF);
+		logger.setLevel(Level.OFF);
+		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(5,1), Pose.POS_X, new Route[] {}, 0);
+		r1 = new Route(r1, Action.PICKUP);
+		Route r3 = aStar.generateRoute(new Point(5,1), new Point(5,5) , r1.getFinalPose(), new Route[] {}, r1.getLength()+1);
+		r1 = new Route(r1, r3);
+		r1 = new Route(r1, Action.PICKUP);		
+
+		r3 = aStar.generateRoute(new Point(5,5), new Point(4,7) , r1.getFinalPose(), new Route[] {}, r1.getLength()+1);
+		r1 = new Route(r1, r3);
+		r1 = new Route(r1, Action.DROPOFF);
+		
+
+		Route r2 = aStar.generateRoute(new Point(5, 6), new Point(5,5), Pose.POS_X, new Route[] {}, 0);
+		r2 = new Route(r2, Action.PICKUP);
+
+		r3 = aStar.generateRoute(new Point(5,5), new Point(6,5) , r2.getFinalPose(), new Route[] {}, r2.getLength()+1);
+		r2 = new Route(r2, r3);
+		r2 = new Route(r2, Action.PICKUP);
+
+		r3 = aStar.generateRoute(new Point(6,5), new Point(5,1) , r2.getFinalPose(), new Route[] {}, r2.getLength()+1);
+		r2 = new Route(r2, r3);
+		r2 = new Route(r2, Action.PICKUP);
+		
+		r3 = aStar.generateRoute(new Point(5,1), new Point(4,7) , r2.getFinalPose(), new Route[] {}, r2.getLength()+1);
+		r2 = new Route(r2, r3);
+		r2 = new Route(r2, Action.DROPOFF);
+		
+	
+		Point[] ps1 = new Point[] {new Point(1,0), new Point(2,0), new Point(3,0), new Point(4,0), new Point(5,0), new Point(5,1), new Point(5,1), new Point(5,2), new Point(5,3), new Point(5,4), new Point(5,5), new Point(5,5), new Point(5,6), new Point(4,6), new Point(4,7), new Point(4,7)};
+		assertArrayEquals(ps1,r1.getCoordinatesArray());
+		Point[] ps2 = new Point[] {new Point(5,5), new Point(5,5), new Point(6,5), new Point(6,5), new Point(6,4), new Point(6,3), new Point(6,2), new Point(5,2), new Point(5,1), new Point(5,1), new Point(5,2), new Point(5,3), new Point(5,4), new Point(5,5), new Point(5,6), new Point(4,6), new Point(4,7), new Point(4,7)};
+		
+		assertArrayEquals(ps2, r2.getCoordinatesArray());
+		for (int i = 0; i<r1.getLength(); i++) {
+			System.out.println(r1.getPoseAt(i));
+		}
+		
+		
+		Action[] as1 = new Action[] {Action.FORWARD, Action.FORWARD, Action.FORWARD, Action.FORWARD, Action.FORWARD, Action.LEFT, Action.PICKUP, Action.FORWARD, Action.FORWARD, Action.FORWARD, Action.FORWARD, Action.PICKUP, Action.FORWARD, Action.LEFT, Action.RIGHT, Action.DROPOFF};
+		assertArrayEquals(as1,r1.getDirectionArray());
+		
+		//Point[] as2 = new Action[] {new Point(5,5), new Point(5,5), new Point(6,5), new Point(6,5), new Point(6,4), new Point(6,3), new Point(6,2), new Point(5,2), new Point(5,1), new Point(5,1), new Point(5,2), new Point(5,3), new Point(5,4), new Point(5,5), new Point(5,6), new Point(4,6), new Point(4,7), new Point(4,7)};
+		
+		//assertArrayEquals(ps2, r2.getCoordinatesArray());
+		aStarLogger.setLevel(Level.OFF);
+		logger.setLevel(Level.OFF);
 	}
 }

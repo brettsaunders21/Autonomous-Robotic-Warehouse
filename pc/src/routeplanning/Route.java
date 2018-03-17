@@ -2,6 +2,8 @@ package routeplanning;
 
 import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import lejos.geom.Point;
 import interfaces.Action;
@@ -32,11 +34,13 @@ public class Route {
 	 *            the pose the robot is in when the first direction is executed
 	 * @param myStartTime
 	 *            the time at which the currentRoute is started
-	 * @param startPoint the starting coordinate of this route, before any movement occurs
+	 * @param startPoint
+	 *            the starting coordinate of this route, before any movement occurs
 	 * @throws IllegalArgumentException
 	 *             coordinates and directions queues differ in length
 	 */
-	public Route(BlockingQueue<Point> coordinates, BlockingQueue<Action> directions, Pose startPose, int myStartTime, Point startPoint) {
+	public Route(BlockingQueue<Point> coordinates, BlockingQueue<Action> directions, Pose startPose, int myStartTime,
+			Point startPoint) {
 		if (coordinates.size() != directions.size()) {
 			throw new IllegalArgumentException("queues differ in length");
 		}
@@ -121,7 +125,9 @@ public class Route {
 	 * @param middleAction
 	 *            the action to be carried out between the two routes
 	 * @throws IllegalArgumentException
-	 *             middleAction can only be WAIT, PICKUP, DROPOFF, CANCEL, SHUTDOWN or null. If null is used then the no additional action will be added
+	 *             middleAction can only be WAIT, PICKUP, DROPOFF, CANCEL, SHUTDOWN
+	 *             or null. If null is used then the no additional action will be
+	 *             added
 	 * @throws IllegalArgumentException
 	 *             one or both routes have no instructions
 	 * @throws IllegalArgumentException
@@ -129,7 +135,7 @@ public class Route {
 	 *             coordinate of second route. Routes cannot be joined
 	 */
 	public Route(Route firstRoute, Route secondRoute, Action middleAction) {
-		if (!nonMovementAction(middleAction)&&!(middleAction == null)) {
+		if (!nonMovementAction(middleAction) && !(middleAction == null)) {
 			throw new IllegalArgumentException("middleAction can only be WAIT, PICKUP, DROPOFF, CANCEL or SHUTDOWN");
 		} else {
 			concatenationConstructor(firstRoute, secondRoute, middleAction);
@@ -160,8 +166,8 @@ public class Route {
 	 * @throws IllegalArgumentException
 	 *             one or more routes have no instructions
 	 * @throws IllegalArgumentException
-	 *             last coordinate of one route is not adjacent to first
-	 *             coordinate of next route. Routes cannot be joined
+	 *             last coordinate of one route is not adjacent to first coordinate
+	 *             of next route. Routes cannot be joined
 	 */
 	public Route(ArrayList<Route> routes) {
 		Route currentRoute;
@@ -199,8 +205,8 @@ public class Route {
 	 * @throws IllegalArgumentException
 	 *             one or more routes have no instructions
 	 * @throws IllegalArgumentException
-	 *             last coordinate of one route is not adjacent to first
-	 *             coordinate of next route. Routes cannot be joined
+	 *             last coordinate of one route is not adjacent to first coordinate
+	 *             of next route. Routes cannot be joined
 	 */
 	public Route(ArrayList<Route> routes, ArrayList<Action> actions) {
 		if (routes.size() != actions.size() + 1) {
@@ -240,10 +246,10 @@ public class Route {
 			throw new IllegalArgumentException("action was not a valid non-movement action");
 		}
 		this.coordinates = route.getCoordinates();
-		this.coordinates.add(route.getCoordinatesArray()[route.getLength()-1]);
+		this.coordinates.add(route.getCoordinatesArray()[route.getLength() - 1]);
 		this.directions = route.getDirections();
 		directions.add(action);
-		this.routeLength = route.getLength()+1;
+		this.routeLength = route.getLength() + 1;
 		this.startPose = route.getStartPose();
 		Action[] a = new Action[directions.size()];
 		this.dirsArray = directions.toArray(a);
@@ -252,7 +258,7 @@ public class Route {
 		this.myStartTime = route.getStartTime();
 		this.startPoint = route.getStartPoint();
 	}
-	
+
 	/* constructor method shared by all route merging constructors */
 	private void concatenationConstructor(Route firstRoute, Route secondRoute, Action middleAction) {
 		// checks both routes have elements
@@ -277,7 +283,7 @@ public class Route {
 			// the middleAction can only be null when called by the constructor which only
 			// takes in two routes
 			if (nonMovementAction(middleAction)) {
-				this.coordinates.add(firstRoute.getCoordinatesArray()[firstRoute.getLength()-1]);
+				this.coordinates.add(firstRoute.getCoordinatesArray()[firstRoute.getLength() - 1]);
 				this.directions.add(middleAction);
 				tempRouteLength = tempRouteLength + 1;
 			}
@@ -303,7 +309,7 @@ public class Route {
 		}
 	}
 
-	/* checks if two points are at adjacent grid positions to each other*/
+	/* checks if two points are at adjacent grid positions to each other */
 	private boolean adjacentCoords(Point p1, Point p2) {
 		for (int x = -1; x < 2; x++) {
 			for (int y = -1; y < 2; y++) {
@@ -317,33 +323,36 @@ public class Route {
 		return false;
 	}
 
-	/*checks that only non move instructions are added to the route from outside an existing route object*/
+	/*
+	 * checks that only non move instructions are added to the route from outside an
+	 * existing route object
+	 */
 	private boolean nonMovementAction(Action a) {
 		if (a == null) {
 			return false;
 		}
 		switch (a) {
-		case WAIT:{
+		case WAIT: {
 			return true;
 		}
-		case PICKUP:{
-			return true;			
+		case PICKUP: {
+			return true;
 		}
-		case DROPOFF:{
-			return true;			
+		case DROPOFF: {
+			return true;
 		}
-		case CANCEL:{
-			return true;			
+		case CANCEL: {
+			return true;
 		}
-		case SHUTDOWN:{
-			return true;			
+		case SHUTDOWN: {
+			return true;
 		}
-		default:{
+		default: {
 			return false;
 		}
 		}
 	}
-	
+
 	/**
 	 * @return an array of all directions in the original route
 	 */
@@ -385,29 +394,34 @@ public class Route {
 	 */
 	public Pose getPoseAt(int relativeTime) {
 		Pose p;
-		if (relativeTime > 0 && relativeTime<routeLength) {
-			int direction = AStar.getDirection(coordsArray[relativeTime - 1], coordsArray[relativeTime]);
-			switch (direction) {
-			case 0: {
-				p = Pose.NEG_X;
-				break;
+		if (relativeTime > 0 && relativeTime < routeLength) {
+			if (!coordsArray[relativeTime-1].equals(coordsArray[relativeTime])) {
+				int direction = AStar.getDirection(coordsArray[relativeTime - 1], coordsArray[relativeTime]);
+				switch (direction) {
+				case 0: {
+					p = Pose.NEG_X;
+					break;
+				}
+				case 1: {
+					p = Pose.NEG_Y;
+					break;
+				}
+				case 2: {
+					p = Pose.POS_X;
+					break;
+				}
+				case 3: {
+					p = Pose.POS_Y;
+					break;
+				}
+				default: { // should not be possible to reach
+					p = Pose.POS_X;
+					break;
+				}
+				}
 			}
-			case 1: {
-				p = Pose.NEG_Y;
-				break;
-			}
-			case 2: {
-				p = Pose.POS_X;
-				break;
-			}
-			case 3: {
-				p = Pose.POS_Y;
-				break;
-			}
-			default: { // should not be possible to reach
-				p = Pose.POS_X;
-				break;
-			}
+			else {
+				return getPoseAt(relativeTime-1);
 			}
 		} else if (relativeTime == 0) {
 			p = this.getStartPose();
@@ -430,10 +444,14 @@ public class Route {
 	public Point getStartPoint() {
 		return startPoint;
 	}
-	
-	/*returns the new instruction that must be carried out to move from the end of one route to the start of the next*/
+
+	/*
+	 * returns the new instruction that must be carried out to move from the end of
+	 * one route to the start of the next
+	 */
 	private Action generateRotation(Point firstPoint, Point secondPoint, Pose poseAtFirstPoint) {
 		int direction = AStar.getDirection(firstPoint, secondPoint);
+		logger.setLevel(Level.OFF);
 		logger.debug(direction);
 		logger.debug(firstPoint);
 		logger.debug(secondPoint);
