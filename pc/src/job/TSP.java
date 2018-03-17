@@ -38,7 +38,6 @@ public class TSP {
 		for (Item item : items) {
 			weightRunningTotal += item.getTOTAL_WEIGHT();
 			if (weightRunningTotal >= 50) {
-				System.out.println("weight total" + weightRunningTotal);
 				Item dropPoint = new Item("droppoint", 0, 0, nearestDropPoint(item.getPOSITION(), Pose.POS_X), 0);
 				withDrops.add(dropPoint);
 				weightRunningTotal = 0;
@@ -48,18 +47,20 @@ public class TSP {
 		return withDrops;
 	}
 	
-	@SuppressWarnings("unused")
-	private int calculateJobDistance(Job job) {
+	public int calculateJobDistance(Job job, Robot robot) {
 		ArrayList<Item> tempItems = new ArrayList<Item>(job.getITEMS());
-		Robot tempR = new Robot("temp", "000", new Point(0,0));
+		Robot tempR = robot;
 		tempItems = orderItems(tempItems, tempR);
-		tempItems = addDropPoints(tempItems);
+		//tempItems = addDropPoints(tempItems);
 		int distance = 0;
-		for (int i = 1; i <= tempItems.size(); i++) {
+		if (tempItems.size() > 1) 
+		for (int i = 1; i <= tempItems.size() - 1; i++) {
 			distance += routeMaker.generateRoute(tempItems.get(i-1).getPOSITION(), tempItems.get(i).getPOSITION(), Pose.POS_X, new Route[] {}, 0).getLength();
 		}
+		distance += routeMaker.generateRoute(robot.getCurrentPosition(), tempItems.get(0).getPOSITION(), robot.getCurrentPose(), new Route[] {}, 0).getLength();
 		return distance;
 	}
+	
 	
 	private Item nearestItemToPoint(Point point,  ArrayList<Item> items) {
 		Item nearestItemSoFar = items.get(0);

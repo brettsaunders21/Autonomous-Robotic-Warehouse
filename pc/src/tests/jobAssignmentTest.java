@@ -34,6 +34,7 @@ public class jobAssignmentTest {
 	final static Logger routeLog = Logger.getLogger(Route.class);
 	Counter counter = new Counter(robotList);
 	Job firstJobAssigned;
+	ArrayList<Point> drops;
 
 	
 	JobSelection jobSelection = new JobSelection(betaValues);
@@ -42,8 +43,8 @@ public class jobAssignmentTest {
 
 	
 	public jobAssignmentTest() {
-		ArrayList<Point> drops = jobInput.getDrops();
-		jAssignment = new JobAssignment(createJobList(), counter, drops);
+		drops = jobInput.getDrops();
+		jAssignment = new JobAssignment(createJobList(), counter, drops, jobSelection);
 		jobAssignmentLogger.setLevel(Level.OFF);
 		//logger.setLevel(Level.DEBUG);
 		logger.setLevel(Level.OFF);
@@ -61,6 +62,7 @@ public class jobAssignmentTest {
 	@Test
 	public void checkJobAssigned() {
 		//robot1.setCurrentPosition(new Point(0,0));
+		jAssignment = new JobAssignment(createJobList(), counter, drops, jobSelection);
 		jAssignment.assignJobs(robot1);
 		firstJobAssigned = jAssignment.getCurrentJob();
 		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
@@ -69,9 +71,12 @@ public class jobAssignmentTest {
 	@Test
 	public void checkTSP() {
 		//robot1.setCurrentPosition(new Point(0,0));
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 1000; i++) {
 			jAssignment.assignJobs(robot1);
+			//System.out.println(i + "completed");
 		}
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
 //		System.out.println("test");
 //		jAssignment.assignJobs(robot1);
 		//jAssignment.assignJobs(robot1);

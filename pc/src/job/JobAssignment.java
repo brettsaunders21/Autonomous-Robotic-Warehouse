@@ -47,8 +47,6 @@ public class JobAssignment {
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
 		Route routeWithDropoff = new Route(routeForAllItems, Action.DROPOFF);
-		for(Action a :routeWithDropoff.getDirectionArray())
-			System.out.println(a);
 		job.assignCurrentroute(routeWithDropoff);
 		robot.setActiveJob(job);
 		recentJob = job;
@@ -70,8 +68,6 @@ public class JobAssignment {
 	
 
 	private ArrayList<Route> calculateRoute(Robot r, Map map, Job job, ArrayList<Item> items) {
-		System.out.println();
-		System.out.println();
 		int timeCount = counter.getTime();
 		Point currentRobotPosition = r.getCurrentPosition();
 		ArrayList<Route> routes = new ArrayList<Route>();
@@ -79,9 +75,6 @@ public class JobAssignment {
 		int item1 = 0;
 		for (Item item : items) {
 			if(item.getID().equals("droppoint")){
-				System.out.println("Triggered");
-				System.out.println(item1);
-				System.out.println("numitem = " + items.size());
 				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
 				itemRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff, r.getCurrentPose(), new Route[] {},timeCount);
 				currentRobotPosition = nearestDropoff;
@@ -92,7 +85,6 @@ public class JobAssignment {
 				currentRobotPosition = item.getPOSITION();
 				routes.add(itemRoute);
 			}
-			System.out.println();
 			r.setCurrentPose(itemRoute.getFinalPose()); 
 			logger.trace(item);
 			logger.trace(itemRoute);
