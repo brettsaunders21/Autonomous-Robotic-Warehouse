@@ -4,25 +4,42 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
-
-import interfaces.Action;
 import lejos.pc.comm.NXTComm;
 import lejos.pc.comm.NXTConnector;
 import lejos.pc.comm.NXTInfo;
 
+import org.apache.log4j.Logger;
+
+import interfaces.Action;
+
+/*
+ * PCNetworkHandler class
+ * 
+ * Handles the bluetooth connection for the PC
+ */
+
 public class PCNetworkHandler extends AbstractSenderReceiver {
-	private static final Logger logger = Logger.getLogger(PCNetworkHandler.class);
+
+	// The logger
+	final static Logger logger = Logger.getLogger(PCNetworkHandler.class);
+
+	// NXTInfo object which holds the robot's bluetooth address + other info
 	private NXTInfo nxtInfo;
 	
 	// boolean for whether the connection has failed after connection retries
 	boolean connectionFailed;
 
+	/**
+	 * The constructor
+	 *
+	 * @param _nxtInfo
+	 *            The NXTInfo object of the robot being connected to
+	 */
 	public PCNetworkHandler(NXTInfo _nxtInfo) {
 		nxtInfo = _nxtInfo;
 		connectionFailed = false;
 	}
-	
+
 	@Override
 	public void run() {
 		// Amount of connection retries

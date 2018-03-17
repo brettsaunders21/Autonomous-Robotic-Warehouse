@@ -34,7 +34,8 @@ public class PCController {
 		aStarLogger.setLevel(Level.OFF);
 		routeExeLogger.setLevel(Level.ALL);
 		jobAssLogger.setLevel(Level.ALL);
-		JobInput jI = new JobInput();JobSelection jS = new JobSelection(jI.getBetaValues());
+		JobInput jI = new JobInput();
+		JobSelection jS = new JobSelection(jI.getBetaValues());
 		Counter counter = new Counter(ROBOTS);
 		orderedJobs = jS.prioritize();
 		JobAssignment jA = new JobAssignment(orderedJobs, counter, jI.getDrops(), jS);

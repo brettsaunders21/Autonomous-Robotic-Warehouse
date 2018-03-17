@@ -42,7 +42,7 @@ public class JobSelection {
 	}
 
 	public ArrayList<Job> prioritize() {
-
+		orderedOrders = new ArrayList<Integer>();
 		Set<Integer> notOrderedOrdersSet = availableOrders.keySet();
 		ArrayList<Integer> notOrderedOrdersList = new ArrayList<Integer>(notOrderedOrdersSet);
 		// This loop will go through all the available orders and it will predict if the
@@ -141,14 +141,23 @@ public class JobSelection {
 	
 	public Job getJob(ArrayList<Job> jobs, Robot robot) {
 		HashMap<Float,Integer> ratioJob = new HashMap<Float,Integer>();
+		ArrayList<Integer> orderedOrders2 = new ArrayList<Integer>();
+		ArrayList<Job> orderedJobs2 = new ArrayList<Job>();
+
 		for (int i = 0; i < jobs.size(); i++) {
 			int totalDistance = tsp.calculateJobDistance(jobs.get(i), robot);
+
 			float totalWeight = jobs.get(i).calculateWeight();
+
 			float totalReward = jobs.get(i).calculateReward();
+
 			float ratio = totalReward/(totalWeight*totalDistance);
+
 			ratioJob.put(ratio,jobs.get(i).getID());			
 		}
+
 		ratiosSet = ratioJob.keySet();
+
 		Float[] ratiosList = ratiosSet.toArray(new Float[ratiosSet.size()]);
 		
 		int n = ratiosList.length;
@@ -167,14 +176,14 @@ public class JobSelection {
 		}
 		
 		for (int i = 0; i < n; i++) {
-			orderedOrders.add(orderRewardsRatio.get(ratiosList[i]));
+			orderedOrders2.add(ratioJob.get(ratiosList[i]));
 
 		}	
 		
 		
-		for (int i = 0; i < orderedOrders.size(); i++) {
+		for (int i = 0; i < orderedOrders2.size(); i++) {
 			ArrayList<Item> items = new ArrayList<Item>();
-			ArrayList<String> itemsAndQty = availableOrders.get(orderedOrders.get(i));
+			ArrayList<String> itemsAndQty = availableOrders.get(orderedOrders2.get(i));
 			for (int j = 0; j < itemsAndQty.size(); j = j + 2) {
 				items.add(new Item(itemsAndQty.get(j), Integer.parseInt(itemsAndQty.get(j + 1)),
 						itemRewardsWeights.get(itemsAndQty.get(j)).get(1),
@@ -183,11 +192,11 @@ public class JobSelection {
 						itemRewardsWeights.get(itemsAndQty.get(j)).get(0)));
 
 			}
-			orderedJobs.add(new Job(orderedOrders.get(i), items));
+			orderedJobs2.add(new Job(orderedOrders2.get(i), items));
 
 		}
 		
-		return orderedJobs.get(0);
+		return orderedJobs2.get(0);
 	}
 
 }

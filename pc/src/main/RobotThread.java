@@ -1,6 +1,5 @@
 package main;
 
-
 import org.apache.log4j.Logger;
 
 import communication.PCNetworkHandler;
@@ -15,7 +14,6 @@ public class RobotThread extends Thread{
 	private Counter counter;
 	
 	public RobotThread(Robot _robot, JobAssignment _tasker, Counter _counter) {
-
 		this.robot = _robot;
 		this.TASKER = _tasker;
 		networker = new PCNetworkHandler(robot.getNXTInfo());
@@ -40,9 +38,6 @@ public class RobotThread extends Thread{
 		}
 		
 		while(true) {
-			if (true) { //Get from tasker if current job equals cancelled
-				//Cancel job
-			}
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
 				robot.jobNotFinished();
 				TASKER.assignJobs(robot);
