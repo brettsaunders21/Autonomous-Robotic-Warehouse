@@ -167,7 +167,7 @@ public class JobSelection {
 		}
 		
 		for (int i = 0; i < n; i++) {
-			orderedOrders.add(orderRewardsRatio.get(ratiosList[i]));
+			orderedOrders.add(ratioJob.get(ratiosList[i]));
 
 		}	
 		
