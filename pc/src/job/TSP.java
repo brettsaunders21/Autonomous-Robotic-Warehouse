@@ -1,6 +1,7 @@
 package job;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import interfaces.Pose;
 import interfaces.Robot;
@@ -26,8 +27,9 @@ public class TSP {
 			items.remove(closestItem);
 			orderedItems.add(closestItem);
 		}
+		ArrayList<Item> dropItems = addDropPoints(orderedItems);
 		robot.setCurrentPose(prePose);
-		return orderedItems;
+		return dropItems;
 	}
 	
 	private ArrayList<Item> addDropPoints(ArrayList<Item> items) {
@@ -36,6 +38,7 @@ public class TSP {
 		for (Item item : items) {
 			weightRunningTotal += item.getTOTAL_WEIGHT();
 			if (weightRunningTotal >= 50) {
+				System.out.println("weight total" + weightRunningTotal);
 				Item dropPoint = new Item("droppoint", 0, 0, nearestDropPoint(item.getPOSITION(), Pose.POS_X), 0);
 				withDrops.add(dropPoint);
 				weightRunningTotal = 0;
