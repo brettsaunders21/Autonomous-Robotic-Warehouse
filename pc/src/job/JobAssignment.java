@@ -42,7 +42,8 @@ public class JobAssignment {
 	public void assignJobs(Robot robot) {
 		Job job = getClosestJob(robot);
 		ArrayList<Item> items = job.getITEMS();
-		ArrayList<Item> orderedItems = orderItems(items,robot,job);
+		//ArrayList<Item> orderedItems = orderItems(items,robot,job);
+		ArrayList<Item> orderedItems = orderItems(items);
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
@@ -119,7 +120,7 @@ public class JobAssignment {
 		return closestPoint;
 	}
 	
-	private ArrayList<Item> orderItems(ArrayList<Item> items, Robot robot, Job job) {
+	/*private ArrayList<Item> orderItems(ArrayList<Item> items, Robot robot, Job job) {
 		ArrayList<Item> orderedItems = new ArrayList<>();
 		ArrayList<Item> originalItems = new ArrayList<>(items);
 		Item closestItem = new Item(null, 0, 0, robot.getCurrentPosition(), 0);
@@ -132,16 +133,16 @@ public class JobAssignment {
 		Route normalRoute = new Route(calculateRoute(robot, map, job, originalItems));
 		System.out.println("\nOptimised route " + testroute.getLength());
 		System.out.println("Non-Optimised route " + normalRoute.getLength());
-		/*System.out.println("Orderded size " + orderedItems.size());
-		System.out.println("NonOrderded size " +originalItems.size());*/
+		System.out.println("Orderded size " + orderedItems.size());
+		System.out.println("NonOrderded size " +originalItems.size());
 		//System.out.println(testroute.getLength() < normalRoute.getLength());
 		//System.out.println(normalRoute.getLength() - testroute.getLength());
 		System.out.println(Arrays.toString(originalItems.toArray()));
 		System.out.println(Arrays.toString(orderedItems.toArray()));
 		return orderedItems;
-	}
+	}*/
 	
-	/*private ArrayList<Item> orderItems(ArrayList<Item> items) {
+	private ArrayList<Item> orderItems(ArrayList<Item> items) {
 		ArrayList<Item> orderedItems = new ArrayList<>();
 		ArrayList<Item> originalItems = new ArrayList<>(items);
  		Item closestItem = nearestItemToPoint(currentRobot.getCurrentPosition(), items);
@@ -160,7 +161,7 @@ public class JobAssignment {
 		System.out.println("Orderded size " + orderedItems.size());
 		System.out.println("NonOrderded size " +originalItems.size());
 		return orderedItems;
-	}*/
+	}
 	
 	private int findOptimalIndex(Item closestItem, ArrayList<Item> orderedItems) {
 		int shortestRoute = Integer.MAX_VALUE;
@@ -183,8 +184,8 @@ public class JobAssignment {
 				bestOrdering = new ArrayList<>(lastOrdering);
 				lastOrdering.remove(closestItem);
 				insertedAt = i;
-				//System.out.println("Best so far is when inserted at " + insertedAt);
-				//System.out.println("Route length was " + lengthRoute);
+				System.out.println("Best so far is when inserted at " + insertedAt);
+				System.out.println("Route length was " + lengthRoute);
 			}
 		}
 		return insertedAt;

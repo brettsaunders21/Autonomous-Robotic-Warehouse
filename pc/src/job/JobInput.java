@@ -32,7 +32,7 @@ public class JobInput {
 
 
 	// Change this depending on your file path
-	String filePath = "C:\\\\\\\\Users\\\\\\\\Ben\\\\\\\\git\\\\\\\\rp-team1.1\\\\\\\\pc\\\\\\\\";
+	String filePath = "/home/students/bxs714/Warehouse/rp-team1.1/pc/";
 	String itemRewardsWeightsFile =  filePath + "src/job/csv/items.csv";
 	String itemLocationsFile = filePath + "src/job/csv/locations.csv";
 	String availableOrdersFile = filePath +  "src/job/csv/jobs.csv";
