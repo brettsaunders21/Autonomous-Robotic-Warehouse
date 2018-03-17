@@ -38,11 +38,12 @@ public class jobAssignmentTest {
 	
 	JobSelection jobSelection = new JobSelection(betaValues);
 	
+	
 
 	
 	public jobAssignmentTest() {
 		ArrayList<Point> drops = jobInput.getDrops();
-		jAssignment = new JobAssignment(createJobList(), robotList, counter, drops);
+		jAssignment = new JobAssignment(createJobList(), counter, drops);
 		jobAssignmentLogger.setLevel(Level.OFF);
 		//logger.setLevel(Level.DEBUG);
 		logger.setLevel(Level.OFF);
@@ -61,21 +62,19 @@ public class jobAssignmentTest {
 	public void checkJobAssigned() {
 		//robot1.setCurrentPosition(new Point(0,0));
 		jAssignment.assignJobs(robot1);
-		firstJobAssigned = jAssignment.getCurrentJob(robot1);
+		firstJobAssigned = jAssignment.getCurrentJob();
 		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
 	}
 	
 	@Test
 	public void checkTSP() {
 		//robot1.setCurrentPosition(new Point(0,0));
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
+		for (int i = 0; i < 100; i++) {
+			jAssignment.assignJobs(robot1);
+		}
+//		System.out.println("test");
+//		jAssignment.assignJobs(robot1);
+		//jAssignment.assignJobs(robot1);
 		assertEquals(true,true);
 	}
 	
