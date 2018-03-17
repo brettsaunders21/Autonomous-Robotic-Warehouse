@@ -61,7 +61,6 @@ public class jobAssignmentTest {
 
 	@Test
 	public void checkJobAssigned() {
-		//robot1.setCurrentPosition(new Point(0,0));
 		jAssignment = new JobAssignment(createJobList(), counter, drops, jobSelection);
 		jAssignment.assignJobs(robot1);
 		firstJobAssigned = jAssignment.getCurrentJob();
@@ -70,16 +69,12 @@ public class jobAssignmentTest {
 	
 	@Test
 	public void checkTSP() {
-		//robot1.setCurrentPosition(new Point(0,0));
 		for (int i = 0; i < 1000; i++) {
 			jAssignment.assignJobs(robot1);
 			//System.out.println(i + "completed");
 		}
 		jAssignment.assignJobs(robot1);
 		jAssignment.assignJobs(robot1);
-//		System.out.println("test");
-//		jAssignment.assignJobs(robot1);
-		//jAssignment.assignJobs(robot1);
 		assertEquals(true,true);
 	}
 	

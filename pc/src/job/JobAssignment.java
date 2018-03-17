@@ -3,6 +3,10 @@ package job;
 import routeplanning.Map;
 import interfaces.Action;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import interfaces.Robot;
 import lejos.geom.Point;
@@ -13,7 +17,7 @@ import routeplanning.Route;
 public class JobAssignment {
 
 	
-	private ArrayList<Job> jobs;
+	private List<Job> jobs;
 	private Map map = Map.generateRealWarehouseMap();
 	private Counter counter;
 	final static Logger logger = Logger.getLogger(JobAssignment.class);
@@ -24,7 +28,7 @@ public class JobAssignment {
 	private JobSelection jS;
 	
 	public JobAssignment(ArrayList<Job> j, Counter _counter, ArrayList<Point> _drops, JobSelection _jS) {
-		jobs = j;
+		jobs = Collections.synchronizedList(new ArrayList<Job>(j));
 		counter = _counter;
 		drops = _drops;
 		tsp = new TSP(drops);
@@ -34,12 +38,17 @@ public class JobAssignment {
 
 	public void assignJobs(Robot robot) {
 		Job job;
-		job = jS.getJob(jobs, robot);
-		jobs.remove(job);
+		if (!jobs.isEmpty()) {
+			job = jS.getJob(jobs, robot);
+		}else{	
+			return;	
+		}
+		System.out.println("Before size " + jobs.size());
+		jobs.removeIf(i -> i.getID() == job.getID());
+		System.out.println("After size " + jobs.size());
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
 		job.setItems(orderedItems);
-		//Add weight drop points
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
@@ -68,7 +77,6 @@ public class JobAssignment {
 		Point currentRobotPosition = r.getCurrentPosition();
 		ArrayList<Route> routes = new ArrayList<Route>();
 		Route itemRoute;
-		int item1 = 0;
 		for (Item item : items) {
 			if(item.getID().equals("droppoint")){
 				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
@@ -85,7 +93,6 @@ public class JobAssignment {
 			logger.trace(item);
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
-			item1++;
 		}
 		Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
 		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , r.getCurrentPose(), new Route[] {},timeCount);
