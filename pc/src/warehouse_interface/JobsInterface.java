@@ -27,9 +27,6 @@ import javax.swing.JTextField;
 
 public class JobsInterface extends JFrame implements Runnable {
 
-	/**
-	 * 
-	 */
 	private JPanel contentPane;
 	private JPanel cancelJobPane;
 	private JTextField textField;
@@ -40,9 +37,9 @@ public class JobsInterface extends JFrame implements Runnable {
 	Object[][] completedJobsData = {};
 	String[][] itemsInformationData = new String[30][3];
 	String[][] robotInfoData = new String[1][4];
-	String[][] robot1Data = new String[1][4];
-	String[][] robot2Data = new String[1][4];
-	String[][] robot3Data = new String[1][4];
+	String[][] robot1Data = new String[1][5];
+	String[][] robot2Data = new String[1][5];
+	String[][] robot3Data = new String[1][5];
 	private JTable t;
 	String itemsCsvFile = "src/job/csv/items.csv";
 
@@ -61,10 +58,11 @@ public class JobsInterface extends JFrame implements Runnable {
 		thread.start();
 	}
 
+	//Table with information about each robot
 	public void currentInfo(String robotName, int robotIndex) {
 		JLabel label2 = new JLabel(robotName);
 		add(label2);
-		String[] fields = { "CurrentJobs", "Total Weight", "Total Reward", "All items in that job" };
+		String[] fields = { "CurrentJobs", "Total Weight", "Total Reward", "Robot Coordinates", "All items in that job" };
 		contentPane.setLayout(mainLayout);
 		if (robotIndex == 0)
 			t = new JTable(robot1Data, fields);
@@ -80,6 +78,7 @@ public class JobsInterface extends JFrame implements Runnable {
 		contentPane.add(scrollPane);
 	}
 
+	//Table with all completed jobs
 	public void completedJobs() {
 		contentPane.setLayout(mainLayout);
 		JLabel label = new JLabel("Completed jobs");
@@ -93,6 +92,7 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	}
 
+	//Table with all items and information about each of them
 	public void itemsInformation() {
 		JLabel label2 = new JLabel("Items information");
 		add(label2);
@@ -126,6 +126,7 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	}
 
+	//Button to cancel particular job
 	public void cancelJobs() {
 		cancelJobPane.setLayout(cancelJobLayout);
 		JLabel label2 = new JLabel("Cancel job");
@@ -149,6 +150,7 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	}
 
+	//To set a frame
 	public void setFrame() {
 		setBackground(Color.LIGHT_GRAY);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -159,6 +161,7 @@ public class JobsInterface extends JFrame implements Runnable {
 		setVisible(true);
 	}
 
+	//To set panes
 	public void setPanes() {
 		mainLayout.setVgap(-20);
 		contentPane = new JPanel();
@@ -168,6 +171,52 @@ public class JobsInterface extends JFrame implements Runnable {
 		setContentPane(contentPane);
 	}
 
+	//Method that updates information about every robot
+	public void setRobotInfo(int indexOfRobot) {
+		String allItems = "";
+		try {
+			if (indexOfRobot == 0) {
+				robot1Data[0][0] = Integer.toString(robots[indexOfRobot].getActiveJob().getID());
+				robot1Data[0][1] = Float.toString(robots[indexOfRobot].getActiveJob().getWEIGHT());
+				robot1Data[0][2] = Float.toString(robots[indexOfRobot].getActiveJob().getREWARD());
+				robot1Data[0][3] =  "[" + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().x)) 
+				+ ", " + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().y)) + "]";				
+				for (Item s : robots[indexOfRobot].getActiveJob().getITEMS())
+					allItems += s.getID() + ",";
+				robot1Data[0][4] = allItems.substring(0, allItems.length() - 1);
+				allItems = "";
+			} else if (indexOfRobot == 1) {
+				robot2Data[0][0] = Integer.toString(robots[indexOfRobot].getActiveJob().getID());
+				robot2Data[0][1] = Float.toString(robots[indexOfRobot].getActiveJob().getWEIGHT());
+				robot2Data[0][2] = Float.toString(robots[indexOfRobot].getActiveJob().getREWARD());
+				robot2Data[0][3] =  "[" + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().x)) 
+				+ ", " + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().y)) + "]";
+				for (Item s : robots[indexOfRobot].getActiveJob().getITEMS())
+					allItems += s.getID() + ",";
+				robot2Data[0][4] = allItems.substring(0, allItems.length() - 1);
+				allItems = "";
+			} else if (indexOfRobot == 2) {
+				robot3Data[0][0] = Integer.toString(robots[indexOfRobot].getActiveJob().getID());
+				robot3Data[0][1] = Float.toString(robots[indexOfRobot].getActiveJob().getWEIGHT());
+				robot3Data[0][2] = Float.toString(robots[indexOfRobot].getActiveJob().getREWARD());
+				robot3Data[0][3] =  "[" + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().x)) 
+				+ ", " + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().y)) + "]";
+				for (Item s : robots[indexOfRobot].getActiveJob().getITEMS())
+					allItems += s.getID() + ",";
+				robot3Data[0][4] = allItems.substring(0, allItems.length() - 1);
+				allItems = "";
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+	}
+
+	public void setCompletedJobsInfo() {
+
+	}
+	
+	//Thread that updated all information
 	@Override
 	public void run() {
 		while (true) {
@@ -183,41 +232,6 @@ public class JobsInterface extends JFrame implements Runnable {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public void setRobotInfo(int indexOfRobot) {
-		String allItems = "";
-		try {
-			if (indexOfRobot == 0) {
-				robot1Data[0][0] = Integer.toString(robots[indexOfRobot].getActiveJob().getID());
-				robot1Data[0][1] = Float.toString(robots[indexOfRobot].getActiveJob().getWEIGHT());
-				robot1Data[0][2] = Float.toString(robots[indexOfRobot].getActiveJob().getREWARD());
-				for (Item s : robots[indexOfRobot].getActiveJob().getITEMS())
-					allItems += s.getID() + ",";
-				robot1Data[indexOfRobot][3] = allItems.substring(0, allItems.length() - 1);
-			} else if (indexOfRobot == 1) {
-				robot2Data[0][0] = Integer.toString(robots[indexOfRobot].getActiveJob().getID());
-				robot2Data[0][1] = Float.toString(robots[indexOfRobot].getActiveJob().getWEIGHT());
-				robot2Data[0][2] = Float.toString(robots[indexOfRobot].getActiveJob().getREWARD());
-				for (Item s : robots[indexOfRobot].getActiveJob().getITEMS())
-					allItems += s.getID() + ",";
-				robot2Data[indexOfRobot][3] = allItems;
-			} else if (indexOfRobot == 1) {
-				robot3Data[0][0] = Integer.toString(robots[indexOfRobot].getActiveJob().getID());
-				robot3Data[0][1] = Float.toString(robots[indexOfRobot].getActiveJob().getWEIGHT());
-				robot3Data[0][2] = Float.toString(robots[indexOfRobot].getActiveJob().getREWARD());
-				for (Item s : robots[indexOfRobot].getActiveJob().getITEMS())
-					allItems += s.getID() + ",";
-				robot3Data[indexOfRobot][3] = allItems;
-			}
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-	}
-
-	public void setCompletedJobsInfo() {
-
 	}
 
 	// Button listener that cancels the job
