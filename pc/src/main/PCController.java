@@ -22,29 +22,30 @@ public class PCController {
 	private static final Logger jobAssLogger = Logger.getLogger(JobAssignment.class);
 	private static final Robot[] ROBOTS = {
 			new Robot("Spike", "0016530AA681", new Point(0, 0)),
-			new Robot("Marco", "00165315678E", new Point(0, 0))
+			new Robot("Jeremy", "00165308E37C", new Point(5, 6))
 	};
 	private static ArrayList<Job> orderedJobs;
-	private static int numOfRobots = 0;
-	private static RobotThread[] r = new RobotThread[numOfRobots+1];
+	private static int numOfRobots = ROBOTS.length;
+	private static RobotThread[] r = new RobotThread[numOfRobots];
 
 	
 	public static void main(String[] args) {
 		controllerLogger.setLevel(Level.ALL);
-		aStarLogger.setLevel(Level.ALL);
+		aStarLogger.setLevel(Level.OFF);
 		routeExeLogger.setLevel(Level.ALL);
 		jobAssLogger.setLevel(Level.ALL);
-		JobInput jI = new JobInput();JobSelection jS = new JobSelection(jI.getBetaValues());
+		JobInput jI = new JobInput();
+		JobSelection jS = new JobSelection(jI.getBetaValues());
 		Counter counter = new Counter(ROBOTS);
 		orderedJobs = jS.prioritize();
 		JobAssignment jA = new JobAssignment(orderedJobs, counter, jI.getDrops(), jS);
-		//new WarehouseInterface(ROBOTS);
-		//new JobsInterface(ROBOTS);
-		for (Robot rob : ROBOTS) {
-			r[numOfRobots] = new RobotThread(rob, jA, counter);
-			r[numOfRobots].setName(rob.getRobotName());
-			r[numOfRobots].start();
-			controllerLogger.debug("Started robot thread: " + rob.getRobotName());
+		new WarehouseInterface(ROBOTS);
+		new JobsInterface(ROBOTS);
+		for (int i = 0; i<numOfRobots; i++) {
+			r[i] = new RobotThread(ROBOTS[i], jA, counter);
+			r[i].setName(ROBOTS[i].getRobotName());
+			r[i].start();
+			controllerLogger.debug("Started robot thread: " + ROBOTS[i].getRobotName());
 		}
 	}
 

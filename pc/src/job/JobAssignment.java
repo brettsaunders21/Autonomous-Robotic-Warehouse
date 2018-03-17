@@ -1,6 +1,5 @@
 package job;
 
-
 import routeplanning.Map;
 import interfaces.Action;
 import java.util.ArrayList;
@@ -12,6 +11,7 @@ import routeplanning.AStar;
 import routeplanning.Route;
 
 public class JobAssignment {
+
 	
 	private ArrayList<Job> jobs;
 	private Map map = Map.generateRealWarehouseMap();
@@ -20,6 +20,7 @@ public class JobAssignment {
 	private ArrayList<Point> drops;
 	private AStar routeMaker = new AStar(map);
 	private TSP tsp;
+	private Job recentJob;
 	private JobSelection jS;
 	
 	public JobAssignment(ArrayList<Job> j, Counter _counter, ArrayList<Point> _drops, JobSelection _jS) {
@@ -32,17 +33,23 @@ public class JobAssignment {
 
 
 	public void assignJobs(Robot robot) {
-		Job job = jS.getJob(jobs, robot);
+		Job job;
+		if (!jobs.isEmpty()) {
+			job = jS.getJob(jobs, robot);
+		}else{
+			return;
+		}
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
 		job.setItems(orderedItems);
-		//Add weight droppoints
+		//Add weight drop points
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
 		Route routeWithDropoff = new Route(routeForAllItems, Action.DROPOFF);
 		job.assignCurrentroute(routeWithDropoff);
 		robot.setActiveJob(job);
+		recentJob = job;
 		jobs.remove(job);
 		logger.info(robot);
 		logger.info(routeWithDropoff);
@@ -58,19 +65,31 @@ public class JobAssignment {
 		}
 		return actions;
 	}
+	
 
 	private ArrayList<Route> calculateRoute(Robot r, Map map, Job job, ArrayList<Item> items) {
 		int timeCount = counter.getTime();
 		Point currentRobotPosition = r.getCurrentPosition();
 		ArrayList<Route> routes = new ArrayList<Route>();
+		Route itemRoute;
+		int item1 = 0;
 		for (Item item : items) {
-			Route itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), r.getCurrentPose(), new Route[] {}, timeCount);
-			routes.add(itemRoute);
+			if(item.getID().equals("droppoint")){
+				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
+				itemRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff, r.getCurrentPose(), new Route[] {},timeCount);
+				currentRobotPosition = nearestDropoff;
+				Route routeWithDropoff = new Route(itemRoute, Action.DROPOFF);
+				routes.add(routeWithDropoff);
+			}else{
+				itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), r.getCurrentPose(), new Route[] {}, timeCount);
+				currentRobotPosition = item.getPOSITION();
+				routes.add(itemRoute);
+			}
 			r.setCurrentPose(itemRoute.getFinalPose()); 
-			currentRobotPosition = item.getPOSITION();
 			logger.trace(item);
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
+			item1++;
 		}
 		Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
 		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , r.getCurrentPose(), new Route[] {},timeCount);
@@ -80,4 +99,9 @@ public class JobAssignment {
 		logger.debug(routes);
 		return routes;
 	}
+	
+	public Job getCurrentJob(){
+		return recentJob;
+	}
+		
 }

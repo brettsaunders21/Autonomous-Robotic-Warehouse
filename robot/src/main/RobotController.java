@@ -16,7 +16,6 @@ public class RobotController implements StoppableRunnable {
 	private boolean running;
 	private RobotNetworkHandler networkHandler;
 	private RobotInterface rInterface;
-
 	private int lineValue = 0;
 	private int backgroundValue = 0;
 	int MID_BOUND;
@@ -60,11 +59,6 @@ public class RobotController implements StoppableRunnable {
 
 					move.nextAction(currentCommand, pickAmount);
 
-					try {
-						networkHandler.sendObject(Action.ACTION_COMPLETE);
-					} catch (IOException e) {
-						System.out.println("Couldn't send object in RobotController" + e.getMessage());
-					}
 				} else {
 					System.out.println("Error: No command received");
 					break;

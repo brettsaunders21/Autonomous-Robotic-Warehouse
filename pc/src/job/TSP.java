@@ -1,6 +1,7 @@
 package job;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import interfaces.Pose;
 import interfaces.Robot;
@@ -26,8 +27,9 @@ public class TSP {
 			items.remove(closestItem);
 			orderedItems.add(closestItem);
 		}
+		ArrayList<Item> dropItems = addDropPoints(orderedItems);
 		robot.setCurrentPose(prePose);
-		return orderedItems;
+		return dropItems;
 	}
 	
 	private ArrayList<Item> addDropPoints(ArrayList<Item> items) {
@@ -49,11 +51,13 @@ public class TSP {
 		ArrayList<Item> tempItems = new ArrayList<Item>(job.getITEMS());
 		Robot tempR = robot;
 		tempItems = orderItems(tempItems, tempR);
-		tempItems = addDropPoints(tempItems);
+		//tempItems = addDropPoints(tempItems);
 		int distance = 0;
-		for (int i = 1; i <= tempItems.size(); i++) {
+		if (tempItems.size() > 1) 
+		for (int i = 1; i <= tempItems.size() - 1; i++) {
 			distance += routeMaker.generateRoute(tempItems.get(i-1).getPOSITION(), tempItems.get(i).getPOSITION(), Pose.POS_X, new Route[] {}, 0).getLength();
 		}
+		distance += routeMaker.generateRoute(robot.getCurrentPosition(), tempItems.get(0).getPOSITION(), robot.getCurrentPose(), new Route[] {}, 0).getLength();
 		return distance;
 	}
 	

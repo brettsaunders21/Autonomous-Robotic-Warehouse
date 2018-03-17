@@ -1,7 +1,5 @@
 package actions;
 
-import lejos.nxt.Button;
-
 //import job.Job;
 //import interfaces.Robot;
 import lejos.nxt.Button;
@@ -99,7 +97,7 @@ public class RobotInterface {
 		}
 		
 	}
-**/
+
 	
 	/**
 	 * A method to drop and pick items and cancel orders.

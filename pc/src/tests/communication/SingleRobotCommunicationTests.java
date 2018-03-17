@@ -15,14 +15,14 @@ import communication.PCNetworkHandler;
 import interfaces.Action;
 
 /*
- * CommunicationTests class
+ * SingleRobotCommunicationTests class
  * 
- * JUnit tests for bluetooth communication. It is required to run
- * CommunicationTestHelper on the robot for there to work.
+ * JUnit tests for bluetooth communication on a single robot. It is required to run
+ * CommunicationTestHelper on the robot for these to work.
  */
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class CommunicationTests {
+public class SingleRobotCommunicationTests {
 
 	static NXTInfo nxtInfo;
 	static PCNetworkHandler networkHandler;
@@ -30,14 +30,14 @@ public class CommunicationTests {
 	// Set up the bluetooth connection before any tests
 	@BeforeClass
 	public static void setup() {
-		// Drawer A3 - Spike - 0016530AA681
-		nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "Spike", "0016530AA681");
+		// Robot: Spike - 0016530AA681
+		nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH, "Marco", "00165317976F");
 
 		networkHandler = new PCNetworkHandler(nxtInfo);
 	}
 
 	// Test if a connection can be established
-	@Test(timeout = 11000)
+	@Test(timeout = 15000)
 	public void singleRobotConnectionTest() {
 		networkHandler.run();
 		assertTrue(networkHandler.isConnected());
@@ -47,7 +47,7 @@ public class CommunicationTests {
 	@Test(timeout = 3000)
 	public void singleRobotSendReceiveActionTest() throws IOException {
 		Action testObject = Action.WAIT;
-		networkHandler.sendObject(testObject);;
+		networkHandler.sendObject(testObject);
 
 		Action receivedObject = networkHandler.receiveAction();
 
@@ -97,6 +97,4 @@ public class CommunicationTests {
 
 		assertEquals(testObject, receivedObject);
 	}
-
-	// Include more tests + multiple robot tests?
 }

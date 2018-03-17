@@ -23,10 +23,10 @@ public class Movement {
 		PILOT.setRotateSpeed(85);
 		rI = _rI;
 	}
-
+	
 	public void nextAction(Action command, int pickAmount) {
-		switch (command) {
-		case WAIT:
+		switch(command) {
+		case WAIT: 
 			Delay.msDelay(100);
 			return;
 		case FORWARD:
@@ -41,7 +41,6 @@ public class Movement {
 			PILOT.rotate(10);
 			PILOT.forward();
 			break;
-
 		case RIGHT: 
 			PILOT.travel(0.05);
 			PILOT.rotate(50);
@@ -51,7 +50,6 @@ public class Movement {
 			PILOT.rotate(-10);
 			PILOT.forward();
 			break;
-
 		case BACKWARD: 
 			PILOT.stop();
 			PILOT.travel(-0.1);
@@ -62,7 +60,6 @@ public class Movement {
 			PILOT.rotate(20);
 			PILOT.forward();
 			break;
-
 		case PICKUP:
 			PILOT.stop();
 			rI.waitForLoadingMessage(pickAmount);
@@ -71,16 +68,13 @@ public class Movement {
 			PILOT.stop();
 			rI.waitForUnloadingMessage(pickAmount);
 			break;
-		case CANCEL: {
+		case CANCEL:
+			break;
+		case SHUTDOWN:
+			break;
+		default:
 			break;
 		}
-		case SHUTDOWN: {
-			break;
-		}
-		default: 
-			break;
-		}
-
 		
 		if (!(command.equals(Action.PICKUP) || command.equals(Action.DROPOFF))) {
 		while (!(isRightOnLine() && isLeftOnLine())) {
@@ -96,10 +90,9 @@ public class Movement {
 		}
 		}
 		PILOT.stop();
-
 		rI.resetQuantity();
 	}
-
+	
 	public boolean isOnLine(int lightValue) {
 		if (lightValue <= MID_BOUND) {
 			return true;
@@ -107,11 +100,11 @@ public class Movement {
 			return false;
 		}
 	}
-
+	
 	public boolean isRightOnLine() {
 		return isOnLine(RIGHT_SENSOR.getNormalizedLightValue());
 	}
-
+	
 	public boolean isLeftOnLine() {
 		return isOnLine(LEFT_SENSOR.getNormalizedLightValue());
 	}

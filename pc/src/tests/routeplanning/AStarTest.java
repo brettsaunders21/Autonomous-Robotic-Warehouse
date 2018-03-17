@@ -7,9 +7,12 @@ import routeplanning.AStar;
 import routeplanning.Map;
 import routeplanning.Route;
 import static org.junit.Assert.*;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
 import interfaces.Action;
+
 import interfaces.Pose;
 
 /**
@@ -38,7 +41,7 @@ public class AStarTest {
 	}
 
 	//Starts facing left and wants to travel left
-	@Test(timeout=1000)
+	@Test
 	public void orientationAdjustWait() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.POS_X, new Route[] {}, 0);
@@ -46,23 +49,23 @@ public class AStarTest {
 	}
 	
 	//Starts facing up and wants to travel left
-	@Test(timeout=1000)
-	public void orientationAdjustRight() {
+	@Test
+	public void orientationAdjustLeft() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_Y, new Route[] {}, 0);
 		assertEquals(Action.LEFT,r.getDirections().peek());
 	}
 	
 	//Starts facing down and wants to travel left
-	@Test(timeout=1000)
-	public void orientationAdjustLeft() {
+	@Test
+	public void orientationAdjustRight() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.POS_Y, new Route[] {}, 0);
 		assertEquals(Action.RIGHT,r.getDirections().peek());
 	}
 	
 	//Starts facing right and wants to travel left
-	@Test(timeout=1000)
+	@Test
 	public void orientationAdjust180() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
@@ -70,7 +73,7 @@ public class AStarTest {
 	}
 
 	//Starts facing negativeX
-	@Test(timeout=1000)
+	@Test
 	public void startPoseNegX() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
@@ -78,7 +81,7 @@ public class AStarTest {
 	}
 
 	//Starts facing positiveX
-	@Test(timeout=1000)
+	@Test
 	public void startPosePosX() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.POS_X, new Route[] {}, 0);
@@ -86,7 +89,7 @@ public class AStarTest {
 	}
 	
 	//Starts facing negativeY
-	@Test(timeout=1000)
+	@Test
 	public void startPoseNegY() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_Y, new Route[] {}, 0);
@@ -94,7 +97,7 @@ public class AStarTest {
 	}
 
 	//Starts facing positiveY
-	@Test(timeout=1000)
+	@Test
 	public void startPosePosY() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.POS_Y, new Route[] {}, 0);
@@ -102,7 +105,7 @@ public class AStarTest {
 	}
 
 	//travels between two points that share a common axis
-	@Test(timeout=1000)
+	@Test
 	public void routeLengthStraight() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
@@ -110,7 +113,7 @@ public class AStarTest {
 	}
 
 	//travels between two points that share a common axis
-	@Test(timeout=1000)
+	@Test
 	public void directionsStraight() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
@@ -119,16 +122,15 @@ public class AStarTest {
 	}
 	
 	//travels between two points that share a common axis
-	@Test(timeout=1000)
-	public void coordinatesStraight() {	
-		logger.trace("");
+	@Test
+	public void coordinatesStraight() {		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(5,0), Pose.NEG_X, new Route[] {}, 0);
 		Point[] ps = new Point[] {new Point(1,0), new Point(2,0), new Point(3,0), new Point(4,0), new Point(5,0)};
 		assertArrayEquals(ps,r.getCoordinates().toArray());
 	}
 
 	//travels between two points that are do not share a common axis
-	@Test(timeout=1000)
+	@Test
 	public void routeLengthNoObstructionTurn() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(3,2), Pose.NEG_X, new Route[] {}, 0);
@@ -136,7 +138,7 @@ public class AStarTest {
 	}
 
 	//travels between two points that are do not share a common axis
-	@Test(timeout=1000)
+	@Test
 	public void directionsNoObstructionTurn() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(3,2), Pose.NEG_X, new Route[] {}, 0);
@@ -145,7 +147,7 @@ public class AStarTest {
 	}
 	
 	//travels between two points that are do not share a common axis
-	@Test(timeout=1000)
+	@Test
 	public void coordinatesNoObstructionTurn() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(3,2), Pose.NEG_X, new Route[] {}, 0);
@@ -154,7 +156,7 @@ public class AStarTest {
 	}
 
 	//reverse route of routeLengthNoObstructionTurn
-	@Test(timeout=1000)
+	@Test
 	public void routeLengthNoObstructionTurnReverse() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3,2), new Point(0,0), Pose.NEG_X, new Route[] {}, 0);
@@ -162,7 +164,7 @@ public class AStarTest {
 	}
 
 	//reverse route of directionsNoObstructionTurn
-	@Test(timeout=1000)
+	@Test
 	public void directionsNoObstructionTurnReverse() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3,2), new Point(0,0), Pose.NEG_X, new Route[] {}, 0);
@@ -171,7 +173,7 @@ public class AStarTest {
 	}
 	
 	//reverse route of coordinatesNoObstructionTurn
-	@Test(timeout=1000)
+	@Test
 	public void coordinatesNoObstructionTurnReverse() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3,2), new Point(0,0), Pose.NEG_X, new Route[] {}, 0);
@@ -180,7 +182,7 @@ public class AStarTest {
 	}                      
 
 	//Route finding around an obstacle
-	@Test(timeout=1000)
+	@Test
 	public void coordinatesObstacleAvoid() {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0,0), new Point(2,6), Pose.NEG_X, new Route[] {}, 0);
