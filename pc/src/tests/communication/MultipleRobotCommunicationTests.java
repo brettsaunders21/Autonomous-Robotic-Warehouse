@@ -35,7 +35,7 @@ public class MultipleRobotCommunicationTests {
 	@BeforeClass
 	public static void setup() throws InterruptedException {
 		nxtInfo1 = new NXTInfo(NXTCommFactory.BLUETOOTH, "Spike", "0016530AA681");
-		nxtInfo2 = new NXTInfo(NXTCommFactory.BLUETOOTH, "Marco", "00165315678E");
+		nxtInfo2 = new NXTInfo(NXTCommFactory.BLUETOOTH, "Marco", "00165317976F");
 		nxtInfo3 = new NXTInfo(NXTCommFactory.BLUETOOTH, "Jeremy", "00165308E37C");
 
 		networkHandler1 = new PCNetworkHandler(nxtInfo1);
