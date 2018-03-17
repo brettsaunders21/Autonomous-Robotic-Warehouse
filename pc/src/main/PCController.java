@@ -21,7 +21,7 @@ public class PCController {
 	private static final Logger routeExeLogger = Logger.getLogger(RouteExecution.class);
 	private static final Logger jobAssLogger = Logger.getLogger(JobAssignment.class);
 	private static final Robot[] ROBOTS = {
-			new Robot("Spike", "0016530AA681", new Point(5, 6)),
+			new Robot("Spike", "0016530AA681", new Point(0, 0)),
 			new Robot("Marco", "00165315678E", new Point(0, 0))
 	};
 	private static ArrayList<Job> orderedJobs;
@@ -34,8 +34,7 @@ public class PCController {
 		aStarLogger.setLevel(Level.ALL);
 		routeExeLogger.setLevel(Level.ALL);
 		jobAssLogger.setLevel(Level.ALL);
-		JobInput jI = new JobInput();
-		JobSelection jS = new JobSelection(jI.getBetaValues());
+		JobInput jI = new JobInput();JobSelection jS = new JobSelection(jI.getBetaValues());
 		Counter counter = new Counter(ROBOTS);
 		orderedJobs = jS.prioritize();
 		JobAssignment jA = new JobAssignment(orderedJobs, counter, jI.getDrops(), jS);
