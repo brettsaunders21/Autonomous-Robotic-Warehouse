@@ -283,7 +283,6 @@ package routeplanning;
 	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo, Route[] routes, int myStartTime, Point myStartCoord) {
  		ArrayList<Point> tempCoords = tempInfo.getCoords();
  		ArrayList<Integer> tempDirs = tempInfo.getDirs();
-		ArrayList<Point[]> otherRobotCoords = new ArrayList<Point[]>();
  		int i = 0;
  		while (i < tempCoords.size()) {
 			logger.debug("length "+routes.length);
