@@ -32,7 +32,8 @@ public class JobAssignment {
 
 
 	public void assignJobs(Robot robot) {
-		Job job = jS.getJob(jobs, robot);
+		//Job job = jS.getJob(jobs, robot);
+		Job job = jobs.get(0);
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
 		job.setItems(orderedItems);

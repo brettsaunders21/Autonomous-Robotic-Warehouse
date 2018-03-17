@@ -54,7 +54,4 @@ public class RobotThread extends Thread{
 		}
 	}
 	
-	public void sendJob() {
-		
-	}
 }
