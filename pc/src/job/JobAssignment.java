@@ -43,9 +43,7 @@ public class JobAssignment {
 		}else{	
 			return;	
 		}
-		System.out.println("Before size " + jobs.size());
 		jobs.removeIf(i -> i.getID() == job.getID());
-		System.out.println("After size " + jobs.size());
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
 		job.setItems(orderedItems);
