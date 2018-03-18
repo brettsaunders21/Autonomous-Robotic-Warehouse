@@ -84,7 +84,7 @@ public class AStar {
 		}
 
 		// finds the shortest route between the two points
-		TempRouteInfo ti = routeFindingAlgo(currentPosition, targetPosition, tempMap);
+		TempRouteInfo ti = routeFindingAlgo(currentPosition, targetPosition, tempMap, routes, myStartTime, currentPosition);
 
 		// moves final coordinates to queue and finalises the length of the route
 		coordinates.addAll(ti.getCoords());
@@ -110,14 +110,14 @@ public class AStar {
 	 * @return the information about the route that is used to produce a route
 	 * object
 	 */
-	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap) {
+	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap, Route[] routes, int myStartTime, Point myStartCoord) {
 		// finds the shortest route through the map
 		ConcurrentMap<Point, RouteCoordInfo> visitedPoints = findShortestRoute(tempMap, startPosition, targetPosition);
 
 		// produces the route information in the correct order
 		TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints);
 
-		return addRobotAvoidInstructions(tempInfo);
+		return addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord);
 	}
 
 	/*
@@ -281,26 +281,33 @@ public class AStar {
 	 * adds additional coordinates and directions to allow the robot to execute a
 	 * wait instruction to avoid a collision
 	 */
-	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo) {
+	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo, Route[] routes, int myStartTime, Point myStartCoord) {
 		ArrayList<Point> tempCoords = tempInfo.getCoords();
 		ArrayList<Integer> tempDirs = tempInfo.getDirs();
 		int i = 0;
 		while (i < tempCoords.size()) {
-			if (otherRobotAtCoord(tempCoords.get(i), i)) {
-				tempCoords.add(i, tempCoords.get(i));
-				tempDirs.add(i, STILL);
+			for (Route route : routes) {
+				int startTime = route.getStartTime();
+				int endTime = route.getStartTime()+route.getLength();
+				int currentTime = myStartTime+i;
+				if (currentTime>=startTime && currentTime<endTime) {
+					int relativeTime = currentTime-startTime;
+					Point theirCoord = route.getCoordinatesArray()[relativeTime];
+					Point myCoord = tempCoords.get(i);
+					if (theirCoord.equals(myCoord)) {
+						if (i>0) {
+							tempCoords.add(i, tempCoords.get(i-1));
+						}
+						else {
+							tempCoords.add(i, myStartCoord);
+						}
+						tempDirs.add(i, STILL);
+					}
+				}
 			}
 			i++;
 		}
 		return new TempRouteInfo(tempCoords, tempDirs);
-	}
-
-	/*
-	 * if another robot is at the coordinate specified at the time specified then
-	 * true is returned
-	 */
-	private boolean otherRobotAtCoord(Point coordinate, int timeInterval) {
-		return false;
 	}
 
 	/* returns a queue of directions that the robot needs to take */
