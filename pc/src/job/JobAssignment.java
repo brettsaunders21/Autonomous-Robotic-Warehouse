@@ -2,6 +2,8 @@ package job;
 
 import routeplanning.Map;
 import interfaces.Action;
+import interfaces.Pose;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -75,6 +77,7 @@ public class JobAssignment {
 		Point currentRobotPosition = r.getCurrentPosition();
 		ArrayList<Route> routes = new ArrayList<Route>();
 		Route itemRoute;
+		Pose initialPose = r.getCurrentPose();
 		for (Item item : items) {
 			if(item.getID().equals("droppoint")){
 				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
@@ -95,7 +98,7 @@ public class JobAssignment {
 		Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
 		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , r.getCurrentPose(), new Route[] {},timeCount);
 		routes.add(dropoffRoute);
-		r.setCurrentPose(dropoffRoute.getFinalPose());
+		r.setCurrentPose(initialPose);
 		logger.debug(r.getCurrentPose());
 		logger.debug(routes);
 		return routes;
