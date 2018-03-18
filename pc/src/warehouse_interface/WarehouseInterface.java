@@ -11,20 +11,18 @@ import lejos.geom.Point;
 public class WarehouseInterface extends JFrame implements Runnable{
 
 	private Image bg = new ImageIcon("src/warehouse_interface/Map.jpg").getImage();	
-	private Image robot1 = new ImageIcon("src/warehouse_interface/nxtSPIKE.png").getImage();
-	private Image robot2 = new ImageIcon("src/warehouse_interface/nxtMarco.png").getImage();
-	private Image robot3 = new ImageIcon("src/warehouse_interface/nxtJEREMY.png").getImage();
-
-
-	private Image[] arrayOfImages = {robot1, robot2, robot3};
+	private Image robotMarco = new ImageIcon("src/warehouse_interface/nxtMarco.png").getImage();
+	private Image robotSpike = new ImageIcon("src/warehouse_interface/nxtSPIKE.png").getImage();
+	private Image robotJeremy = new ImageIcon("src/warehouse_interface/nxtJEREMY.png").getImage();
+	private Image extraRobot = new ImageIcon("src/warehouse_interface/nxtExtra.png").getImage();
+	private Image[] arrayOfImages = {robotMarco, robotSpike, robotJeremy, extraRobot};
 	private Thread thread;
 	private int zeroOnRobotXAxis = 60;
 	private int zeroOnRobotYAxis = 700;
 	private int moveByXAxis = 90;
 	private int moveByYAxis = -93;
 	private Robot[] robots;
-	
-	
+		
 	//Constructor that takes a list of robots as a parameter
 	public WarehouseInterface(Robot[] robots){
 		setFrame();		
@@ -45,10 +43,18 @@ public class WarehouseInterface extends JFrame implements Runnable{
 	public void paint(Graphics g){
 		g.drawImage(bg, 0, 0, null);		
 		for(int i = 0; i < robots.length; i++){
-			if(i<arrayOfImages.length)
-				g.drawImage(arrayOfImages[i], zeroOnRobotXAxis+Math.round(robots[i].getCurrentPosition().x)*moveByXAxis, zeroOnRobotYAxis+Math.round(robots[i].getCurrentPosition().y)*moveByYAxis, null);
+			//If robot is called "Marco", give him a special image for Marco
+			if(robots[i].getRobotName().toLowerCase().equals("marco"))
+				g.drawImage(arrayOfImages[0], zeroOnRobotXAxis+Math.round(robots[i].getCurrentPosition().x)*moveByXAxis, zeroOnRobotYAxis+Math.round(robots[i].getCurrentPosition().y)*moveByYAxis, null);
+			//If robot is called "Spike", give him a special image for Spike
+			else if(robots[i].getRobotName().toLowerCase().equals("spike"))
+				g.drawImage(arrayOfImages[1], zeroOnRobotXAxis+Math.round(robots[i].getCurrentPosition().x)*moveByXAxis, zeroOnRobotYAxis+Math.round(robots[i].getCurrentPosition().y)*moveByYAxis, null);
+			//If robot is called "Jeremy", give him a special image for Jeremy
+			else if(robots[i].getRobotName().toLowerCase().equals("jeremy"))
+				g.drawImage(arrayOfImages[2], zeroOnRobotXAxis+Math.round(robots[i].getCurrentPosition().x)*moveByXAxis, zeroOnRobotYAxis+Math.round(robots[i].getCurrentPosition().y)*moveByYAxis, null);
+			//If else, give a default picture for robot without a name below picture
 			else
-				g.drawImage(arrayOfImages[0], zeroOnRobotXAxis, zeroOnRobotYAxis, null);			
+				g.drawImage(arrayOfImages[3], zeroOnRobotXAxis+Math.round(robots[i].getCurrentPosition().x)*moveByXAxis, zeroOnRobotYAxis+Math.round(robots[i].getCurrentPosition().y)*moveByYAxis, null);			
 		}
 		JLabel lblRobot = new JLabel();
 			this.add(lblRobot);		
@@ -65,7 +71,7 @@ public class WarehouseInterface extends JFrame implements Runnable{
 			revalidate();
 			repaint();
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(300);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
