@@ -41,9 +41,9 @@ public class Counter {
 	}
 	
 	public void iMoved(){
-		robotsMoved.getAndIncrement();
+		robotsMoved.incrementAndGet();
 		if (robotsMoved.get() == readyToMove.size()) {
-			time.getAndIncrement();
+			time.incrementAndGet();
 			for (int i = 0; i<readyToMove.size(); i++) {
 				readyToMove.set(i, false);
 			}
