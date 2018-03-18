@@ -17,6 +17,8 @@ public class Counter {
 	private List<Boolean> readyToMove;
 	
 	public Counter(Robot[] ROBOTS) {
+		time = new AtomicInteger(0);
+		robotsMoved = new AtomicInteger(0);
 		readyToMove = Collections.synchronizedList(new ArrayList<Boolean>());
 		int i=0;
 		for (Robot robot : ROBOTS) {
@@ -47,6 +49,7 @@ public class Counter {
 			for (int i = 0; i<readyToMove.size(); i++) {
 				readyToMove.set(i, false);
 			}
+			robotsMoved.set(0);
 		}
 	}
 	

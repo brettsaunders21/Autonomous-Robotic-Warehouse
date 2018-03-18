@@ -42,13 +42,14 @@ public class RouteExecution {
 		try {
 			while (!currentDirections.isEmpty()) { 
 				currentCommand = currentDirections.poll();
-				network.sendObject(currentCommand);
 				counter.readyToMove(robot.getRobotName());
 				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF))) {
 					while (!counter.canMove()) {
 						Thread.sleep(100);
 					}
 				}
+				network.sendObject(currentCommand);
+				counter.iMoved();
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				rELogger.debug(whereImGoing);
 				if (currentCommand == interfaces.Action.PICKUP) {
@@ -78,7 +79,6 @@ public class RouteExecution {
 				//robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
 				robot.setCurrentPosition(whereImGoing);
-				counter.iMoved();
 			}
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
