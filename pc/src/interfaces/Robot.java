@@ -8,7 +8,7 @@ import lejos.pc.comm.NXTInfo;
 public class Robot {
 	public static final int MAX_WEIGHT = 50;	//max weight any robot can carry
 	private Point currentCoords;
-	private int weight;
+	private float weight;
 	private Job activeJob;
 	private boolean routeSet;
 	private String robotName;
@@ -89,7 +89,7 @@ public class Robot {
 	/**
 	 * @return the weight
 	 */
-	public int getWeight() {
+	public float getWeight() {
 		return weight;
 	}
 
@@ -98,10 +98,11 @@ public class Robot {
 	}
 
 	/**
-	 * @param weight the weight to set
+	 * @param f the weight to set
 	 */
-	public void setWeight(int weight) {
-		this.weight = weight;
+	public void setWeight(float f) {
+		this.weight = f;
+		if (this.weight > 50) System.out.println("ERROR with weight " + robotName);
 	}
 
 	public boolean isJobFinished() {

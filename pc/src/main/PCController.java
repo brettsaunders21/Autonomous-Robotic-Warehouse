@@ -26,6 +26,7 @@ public class PCController {
 			new Robot("Marco", "001653115A7E", new Point(0, 7))
 	};
 	private static ArrayList<Job> orderedJobs;
+	private static ArrayList<Job> completedJobs;
 	private static int numOfRobots = ROBOTS.length;
 	private static RobotThread[] r = new RobotThread[numOfRobots];
 
@@ -44,7 +45,7 @@ public class PCController {
 		new WarehouseInterface(ROBOTS);
 		new JobsInterface(ROBOTS);
 		for (int i = 0; i<numOfRobots; i++) {
-			r[i] = new RobotThread(ROBOTS[i], jA, counter, heldPoints);
+			r[i] = new RobotThread(ROBOTS[i], jA, counter, heldPoints, completedJobs);
 			r[i].setName(ROBOTS[i].getRobotName());
 			r[i].start();
 			controllerLogger.debug("Started robot thread: " + ROBOTS[i].getRobotName());

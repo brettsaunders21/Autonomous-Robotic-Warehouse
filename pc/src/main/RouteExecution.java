@@ -87,12 +87,12 @@ public class RouteExecution {
 					heldPoints.freeUp(heldCoord);
 				}
 				if (currentCommand == Action.PICKUP) {
-					robot.setWeight(robot.getWeight() + 0);
+					robot.setWeight(robot.getWeight() + ITEMS.get(0).getTOTAL_WEIGHT());
 					itemsToDrop.add(ITEMS.get(0));
 					ITEMS.remove(0);
 					rELogger.debug(robot.getRobotName() + " picked up items");
 				} else if (currentCommand.equals(Action.DROPOFF)) {
-					robot.setWeight(robot.getWeight() - 0);
+					robot.setWeight(0);
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
