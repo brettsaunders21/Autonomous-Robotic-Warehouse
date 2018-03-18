@@ -44,7 +44,7 @@ public class JobsInterface extends JFrame implements Runnable {
 	String itemsCsvFile = "src/job/csv/items.csv";
 
 	public JobsInterface(Robot[] robots) {
-		mainLayout = new GridLayout((7 + robots.length * 2), 0);
+		mainLayout = new GridLayout((8 + robots.length * 2), 0);
 		setFrame();
 		setPanes();
 		this.robots = robots;
@@ -53,6 +53,7 @@ public class JobsInterface extends JFrame implements Runnable {
 		}
 		itemsInformation();
 		completedJobs();
+		totalReward();
 		cancelJobs();
 		thread = new Thread(this);
 		thread.start();
@@ -124,6 +125,21 @@ public class JobsInterface extends JFrame implements Runnable {
 		getContentPane().add(scrollPane);
 		contentPane.add(scrollPane);
 
+	}
+	
+	//Total reward from all robots
+	public void totalReward(){
+		Float allRewardSum = 0.0f;
+		for(int i = 0; i < robots.length; i++){
+			try{
+				allRewardSum += robots[i].currentReward();
+			}
+			catch (NullPointerException e){
+				
+			}
+		}
+		JLabel totalReward = new JLabel("Total reward: " + Float.toString(allRewardSum));
+		add(totalReward);
 	}
 
 	//Button to cancel particular job
