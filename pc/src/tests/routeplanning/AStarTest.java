@@ -251,14 +251,14 @@ public class AStarTest {
 		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(1, 0), Pose.POS_X, new Route[] {}, 0);
 		Route[] rs = new Route[1];
 		rs[0] = r1;
-		Route r2 = aStar.generateRoute(new Point(1, 0), new Point(0, 1), Pose.POS_X, rs, 0);
+		Route r2 = aStar.generateRoute(new Point(1, 0), new Point(0, 0), Pose.POS_X, rs, 0);
 
 		Point[] ps1 = new Point[] { new Point(1, 0) };
 		assertArrayEquals(ps1, r1.getCoordinates().toArray());
 
 		Point[] ps2 = new Point[] { new Point(2, 0), new Point(2, 1), new Point(2, 2), new Point(2, 3), new Point(2, 4),
 				new Point(2, 5), new Point(2, 6), new Point(1, 6), new Point(0, 6), new Point(0, 5), new Point(0, 4),
-				new Point(0, 3), new Point(0, 2), new Point(0, 1) };
+				new Point(0, 3), new Point(0, 2), new Point(0, 1), new Point(0,0)};
 
 		assertArrayEquals(ps2, r2.getCoordinates().toArray());
 		aStarLogger.setLevel(Level.OFF);

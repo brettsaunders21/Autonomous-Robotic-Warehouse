@@ -30,6 +30,7 @@ public class AStar {
 	private final static int POS_X = 2;
 	private final static int POS_Y = 3;
 	private final static int STILL = 4;
+	private final static int HOLD = 5;
 
 	private final Map map;
 
@@ -338,7 +339,14 @@ public class AStar {
 						} else {
 							tempCoords.add(i, myStartCoord);
 						}
-						tempDirs.add(i, STILL);
+						Action[] actions = route.getDirectionArray();
+						Action action = actions[relativeTime];
+						if (action.equals(Action.PICKUP)||action.equals(Action.DROPOFF)||action.equals(Action.HOLD)) {
+							tempDirs.add(i, HOLD);
+						}
+						else {
+							tempDirs.add(i, STILL);
+						}
 					}
 					if (i > 0) {
 						headOnCollisionCheck(tempCoords.get(i - 1), myCoord, relativeTime, i, route);
@@ -363,7 +371,7 @@ public class AStar {
 			theirPointNow = route.getStartPoint();
 		}
 		if (theirPointNow.equals(nextPoint) && theirNextPoint.equals(thisPoint)) {
-			throw new BacktrackNeededException(nextPoint, myTime);
+			//throw new BacktrackNeededException(nextPoint, myTime);
 		}
 	}
 
@@ -377,7 +385,11 @@ public class AStar {
 		for (int i = 0; i < tempDirs.size(); i++) {
 			if (tempDirs.get(i).equals(STILL)) {
 				directions.add(Action.WAIT);
-			} else {
+			}
+			else if (tempDirs.get(i).equals(HOLD)) {
+				directions.add(Action.HOLD);
+			}
+			else {
 				logger.debug(startPose);
 				Action action = generateDirectionInstruction(startPose, tempDirs.get(i));
 				directions.add(action);
