@@ -43,6 +43,60 @@ public class AStar {
 		this.map = map;
 	}
 
+	public Route adjustForCollisions(Route r, Route[] rs, int startTime, int numOfInstructionsSent) {
+		if (numOfInstructionsSent==r.getLength()-1) {
+			return r;
+		}
+		Action[] actions = r.getDirectionArray();
+		int timePoint = r.getLength()-1;
+		for (int i = numOfInstructionsSent; i< actions.length; i++) {
+			if (actions[i].equals(Action.HOLD)||actions[i].equals(Action.PICKUP)||actions[i].equals(Action.DROPOFF)) {
+				timePoint = i;
+				break;
+			}
+		}
+		Point[] coordinates = r.getCoordinatesArray();
+		boolean collision = false;
+		for (int i = numOfInstructionsSent; i<timePoint; i++) {
+			for (Route route : rs) {
+				Point[] otherCoords = route.getCoordinatesArray();
+				int relativeTime = ((startTime-route.getStartTime())+i)-numOfInstructionsSent;
+				if (relativeTime>=0 && relativeTime<route.getLength()) {
+					Point myCoord = coordinates[i];
+					Point theirCoord = otherCoords[relativeTime];
+					if (myCoord.equals(theirCoord)) {
+						collision = true;
+						break;
+					}
+				}
+			}
+			if (collision) {
+				break;
+			}
+		}
+		if (collision) {
+			Point startCoord = coordinates[timePoint];
+			Point endCoord = coordinates[timePoint];
+			Pose pose = r.getPoseAt(numOfInstructionsSent);
+			Route nextSection = generateRoute(startCoord, endCoord, pose, rs, startTime);
+			boolean nextNonMove = false;
+			while (!nextNonMove) {
+				BlockingQueue<Point> coordQ = r.getCoordinates();
+				BlockingQueue<Action> directionQ = r.getDirections();
+				if (coordQ.peek().equals(Action.HOLD)||coordQ.peek().equals(Action.PICKUP)||coordQ.peek().equals(Action.DROPOFF)) {
+					nextNonMove = true;
+				}
+				else {
+					coordQ.poll();
+					directionQ.poll();
+				}
+			}
+			r = new Route(r.getCoordinates(), r.getDirections(), r.getPoseAt(timePoint), startTime, endCoord);
+			r = new Route(nextSection, r);
+		}
+		return r;
+	}
+	
 	/**
 	 * @param currentPosition
 	 *            the starting coordinate of the route
