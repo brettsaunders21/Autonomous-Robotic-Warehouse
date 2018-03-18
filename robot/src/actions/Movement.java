@@ -26,6 +26,9 @@ public class Movement {
 	
 	public void nextAction(Action command, int pickAmount) {
 		switch(command) {
+		case HOLD:
+			Delay.msDelay(100);
+			return;
 		case WAIT: 
 			Delay.msDelay(100);
 			return;
@@ -76,7 +79,7 @@ public class Movement {
 			break;
 		}
 		
-		if (!(command.equals(Action.PICKUP) || command.equals(Action.DROPOFF))) {
+		if (!(command.equals(Action.PICKUP) || command.equals(Action.DROPOFF)|| command.equals(Action.WAIT)|| command.equals(Action.HOLD))) {
 		while (!(isRightOnLine() && isLeftOnLine())) {
 			PILOT.forward();
 			while (isLeftOnLine() && !isRightOnLine()) {
