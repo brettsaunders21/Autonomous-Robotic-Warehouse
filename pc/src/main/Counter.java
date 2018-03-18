@@ -19,11 +19,11 @@ public class Counter {
 		}
 	}
 	
-	public void readyToMove(String robotName) {
+	public synchronized void readyToMove(String robotName) {
 		readyToMove[nameIndex.get(robotName)] = true;
 	}
 	
-	public boolean canMove() {
+	public synchronized boolean canMove() {
 		boolean flag = true;
 		for (boolean move : readyToMove) {
 			if (!move) {
