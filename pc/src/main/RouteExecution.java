@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import communication.PCNetworkHandler;
 import interfaces.Action;
+import interfaces.Pose;
 import interfaces.Robot;
 import job.Item;
 import job.Job;
@@ -74,6 +75,7 @@ public class RouteExecution {
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
 				robot.setCurrentPosition(whereImGoing);
+				robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 			}
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
@@ -81,5 +83,24 @@ public class RouteExecution {
 		robot.jobFinished();
 		counter.readyToMove(robot.getRobotName());
 		rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward " + currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
+	}
+	
+	public static Pose getDirection(Point firstPoint, Point secondPoint) {
+		Pose direction;
+		Point difference = secondPoint.subtract(firstPoint);
+		if (difference.x != 0d) {
+			if (difference.x == 1d) {
+				direction = Pose.POS_X;
+			} else {
+				direction = Pose.NEG_X;
+			}
+		} else {
+			if (difference.y == 1d) {
+				direction = Pose.POS_Y;
+			} else {
+				direction = Pose.NEG_Y;
+			}
+		}
+		return direction;
 	}
 }
