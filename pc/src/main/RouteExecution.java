@@ -76,7 +76,8 @@ public class RouteExecution {
 					robot.cancelJob();
 				}
 				if (currentCommand.equals(Action.HOLD)) {
-					Point heldCoord = arrayOfCoords[instructionCounter];
+					//hold instruction cannot be the last instruction
+					Point heldCoord = arrayOfCoords[instructionCounter+1];
 					while (heldPoints.isStillHeld(heldCoord)) {
 						Thread.sleep(100);
 					}
