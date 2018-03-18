@@ -84,7 +84,9 @@ public class AStar {
 		}
 
 		// finds the shortest route between the two points
-		TempRouteInfo ti = routeFindingAlgo(currentPosition, targetPosition, tempMap, routes, myStartTime, currentPosition);
+		BacktrackNeededException[] blockages = new BacktrackNeededException[0];
+		TempRouteInfo ti = routeFindingAlgo(currentPosition, targetPosition, tempMap, routes, myStartTime,
+				currentPosition, blockages);
 
 		// moves final coordinates to queue and finalises the length of the route
 		coordinates.addAll(ti.getCoords());
@@ -110,14 +112,35 @@ public class AStar {
 	 * @return the information about the route that is used to produce a route
 	 * object
 	 */
-	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap, Route[] routes, int myStartTime, Point myStartCoord) {
-		// finds the shortest route through the map
-		ConcurrentMap<Point, RouteCoordInfo> visitedPoints = findShortestRoute(tempMap, startPosition, targetPosition);
+	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap, Route[] routes,
+			int myStartTime, Point myStartCoord, BacktrackNeededException[] blockages) {
+		boolean collision = true;
+		TempRouteInfo finalInfo = null;
+		while (collision) {
+			collision = false;
+			// finds the shortest route through the map
+			ConcurrentMap<Point, RouteCoordInfo> visitedPoints = findShortestRoute(tempMap, startPosition,
+					targetPosition, blockages);
 
-		// produces the route information in the correct order
-		TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints);
+			// produces the route information in the correct order
+			TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints);
 
-		return addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord);
+			try {
+				finalInfo = addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord);
+				collision = false;
+			} catch (BacktrackNeededException e) {
+				collision = true;
+				ArrayList<BacktrackNeededException> blockedInfo = new ArrayList<BacktrackNeededException>();
+				for (BacktrackNeededException b : blockages) {
+					blockedInfo.add(b);
+				}
+				blockedInfo.add(e);
+				blockages = blockedInfo.toArray(blockages);
+				finalInfo = routeFindingAlgo(startPosition, targetPosition, tempMap, routes, myStartTime, myStartCoord,
+						blockages);
+			}
+		}
+		return finalInfo;
 	}
 
 	/*
@@ -125,7 +148,7 @@ public class AStar {
 	 * used to obtain the shortest route
 	 */
 	private ConcurrentMap<Point, RouteCoordInfo> findShortestRoute(Map tempMap, Point startPosition,
-			Point targetPosition) {
+			Point targetPosition, BacktrackNeededException[] blockages) {
 
 		// holds information about each point that is currently accessible to route find
 		// on
@@ -146,11 +169,12 @@ public class AStar {
 		Point testPoint = startPosition.clone();
 		// loop exit condition
 		boolean atDestination = startPosition.equals(targetPosition);
+		int routeTime = 0;
 		// loops until the test coordinate is at the target coordinates
 		while (!atDestination) {
 			// returns a list of all points directly adjacent to the current point that are
 			// valid points to move to
-			Point[] points = getValidSurroundingPoints(tempMap, testPoint);
+			Point[] points = getValidSurroundingPoints(tempMap, testPoint, blockages, routeTime);
 			for (int i = 0; i < points.length; i++) {
 				Point p = points[i];
 				// adds the information about each point to corresponding arrays if it is not
@@ -169,6 +193,8 @@ public class AStar {
 			// checks if the target poisiton has been reached
 			atDestination = testPoint.equals(targetPosition);
 
+			routeTime++;
+
 			logger.info(testPoint);
 			logger.info(visitedPoints.get(testPoint).getTotalPointDist());
 		}
@@ -179,7 +205,8 @@ public class AStar {
 	 * returns a list of all points directly adjacent to the current point that are
 	 * valid points to move to
 	 */
-	private Point[] getValidSurroundingPoints(Map tempMap, Point testPoint) {
+	private Point[] getValidSurroundingPoints(Map tempMap, Point testPoint, BacktrackNeededException[] blockages,
+			int routeTime) {
 		ArrayList<Point> points = new ArrayList<Point>(4);
 		Point[] testDirs = new Point[] { new Point(testPoint.x - 1, testPoint.y), // left
 				new Point(testPoint.x, testPoint.y - 1), // up
@@ -192,7 +219,17 @@ public class AStar {
 			if (tempMap.withinMapBounds(testDirs[allDirs])) {
 				// if test point is passable and makes the route shorter than the
 				if (tempMap.isPassable(testDirs[allDirs])) {
-					points.add(testDirs[allDirs]);
+					boolean blocked = false;
+					for (BacktrackNeededException blockage : blockages) {
+						if (blockage.getBlockedPoint().equals(testDirs[allDirs])
+								&& blockage.getRelTime() == routeTime) {
+							blocked = true;
+							break;
+						}
+					}
+					if (!blocked) {
+						points.add(testDirs[allDirs]);
+					}
 				}
 			}
 		}
@@ -281,33 +318,53 @@ public class AStar {
 	 * adds additional coordinates and directions to allow the robot to execute a
 	 * wait instruction to avoid a collision
 	 */
-	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo, Route[] routes, int myStartTime, Point myStartCoord) {
+	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo, Route[] routes, int myStartTime,
+			Point myStartCoord) throws BacktrackNeededException {
 		ArrayList<Point> tempCoords = tempInfo.getCoords();
 		ArrayList<Integer> tempDirs = tempInfo.getDirs();
 		int i = 0;
 		while (i < tempCoords.size()) {
 			for (Route route : routes) {
 				int startTime = route.getStartTime();
-				int endTime = route.getStartTime()+route.getLength();
-				int currentTime = myStartTime+i;
-				if (currentTime>=startTime && currentTime<endTime) {
-					int relativeTime = currentTime-startTime;
+				int endTime = route.getStartTime() + route.getLength();
+				int currentTime = myStartTime + i;
+				if (currentTime >= startTime && currentTime < endTime) {
+					int relativeTime = currentTime - startTime;
 					Point theirCoord = route.getCoordinatesArray()[relativeTime];
 					Point myCoord = tempCoords.get(i);
 					if (theirCoord.equals(myCoord)) {
-						if (i>0) {
-							tempCoords.add(i, tempCoords.get(i-1));
-						}
-						else {
+						if (i > 0) {
+							tempCoords.add(i, tempCoords.get(i - 1));
+						} else {
 							tempCoords.add(i, myStartCoord);
 						}
 						tempDirs.add(i, STILL);
+					}
+					if (i > 0) {
+						headOnCollisionCheck(tempCoords.get(i - 1), myCoord, relativeTime, i, route);
+					} else {
+						headOnCollisionCheck(myStartCoord, myCoord, relativeTime, i, route);
 					}
 				}
 			}
 			i++;
 		}
 		return new TempRouteInfo(tempCoords, tempDirs);
+	}
+
+	private void headOnCollisionCheck(Point thisPoint, Point nextPoint, int theirTime, int myTime, Route route)
+			throws BacktrackNeededException {
+		Point[] theirPoints = route.getCoordinatesArray();
+		Point theirNextPoint = theirPoints[theirTime];
+		Point theirPointNow;
+		if (theirTime > 0) {
+			theirPointNow = theirPoints[theirTime - 1];
+		} else {
+			theirPointNow = route.getStartPoint();
+		}
+		if (theirPointNow.equals(nextPoint) && theirNextPoint.equals(thisPoint)) {
+			throw new BacktrackNeededException(nextPoint, myTime);
+		}
 	}
 
 	/* returns a queue of directions that the robot needs to take */
