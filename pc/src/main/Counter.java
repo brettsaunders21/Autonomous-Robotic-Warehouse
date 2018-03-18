@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.List;
 
 import interfaces.Robot;
 
 public class Counter {
-	private int time = 0;
-	//private List<Boolean> readyToMove;
+	private AtomicInteger time;
+	private AtomicInteger robotsMoved;
+	
 	private ConcurrentMap<String, Integer> nameIndex = new ConcurrentHashMap<String, Integer>();
 	private List<Boolean> readyToMove;
 	
 	public Counter(Robot[] ROBOTS) {
-		//readyToMove = new boolean[ROBOTS.length];
 		readyToMove = Collections.synchronizedList(new ArrayList<Boolean>());
 		int i=0;
 		for (Robot robot : ROBOTS) {
@@ -27,7 +27,6 @@ public class Counter {
 	}
 	
 	public synchronized void readyToMove(String robotName) {
-		//readyToMove[nameIndex.get(robotName)] = true;
 		readyToMove.set(nameIndex.get(robotName), true);
 	}
 	
@@ -38,17 +37,20 @@ public class Counter {
 				flag=false;
 			}
 		}
-		if (flag) {
-			time++;
-			for (int i = 0; i<readyToMove.size(); i++) {
-				//readyToMove[i] = false;
-				readyToMove.set(i, false);
-			}
-		}
 		return flag;
 	}
 	
+	public void iMoved(){
+		robotsMoved.getAndIncrement();
+		if (robotsMoved.get() == readyToMove.size()) {
+			time.getAndIncrement();
+			for (int i = 0; i<readyToMove.size(); i++) {
+				readyToMove.set(i, false);
+			}
+		}
+	}
+	
 	public int getTime() {
-		return time;
+		return time.get();
 	}
 }

@@ -43,6 +43,7 @@ public class RouteExecution {
 			while (!currentDirections.isEmpty()) { 
 				currentCommand = currentDirections.poll();
 				network.sendObject(currentCommand);
+				counter.readyToMove(robot.getRobotName());
 				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF))) {
 					while (!counter.canMove()) {
 						Thread.sleep(100);
@@ -77,13 +78,13 @@ public class RouteExecution {
 				//robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
 				robot.setCurrentPosition(whereImGoing);
+				counter.iMoved();
 			}
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		robot.jobFinished();
 		robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
-		counter.readyToMove(robot.getRobotName());
 		rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward " + currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
 	}
 	
