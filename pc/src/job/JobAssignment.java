@@ -80,26 +80,26 @@ public class JobAssignment {
 		Pose initialPose = r.getCurrentPose();
 		for (Item item : items) {
 			if(item.getID().equals("droppoint")){
-				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
-				itemRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff, r.getCurrentPose(), new Route[] {},timeCount);
+				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,initialPose);
+				itemRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff, initialPose, new Route[] {},timeCount);
 				currentRobotPosition = nearestDropoff;
 				Route routeWithDropoff = new Route(itemRoute, Action.DROPOFF);
 				routes.add(routeWithDropoff);
 			}else{
-				itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), r.getCurrentPose(), new Route[] {}, timeCount);
+				itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), initialPose, new Route[] {}, timeCount);
 				currentRobotPosition = item.getPOSITION();
 				routes.add(itemRoute);
 			}
-			r.setCurrentPose(itemRoute.getFinalPose()); 
+			//r.setCurrentPose(itemRoute.getFinalPose()); 
+			initialPose = itemRoute.getFinalPose();
 			logger.trace(item);
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
 		}
-		Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,r.getCurrentPose());
-		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , r.getCurrentPose(), new Route[] {},timeCount);
+		Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,initialPose);
+		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , initialPose, new Route[] {},timeCount);
 		routes.add(dropoffRoute);
-		r.setCurrentPose(initialPose);
-		logger.debug(r.getCurrentPose());
+		logger.debug(initialPose);
 		logger.debug(routes);
 		return routes;
 	}
