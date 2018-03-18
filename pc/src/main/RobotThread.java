@@ -12,12 +12,14 @@ public class RobotThread extends Thread{
 	private final JobAssignment TASKER;
 	private final PCNetworkHandler networker;
 	private Counter counter;
+	private PointsHeld heldPoints;
 	
-	public RobotThread(Robot _robot, JobAssignment _tasker, Counter _counter) {
+	public RobotThread(Robot _robot, JobAssignment _tasker, Counter _counter, PointsHeld _heldPoints) {
 		this.robot = _robot;
 		this.TASKER = _tasker;
 		networker = new PCNetworkHandler(robot.getNXTInfo());
 		counter = _counter;
+		heldPoints = _heldPoints;
 	}
 	
 	public void run() {
@@ -43,7 +45,7 @@ public class RobotThread extends Thread{
 				TASKER.assignJobs(robot);
 				rTLogger.debug("Assigned " + robot.getRobotName() + " job: " + robot.getActiveJob());
 			}
-			RouteExecution rE = new RouteExecution(robot, networker, counter);
+			RouteExecution rE = new RouteExecution(robot, networker, counter, heldPoints);
 			rE.run();
 			rTLogger.debug("Executing robot job");
 		}

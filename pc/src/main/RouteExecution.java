@@ -22,41 +22,50 @@ public class RouteExecution {
 	private interfaces.Action currentCommand;
 	private ArrayList<Item> ITEMS;
 	private Queue<Item> itemsToDrop;
-	private Queue<interfaces.Action> currentDirections;
+	private Queue<Action> currentDirections;
 	private PCNetworkHandler network;
 	private Counter counter;
+	private PointsHeld heldPoints;
 
-	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter) {
+	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints) {
 		this.robot = _robot;
 		this.network = _network;
 		itemsToDrop = new LinkedList<Item>();
 		counter = _counter;
+		heldPoints = _heldPoints;
 	}
 
 	public void run() {
 		currentJob = robot.getActiveJob();
 		ITEMS = currentJob.getITEMS();
 		currentDirections = currentJob.getCurrentroute().getDirections();
+		Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
+		int instructionCounter = -1;
 		rELogger.debug(currentDirections);
 		rELogger.debug(ITEMS);
 		try {
 			while (!currentDirections.isEmpty()) { 
+				instructionCounter++;
 				currentCommand = currentDirections.poll();
 				counter.readyToMove(robot.getRobotName());
-				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF))) {
+				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF) || currentCommand.equals(Action.HOLD))) {
 					while (!counter.canMove()) {
 						Thread.sleep(100);
 					}
+				}
+				else {
+					Point heldCoord = arrayOfCoords[instructionCounter];
+					heldPoints.holdAt(heldCoord);
 				}
 				network.sendObject(currentCommand);
 				counter.iMoved();
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				rELogger.debug(whereImGoing);
-				if (currentCommand == interfaces.Action.PICKUP) {
+				if (currentCommand == Action.PICKUP) {
 					rELogger.debug(ITEMS.get(0) + " " + ITEMS.get(0).getQUANTITY());
 					network.sendObject(ITEMS.get(0).getQUANTITY());
 				}
-				if (currentCommand == interfaces.Action.DROPOFF)
+				if (currentCommand == Action.DROPOFF)
 					network.sendObject(itemsToDrop.peek().getQUANTITY());
 				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
 					rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
@@ -66,12 +75,22 @@ public class RouteExecution {
 				if (currentJob.isCanceled()) {
 					robot.cancelJob();
 				}
-				if (currentCommand == interfaces.Action.PICKUP) {
+				if (currentCommand.equals(Action.HOLD)) {
+					Point heldCoord = arrayOfCoords[instructionCounter];
+					while (heldPoints.isStillHeld(heldCoord)) {
+						Thread.sleep(100);
+					}
+				}
+				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF) || currentCommand.equals(Action.HOLD))) {
+					Point heldCoord = arrayOfCoords[instructionCounter];
+					heldPoints.freeUp(heldCoord);
+				}
+				if (currentCommand == Action.PICKUP) {
 					robot.setWeight(robot.getWeight() + 0);
 					itemsToDrop.add(ITEMS.get(0));
 					ITEMS.remove(0);
 					rELogger.debug(robot.getRobotName() + " picked up items");
-				} else if (currentCommand.equals(interfaces.Action.DROPOFF)) {
+				} else if (currentCommand.equals(Action.DROPOFF)) {
 					robot.setWeight(robot.getWeight() - 0);
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
