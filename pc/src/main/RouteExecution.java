@@ -74,8 +74,9 @@ public class RouteExecution {
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
+				//robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
+				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
 				robot.setCurrentPosition(whereImGoing);
-				robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 			}
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
