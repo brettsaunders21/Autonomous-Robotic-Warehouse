@@ -8,6 +8,7 @@ import communication.PCNetworkHandler;
 import interfaces.Robot;
 import job.Job;
 import job.JobAssignment;
+import job.JobList;
 
 public class RobotThread extends Thread{
 	private static final Logger rTLogger = Logger.getLogger(RobotThread.class);
@@ -17,14 +18,16 @@ public class RobotThread extends Thread{
 	private Counter counter;
 	private PointsHeld heldPoints;
 	private ArrayList<Job> completedJobs;
+	private JobList jobList;
 	
-	public RobotThread(Robot _robot, JobAssignment _tasker, Counter _counter, PointsHeld _heldPoints, ArrayList<Job> _completedJobs) {
+	public RobotThread(Robot _robot, JobAssignment _tasker, Counter _counter, PointsHeld _heldPoints, ArrayList<Job> _completedJobs, JobList _jobList) {
 		this.robot = _robot;
 		this.TASKER = _tasker;
 		networker = new PCNetworkHandler(robot.getNXTInfo());
 		counter = _counter;
 		heldPoints = _heldPoints;
 		completedJobs = _completedJobs;
+		jobList = _jobList;
 	}
 	
 	public void run() {
@@ -51,7 +54,7 @@ public class RobotThread extends Thread{
 				TASKER.assignJobs(robot);
 				rTLogger.debug("Assigned " + robot.getRobotName() + " job: " + robot.getActiveJob());
 			}
-			RouteExecution rE = new RouteExecution(robot, networker, counter, heldPoints);
+			RouteExecution rE = new RouteExecution(robot, networker, counter, heldPoints, jobList);
 			rE.run();
 			rTLogger.debug("Executing robot job");
 		}

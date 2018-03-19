@@ -13,6 +13,7 @@ import interfaces.Pose;
 import interfaces.Robot;
 import job.Item;
 import job.Job;
+import job.JobList;
 import lejos.geom.Point;
 
 public class RouteExecution {
@@ -26,27 +27,30 @@ public class RouteExecution {
 	private PCNetworkHandler network;
 	private Counter counter;
 	private PointsHeld heldPoints;
+	private JobList jobList;
 
-	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints) {
+	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints, JobList _jobList) {
 		this.robot = _robot;
 		this.network = _network;
 		itemsToDrop = new LinkedList<Item>();
 		counter = _counter;
 		heldPoints = _heldPoints;
+		jobList = _jobList;
 	}
 
 	public void run() {
 		try {
-		network.sendObject(robot.getRobotName());
-		currentJob = robot.getActiveJob();
-		network.sendObject(currentJob.getID());
-		ITEMS = currentJob.getITEMS();
-		currentDirections = currentJob.getCurrentroute().getDirections();
-		Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
-		int instructionCounter = -1;
-		rELogger.debug(currentDirections);
-		rELogger.debug(ITEMS);
-			while (!currentDirections.isEmpty()) { 
+			network.sendObject(robot.getRobotName());
+			currentJob = robot.getActiveJob();
+			if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) robot.cancelJob();
+			network.sendObject(currentJob.getID());
+			ITEMS = currentJob.getITEMS();
+			currentDirections = currentJob.getCurrentroute().getDirections();
+			Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
+			int instructionCounter = -1;
+			rELogger.debug(currentDirections);
+			rELogger.debug(ITEMS);
+			while (!currentDirections.isEmpty()) {
 				instructionCounter++;
 				currentCommand = currentDirections.poll();
 				if (robot.getJobCancelled()) {
@@ -54,12 +58,12 @@ public class RouteExecution {
 					break;
 				}
 				counter.readyToMove(robot.getRobotName());
-				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF) || currentCommand.equals(Action.HOLD))) {
+				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
+						|| currentCommand.equals(Action.HOLD))) {
 					while (!counter.canMove()) {
 						Thread.sleep(100);
 					}
-				}
-				else {
+				} else {
 					Point heldCoord = arrayOfCoords[instructionCounter];
 					heldPoints.holdAt(heldCoord);
 				}
@@ -80,13 +84,14 @@ public class RouteExecution {
 					break;
 				}
 				if (currentCommand.equals(Action.HOLD)) {
-					//hold instruction cannot be the last instruction
-					Point heldCoord = arrayOfCoords[instructionCounter+1];
+					// hold instruction cannot be the last instruction
+					Point heldCoord = arrayOfCoords[instructionCounter + 1];
 					while (heldPoints.isStillHeld(heldCoord)) {
 						Thread.sleep(100);
 					}
 				}
-				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF) || currentCommand.equals(Action.HOLD))) {
+				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
+						|| currentCommand.equals(Action.HOLD))) {
 					Point heldCoord = arrayOfCoords[instructionCounter];
 					heldPoints.freeUp(heldCoord);
 				}
@@ -100,7 +105,7 @@ public class RouteExecution {
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
-				//robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
+				// robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
 				robot.setCurrentPosition(whereImGoing);
 			}
@@ -110,10 +115,11 @@ public class RouteExecution {
 		if (!robot.getJobCancelled()) {
 			robot.jobFinished();
 			robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
-			rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward " + currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
+			rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward "
+					+ currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
 		}
 	}
-	
+
 	public static Pose getDirection(Point firstPoint, Point secondPoint) {
 		Pose direction;
 		Point difference = secondPoint.subtract(firstPoint);
