@@ -33,26 +33,27 @@ public class RobotController implements StoppableRunnable {
 
 	@Override
 	public void run() {
+		rInterface.sensorCalibrationMessage();
 		userCalibration();
 		lineValue = getLine();
 		backgroundValue = getBackground();
 		MID_BOUND = (lineValue + backgroundValue) /2;
-		System.out.println("line" + lineValue);
-		System.out.println("background " + backgroundValue);
-		System.out.println("mid" + MID_BOUND);
 		Button.waitForAnyPress();
 		move = new Movement(MID_BOUND, rInterface);
 		networkHandler.run();
+		rInterface.networkMessage("Connected!");
 		Action currentCommand = null;
 		int pickAmount = 0;
-		System.out.println("Starting receiveing commands");
 		while (running) {
 			try {
-				// Print message
+				rInterface.setJobCode(networkHandler.receiveInt());
+				rInterface.setCurrentDirection(networkHandler.receiveAction());
+				rInterface.setDropLocation(networkHandler.receivePoint());
+				rInterface.waitingForOrdersMessage();
 				currentCommand = (Action) networkHandler.receiveAction();
 
 				if (currentCommand != null) {
-					// Print Message
+					rInterface.networkMessage(currentCommand);
 					if (currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)) {
 						pickAmount = (int) networkHandler.receiveInt();
 					}

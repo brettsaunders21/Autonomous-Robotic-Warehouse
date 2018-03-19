@@ -1,53 +1,121 @@
 package actions;
 
-//import job.Job;
-//import interfaces.Robot;
+import interfaces.Action;
 import lejos.nxt.Button;
+import lejos.nxt.LCD;
+//import lejos.nxt.remote.RemoteNXT;
+
+/*
+ * @author Huda Khan <hik649@student.bham.ac.uk>
+ */
 
 public class RobotInterface {
 	
 	private int itemQuantity;
 	//private Robot robotInfo;
-	//private Job jobInfo;
+	int jobCode;
+	String dropLocation;
+	String pickLocation;
+	String currentRoute;
+	Action currentDirections;
+	
+	//public String brickName = RemoteNXT.getBrickName();
 	
 	
 	public RobotInterface(){
 		this.itemQuantity = 0;
-
+		
+		
+		
 	}
-
+// function to read job info (code and drop location)
+	//way to get the name from nxt
+	
+	public int setJobCode(int jobID){
+		jobCode = jobID;
+		return jobCode;
+	}
+	
+	public int getJobCode(){
+		return jobCode;
+	}
+	
+	public String setDropLocation(String string){
+		dropLocation = string;
+		return dropLocation;
+	}
+	
+	public String getDropLocation(){
+		return dropLocation;
+	}
+	
+	public String setPickLocation(String pickLocationPoint){
+		pickLocation = pickLocationPoint;
+		return pickLocation;
+	}
+	
+	public String getPickLocation() {
+		return pickLocation;
+	}
+	
+	public String setCurrentRoute(String whereImGoing){
+		currentRoute = whereImGoing;
+		return currentRoute;
+	}
+	
+	public String getCurrentRoute(){
+		return currentRoute;
+	}
+	
+	public Action setCurrentDirection(Action receiveAction) {
+		currentDirections = receiveAction;
+		return currentDirections;
+	}
+	
+	public Action getCurrentDirection(){
+		return currentDirections;
+	}
+	
+	
 
 	/**
 	 * Prints a message on the robot to tell the user to calibrate the sensors.
 	 */
 	
-	/** public void sensorCalibrationMessage(){
+	 public void sensorCalibrationMessage(){
 		LCD.clear();
-		LCD.drawString(robotInfo.getRobotName(), 1, 0);
+		
+		LCD.drawString("brickName", 1, 0);
 		System.out.println("Press a button to calibrate the sensors.");
 		Button.waitForAnyPress();
 	
 	}
-
-	**/
+	
 	
 	/**
 	 * Prints a message received from blue tooth.
 	 * @param message
 	 */
-	/** public void networkMessage(String message) {
+	public void networkMessage(String message) {
 		LCD.clear();
-		LCD.drawString(robotInfo.getRobotName(), 1, 0);
-		System.out.println(message);
+		LCD.drawString("brickName", 1, 0);
+		System.out.println("Status: " + message);
+		
+	}
+	
+	public void networkMessage(Action currentCommand) {
+		LCD.clear();
+		LCD.drawString("brickName", 1, 0);
+		System.out.println(currentCommand);
 		
 	}
 	
 	/**
 	 * Prints a message on the robot to tell the user the robot is waiting for orders.
 	 */
-	/** public void waitingForOrdersMessage(){
+	public void waitingForOrdersMessage(){
 		LCD.clear();
-		System.out.println(robotInfo.getRobotName() + "is waiting for orders.");
+		System.out.println("brickName" + "is waiting for orders.");
 		
 	}
 	
@@ -55,8 +123,8 @@ public class RobotInterface {
 	 * Prints a message when the robot is travelling. Different messages are used depending on whether 
 	 * the robot is travelling towards the item or the drop off location.
 	 */
-	/** public void movingMessage(){
-		if(robotInfo.getActiveJob().getDropLocation() != null){
+	 public void movingMessage(){
+		if(getDropLocation() != null){
 			movingToDestinationMessage();	
 		}
 		else{
@@ -67,29 +135,29 @@ public class RobotInterface {
 	/**
 	 * Prints a message when the robot is travelling towards the drop off location.
 	 */
-	/** public void movingToDestinationMessage(){
+	 public void movingToDestinationMessage(){
 		LCD.clear();
-		System.out.println(robotInfo.getRobotName() + " is moving to the drop point.");
-		System.out.println("Job ID: " + jobInfo.getID());
-		System.out.println("Destination Coordinates: " + jobInfo.getDropLocation());
-		
+		System.out.println("brickName" + " is moving to the drop point.");
+		System.out.println("Job ID: " + getJobCode());
+		System.out.println("Destination Coordinates: " + getDropLocation());
 	}
 	
 	/**
 	 * Prints a message when the robot is travelling towards the item.
 	 */
-	/** public void movingToItemMessage(){
+	 public void movingToItemMessage(){
 		LCD.clear();
-		System.out.println(robotInfo.getRobotName() + " is moving to the collection point.");
-		System.out.println("Job ID: " + jobInfo.getID());
-		System.out.println("Destination Coordinates: ");  // need to add coordinates for item pickup
+		System.out.println("brickName" + " is moving to the collection point.");
+		System.out.println("Job ID: " + getJobCode());
+		System.out.println("Destination Coordinates: " + getDropLocation()); 
 	}
+	
 	
 	/**
 	 * Prints a message when the robot arrives at the drop off location. Message dependent on whether the robot is preparing to load or unload.
 	 */
-	/** public void destinationMessage(){
-		if(robotInfo.getActiveJob().getDropLocation() != null){
+	 public void destinationMessage(){
+		if(getDropLocation() != null){
 			unloadItemsMessage();	
 		}
 		else{
@@ -97,14 +165,12 @@ public class RobotInterface {
 		}
 		
 	}
-
 	
 	/**
 	 * A method to drop and pick items and cancel orders.
 	 */
 	public void waitForLoadingMessage(int amount){
 		System.out.println("Pick up: " + amount);
-		/**
 		while (itemQuantity != amount) {
 			switch (Button.waitForAnyPress()) {
 			case Button.ID_LEFT:
@@ -114,7 +180,6 @@ public class RobotInterface {
 				pickItems(itemQuantity);
 				break;
 			}
-			**/
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
@@ -122,20 +187,19 @@ public class RobotInterface {
 			e.printStackTrace();
 		}
 		}
-		/**
-			if(Button.waitForAnyPress() == Button.ID_ESCAPE){
-				LCD.clear();
-				System.out.println("You are cancelling the order. If you wish to confirm press ENTER. "
-						+ "If you do not wish to cancel press any other button.");
-				if(Button.waitForAnyPress() == Button.ID_ENTER){
-					robotInfo.cancelJob();
-				}
-				else{
-					loadItemsMessage();
-				}
-			}
-			**/
-		//}
+//			if(Button.waitForAnyPress() == Button.ID_ESCAPE){
+//				LCD.clear();
+//				System.out.println("You are cancelling the order. If you wish to confirm press ENTER. "
+//						+ "If you do not wish to cancel press any other button.");
+//				if(Button.waitForAnyPress() == Button.ID_ENTER){
+//					robotInfo.cancelJob();
+//				}
+//				else{
+//					loadItemsMessage();
+//				}
+//			}
+			
+	}
 		
 	
 	/**
@@ -143,7 +207,6 @@ public class RobotInterface {
 	 */
 	public void waitForUnloadingMessage(int amount){
 		System.out.println("Drop off: " + itemQuantity);
-		/**
 		itemQuantity = 1;
 		while (itemQuantity != 0) {
 			switch (Button.waitForAnyPress()) {
@@ -154,9 +217,7 @@ public class RobotInterface {
 				pickItems(itemQuantity);
 				break;
 			}
-		
 		}
-		**/
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
@@ -168,10 +229,11 @@ public class RobotInterface {
 	/**
 	 * Prints a message to tell the user to load items.
 	 */
-	/** public void loadItemsMessage(){
+	 public void loadItemsMessage(){
 		LCD.clear();
-		LCD.drawString(robotInfo.getRobotName(), 1, 0);
-		System.out.println("Job ID: " + jobInfo.getID());
+		LCD.drawString("brickName", 1, 0);
+		System.out.println("Job ID: " + getJobCode());
+		System.out.println("Please load " + itemQuantity + "items.");
 		System.out.println("Press a button to load the items.");
 		waitForLoadingMessage(itemQuantity);
 	}
@@ -179,10 +241,11 @@ public class RobotInterface {
 	/**
 	 * Prints a message to tell the user to unload items.
 	 */
-	/** public void unloadItemsMessage(){
+	 public void unloadItemsMessage(){
 		LCD.clear();
-		LCD.drawString(robotInfo.getRobotName(), 1, 0);
-		System.out.println("Job ID: " + jobInfo.getID());
+		LCD.drawString("brickName", 1, 0);
+		System.out.println("Job ID: " + getJobCode());
+		System.out.println("Please unload " + itemQuantity + "items.");
 		System.out.println("Press a button to unload the items.");
 		waitForUnloadingMessage(itemQuantity);
 	}
@@ -222,8 +285,7 @@ public class RobotInterface {
 	public int getQuantity(){
 		return itemQuantity;
 	}
+
 	
 
 }
-
-
