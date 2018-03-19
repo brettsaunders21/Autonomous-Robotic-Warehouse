@@ -94,7 +94,6 @@ public class JobAssignment {
 				currentRobotPosition = item.getPOSITION();
 				routes.add(itemRoute);
 			}
-			//r.setCurrentPose(itemRoute.getFinalPose()); 
 			initialPose = itemRoute.getFinalPose();
 			logger.trace(item);
 			logger.trace(itemRoute);

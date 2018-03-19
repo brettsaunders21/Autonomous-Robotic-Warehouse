@@ -14,6 +14,9 @@ import interfaces.Robot;
 import job.Item;
 import job.Job;
 import lejos.geom.Point;
+import routeplanning.AStar;
+import routeplanning.Map;
+import routeplanning.Route;
 
 public class RouteExecution {
 	private static final Logger rELogger = Logger.getLogger(RouteExecution.class);
@@ -26,13 +29,19 @@ public class RouteExecution {
 	private PCNetworkHandler network;
 	private Counter counter;
 	private PointsHeld heldPoints;
+	private AStar routeMaker;
+	private Robot[] robots;
+	private Counter time;
 
-	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints) {
+	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints, Robot[] _robots, Counter _time) {
 		this.robot = _robot;
 		this.network = _network;
 		itemsToDrop = new LinkedList<Item>();
 		counter = _counter;
 		heldPoints = _heldPoints;
+		routeMaker = new AStar(Map.generateRealWarehouseMap());
+		robots = _robots;
+		time = _time;
 	}
 
 	public void run() {
@@ -65,7 +74,7 @@ public class RouteExecution {
 				}
 				network.sendObject(currentCommand);
 				counter.iMoved();
-				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
+				Point whereImGoing = currentJob.getCurrentroute().getadjustForCollisionsCoordinates().poll();
 				network.sendObject(whereImGoing);
 				rELogger.debug(whereImGoing);
 				if (currentCommand == Action.PICKUP) {
@@ -89,6 +98,14 @@ public class RouteExecution {
 				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF) || currentCommand.equals(Action.HOLD))) {
 					Point heldCoord = arrayOfCoords[instructionCounter];
 					heldPoints.freeUp(heldCoord);
+					Route currentRoute = currentJob.getCurrentroute();
+					Route[] routesRunning = new Route[robots.length];
+					for (int i = 0; i < robots.length; i++) {
+						routesRunning[i] = robot.getActiveJob().getCurrentroute();
+					}
+					currentRoute = routeMaker.adjustForCollisions(currentRoute,routesRunning,time.getTime(),instructionCounter);
+					currentDirections = currentRoute.getDirections();
+					
 				}
 				if (currentCommand == Action.PICKUP) {
 					robot.setWeight(robot.getWeight() + ITEMS.get(0).getTOTAL_WEIGHT());
@@ -100,7 +117,6 @@ public class RouteExecution {
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
-				//robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
 				robot.setCurrentPosition(whereImGoing);
 			}
