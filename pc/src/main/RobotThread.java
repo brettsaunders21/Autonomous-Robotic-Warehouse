@@ -1,5 +1,6 @@
 package main;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -48,7 +49,11 @@ public class RobotThread extends Thread{
 			// Print to logger that connection failed and return
 			return;
 		}
-		
+		try {
+			networker.sendObject(robot.getRobotName());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		while(true) {
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
 				if (robot.isJobFinished()) {

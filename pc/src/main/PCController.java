@@ -22,7 +22,7 @@ public class PCController {
 	private static final Logger routeExeLogger = Logger.getLogger(RouteExecution.class);
 	private static final Logger jobAssLogger = Logger.getLogger(JobAssignment.class);
 	private static final Robot[] ROBOTS = {
-			new Robot("Marco", "001653115A7E", new Point(0, 0))/*,
+			new Robot("Marco", "001653115A7E", new Point(0, 7))/*,
 			new Robot("Jeremy", "00165308E37C", new Point(11,7)),
 			new Robot("Marco", "001653115A7E", new Point(0, 7))*/
 	};
@@ -43,7 +43,7 @@ public class PCController {
 		PointsHeld heldPoints = new PointsHeld();
 		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops(), ROBOTS);
 		new WarehouseInterface(ROBOTS);
-		new JobsInterface(ROBOTS, completedJobs);
+		new JobsInterface(ROBOTS, completedJobs, jobList);
 		for (int i = 0; i<numOfRobots; i++) {
 			r[i] = new RobotThread(ROBOTS[i], jA, counter, heldPoints, completedJobs, ROBOTS, jobList);
 			r[i].setName(ROBOTS[i].getRobotName());

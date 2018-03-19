@@ -42,21 +42,27 @@ public class RobotController implements StoppableRunnable {
 		move = new Movement(MID_BOUND, rInterface);
 		networkHandler.run();
 		rInterface.networkMessage("Connected!");
+		try {
+			rInterface.setRobotName(networkHandler.receiveString());
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		Action currentCommand = null;
 		int pickAmount = 0;
 		while (running) {
 			try {
 				rInterface.setJobCode(networkHandler.receiveInt());
-				rInterface.setCurrentDirection(networkHandler.receiveAction());
-				rInterface.setDropLocation(networkHandler.receiveString());
 				rInterface.waitingForOrdersMessage();
 				currentCommand = (Action) networkHandler.receiveAction();
-
+				rInterface.setCurrentDirection(currentCommand);
 				if (currentCommand != null) {
 					rInterface.networkMessage(currentCommand);
 					if (currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)) {
 						pickAmount = (int) networkHandler.receiveInt();
 					}
+					if (currentCommand.equals(Action.PICKUP)) rInterface.loadItemsMessage();
+					if (currentCommand.equals(Action.DROPOFF)) rInterface.unloadItemsMessage();
+					if (currentCommand.equals(Action.DROPOFF)) rInterface.setDropLocation(networkHandler.receiveString());
 
 					move.nextAction(currentCommand, pickAmount);
 

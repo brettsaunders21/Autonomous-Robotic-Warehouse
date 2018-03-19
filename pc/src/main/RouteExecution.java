@@ -47,12 +47,10 @@ public class RouteExecution {
 
 	public void run() {
 		try {
-			network.sendObject(robot.getRobotName());
 			currentJob = robot.getActiveJob();
 			if (jobList.getJob(robot.getActiveJob().getID()) != null) {
 				if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) robot.cancelJob();
 			}
-			network.sendObject(currentJob.getID());
 			ITEMS = currentJob.getITEMS();
 			currentDirections = currentJob.getCurrentroute().getDirections();
 			Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
@@ -76,17 +74,19 @@ public class RouteExecution {
 					Point heldCoord = arrayOfCoords[instructionCounter];
 					heldPoints.holdAt(heldCoord);
 				}
+				network.sendObject(currentJob.getID());
 				network.sendObject(currentCommand);
 				counter.iMoved();
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
-				network.sendObject(whereImGoing);
 				rELogger.debug(whereImGoing);
 				if (currentCommand == Action.PICKUP) {
 					rELogger.debug(ITEMS.get(0) + " " + ITEMS.get(0).getQUANTITY());
 					network.sendObject(ITEMS.get(0).getQUANTITY());
 				}
-				if (currentCommand == Action.DROPOFF)
+				if (currentCommand == Action.DROPOFF) {
 					network.sendObject(itemsToDrop.peek().getQUANTITY());
+					network.sendObject(whereImGoing);	
+				}
 				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
 					rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
 					robot.cancelJob();
