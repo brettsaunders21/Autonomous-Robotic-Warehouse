@@ -27,21 +27,22 @@ public class JobAssignment {
 	private AStar routeMaker = new AStar(map);
 	private TSP tsp;
 	private Job recentJob;
-	private JobSelection jS;
+	private JobList jobList;
 	
-	public JobAssignment(ArrayList<Job> j, Counter _counter, ArrayList<Point> _drops, JobSelection _jS) {
-		jobs = Collections.synchronizedList(new ArrayList<Job>(j));
+	public JobAssignment(JobList _jobList, Counter _counter, ArrayList<Point> _drops) {
+		jobs = _jobList.getJobList();
 		counter = _counter;
 		drops = _drops;
 		tsp = new TSP(drops);
-		jS = _jS;
+		jobList = _jobList;
 	}
 
 
 	public void assignJobs(Robot robot) {
+		jobs = jobList.getJobList();
 		Job job;
 		if (!jobs.isEmpty()) {
-			job = jS.getJob(jobs, robot);
+			job = jobList.getNewJob(robot);
 		}else{	
 			return;	
 		}

@@ -36,17 +36,23 @@ public class RouteExecution {
 	}
 
 	public void run() {
+		try {
+		network.sendObject(robot.getRobotName());
 		currentJob = robot.getActiveJob();
+		network.sendObject(currentJob.getID());
 		ITEMS = currentJob.getITEMS();
 		currentDirections = currentJob.getCurrentroute().getDirections();
 		Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
 		int instructionCounter = -1;
 		rELogger.debug(currentDirections);
 		rELogger.debug(ITEMS);
-		try {
 			while (!currentDirections.isEmpty()) { 
 				instructionCounter++;
 				currentCommand = currentDirections.poll();
+				if (robot.getJobCancelled()) {
+					network.sendObject(Action.CANCEL);
+					break;
+				}
 				counter.readyToMove(robot.getRobotName());
 				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF) || currentCommand.equals(Action.HOLD))) {
 					while (!counter.canMove()) {
@@ -60,6 +66,7 @@ public class RouteExecution {
 				network.sendObject(currentCommand);
 				counter.iMoved();
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
+				network.sendObject(whereImGoing);
 				rELogger.debug(whereImGoing);
 				if (currentCommand == Action.PICKUP) {
 					rELogger.debug(ITEMS.get(0) + " " + ITEMS.get(0).getQUANTITY());
@@ -71,9 +78,6 @@ public class RouteExecution {
 					rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
 					robot.cancelJob();
 					break;
-				}
-				if (currentJob.isCanceled()) {
-					robot.cancelJob();
 				}
 				if (currentCommand.equals(Action.HOLD)) {
 					//hold instruction cannot be the last instruction
@@ -103,9 +107,11 @@ public class RouteExecution {
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
-		robot.jobFinished();
-		robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
-		rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward " + currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
+		if (!robot.getJobCancelled()) {
+			robot.jobFinished();
+			robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
+			rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward " + currentJob.getREWARD() + ". Robot total now " + robot.currentReward());
+		}
 	}
 	
 	public static Pose getDirection(Point firstPoint, Point secondPoint) {

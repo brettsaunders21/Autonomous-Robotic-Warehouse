@@ -1,6 +1,8 @@
 package tests;
 
 import org.junit.Test;
+
+
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import interfaces.Robot;
 import job.Job;
 import job.JobAssignment;
 import job.JobInput;
+import job.JobList;
 import job.JobSelection;
 import lejos.geom.Point;
 import main.Counter;
@@ -38,13 +41,13 @@ public class jobAssignmentTest {
 
 	
 	JobSelection jobSelection = new JobSelection(betaValues);
-	
+	JobList jobList = new JobList(jobSelection);
 	
 
 	
 	public jobAssignmentTest() {
 		drops = jobInput.getDrops();
-		jAssignment = new JobAssignment(createJobList(), counter, drops, jobSelection);
+		jAssignment = new JobAssignment(jobList, counter, drops);
 		jobAssignmentLogger.setLevel(Level.OFF);
 		//logger.setLevel(Level.DEBUG);
 		logger.setLevel(Level.OFF);
@@ -52,16 +55,9 @@ public class jobAssignmentTest {
 		routeLog.setLevel(Level.OFF);
 	}
 
-	
-	private ArrayList<Job> createJobList(){
-		ArrayList<Job> jobList = jobSelection.prioritize();
-		return jobList;
-		
-	}
-
 	@Test
 	public void checkJobAssigned() {
-		jAssignment = new JobAssignment(createJobList(), counter, drops, jobSelection);
+		jAssignment = new JobAssignment(jobList, counter, drops);
 		jAssignment.assignJobs(robot1);
 		firstJobAssigned = jAssignment.getCurrentJob();
 		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
@@ -86,6 +82,13 @@ public class jobAssignmentTest {
 		Route route = currentJob.getCurrentroute();
 		Action[] routeArray = route.getDirectionArray();
 		assertEquals(Action.DROPOFF, routeArray[routeArray.length-1]);	
+	}
+	
+	@Test
+	public void checkJobGetsCancelled(){
+		int j1 = jobList.getNewJob(robot1).getID();
+		jobList.cancelJob(j1);
+		assertEquals(true, jobList.getJob(j1).isCanceled());
 	}
 	}
 	
