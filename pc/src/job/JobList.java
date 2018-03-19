@@ -2,7 +2,11 @@ package job;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry.Entry;
 
 import interfaces.Robot;
 
@@ -11,10 +15,14 @@ import interfaces.Robot;
 public class JobList {
 	private JobSelection jS;
 	private List<Job> jobs;
+	private List<Job> jobsCompleted;
+	private ConcurrentHashMap<Integer, ArrayList<Robot>> jobInProgressMap;
 	
 	public JobList(JobSelection _jS){
 		jS = _jS;
 		jobs = Collections.synchronizedList(new ArrayList<Job>(jS.prioritize()));
+		jobInProgressMap = new ConcurrentHashMap<Integer, ArrayList<Robot>>();
+		jobsCompleted = new ArrayList<>();
 	}
 
 	public synchronized Job getNewJob(Robot robot){
@@ -47,6 +55,36 @@ public class JobList {
 			}
 		}
 		return null;
+	}
+	
+	public void addJobToProgressMap(Job j, Robot r) {
+		ArrayList<Robot> robotMap = new ArrayList<>();
+		robotMap.add(r);
+		if (!jobInProgressMap.containsKey(j.getID())) {
+			jobInProgressMap.put(j.getID(), robotMap);
+		}
+	}
+	
+	public void addRobotToJob(Job j, Robot r) {
+		int jobID = j.getID();
+		if (jobInProgressMap.containsKey(jobID)) {
+			ArrayList<Robot> robotMap = jobInProgressMap.get(jobID);
+			robotMap.add(r);
+			jobInProgressMap.put(jobID, robotMap);
+		}
+	}
+	
+	public void removeRobotFromJob(Job j, Robot r) {
+		int jobID = j.getID();
+		if (jobInProgressMap.containsKey(jobID)) {
+			ArrayList<Robot> robotMap = jobInProgressMap.get(jobID);
+			robotMap.remove(r);
+			jobInProgressMap.put(jobID, robotMap);
+		}
+		if (jobInProgressMap.get(jobID).isEmpty()) {
+			jobsCompleted.add(j);
+			jobInProgressMap.remove(j);
+		}
 	}
 }
 

@@ -61,6 +61,20 @@ public class TSP {
 		return distance;
 	}
 	
+	public int calculateJobDistance(ArrayList<Item> items, Robot robot) {
+		ArrayList<Item> tempItems = new ArrayList<Item>(items);
+		Robot tempR = robot;
+		tempItems = orderItems(tempItems, tempR);
+		//tempItems = addDropPoints(tempItems);
+		int distance = 0;
+		if (tempItems.size() > 1) 
+		for (int i = 1; i <= tempItems.size() - 1; i++) {
+			distance += routeMaker.generateRoute(tempItems.get(i-1).getPOSITION(), tempItems.get(i).getPOSITION(), Pose.POS_X, new Route[] {}, 0).getLength();
+		}
+		distance += routeMaker.generateRoute(robot.getCurrentPosition(), tempItems.get(0).getPOSITION(), robot.getCurrentPose(), new Route[] {}, 0).getLength();
+		return distance;
+	}
+	
 	
 	private Item nearestItemToPoint(Point point,  ArrayList<Item> items) {
 		Item nearestItemSoFar = items.get(0);
