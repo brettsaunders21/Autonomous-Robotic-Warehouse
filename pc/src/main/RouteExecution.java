@@ -15,6 +15,9 @@ import job.Item;
 import job.Job;
 import job.JobList;
 import lejos.geom.Point;
+import routeplanning.AStar;
+import routeplanning.Map;
+import routeplanning.Route;
 
 public class RouteExecution {
 	private static final Logger rELogger = Logger.getLogger(RouteExecution.class);
@@ -28,14 +31,18 @@ public class RouteExecution {
 	private Counter counter;
 	private PointsHeld heldPoints;
 	private JobList jobList;
+	private Robot[] robots;
+	private AStar routeMaker;
 
-	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints, JobList _jobList) {
+	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints, Robot[] _robots, JobList _jobList) {
 		this.robot = _robot;
 		this.network = _network;
 		itemsToDrop = new LinkedList<Item>();
 		counter = _counter;
 		heldPoints = _heldPoints;
 		jobList = _jobList;
+		routeMaker = new AStar(Map.generateRealWarehouseMap());
+		robots = _robots;
 	}
 
 	public void run() {
@@ -94,6 +101,14 @@ public class RouteExecution {
 						|| currentCommand.equals(Action.HOLD))) {
 					Point heldCoord = arrayOfCoords[instructionCounter];
 					heldPoints.freeUp(heldCoord);
+					Route currentRoute = currentJob.getCurrentroute();
+					Route[] routesRunning = new Route[robots.length];
+					for (int i = 0; i < robots.length; i++) {
+						routesRunning[i] = robot.getActiveJob().getCurrentroute();
+					}
+					currentRoute = routeMaker.adjustForCollisions(currentRoute,routesRunning,counter.getTime(),instructionCounter);
+					currentDirections = currentRoute.getDirections();
+					
 				}
 				if (currentCommand == Action.PICKUP) {
 					robot.setWeight(robot.getWeight() + ITEMS.get(0).getTOTAL_WEIGHT());
@@ -105,7 +120,6 @@ public class RouteExecution {
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
-				// robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
 				robot.setCurrentPosition(whereImGoing);
 			}

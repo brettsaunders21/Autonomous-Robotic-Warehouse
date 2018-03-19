@@ -41,11 +41,11 @@ public class PCController {
 		JobList jobList = new JobList(jS);
 		Counter counter = new Counter(ROBOTS);
 		PointsHeld heldPoints = new PointsHeld();
-		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops());
+		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops(), ROBOTS);
 		new WarehouseInterface(ROBOTS);
 		new JobsInterface(ROBOTS, completedJobs);
 		for (int i = 0; i<numOfRobots; i++) {
-			r[i] = new RobotThread(ROBOTS[i], jA, counter, heldPoints, completedJobs, jobList);
+			r[i] = new RobotThread(ROBOTS[i], jA, counter, heldPoints, completedJobs, ROBOTS, jobList);
 			r[i].setName(ROBOTS[i].getRobotName());
 			r[i].start();
 			controllerLogger.debug("Started robot thread: " + ROBOTS[i].getRobotName());

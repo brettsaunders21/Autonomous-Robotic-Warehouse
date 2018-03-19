@@ -19,8 +19,9 @@ public class RobotThread extends Thread{
 	private PointsHeld heldPoints;
 	private ArrayList<Job> completedJobs;
 	private JobList jobList;
+	private Robot[] robots;
 	
-	public RobotThread(Robot _robot, JobAssignment _tasker, Counter _counter, PointsHeld _heldPoints, ArrayList<Job> _completedJobs, JobList _jobList) {
+	public RobotThread(Robot _robot, JobAssignment _tasker, Counter _counter, PointsHeld _heldPoints, ArrayList<Job> _completedJobs, Robot[] _robots, JobList _jobList) {
 		this.robot = _robot;
 		this.TASKER = _tasker;
 		networker = new PCNetworkHandler(robot.getNXTInfo());
@@ -28,6 +29,7 @@ public class RobotThread extends Thread{
 		heldPoints = _heldPoints;
 		completedJobs = _completedJobs;
 		jobList = _jobList;
+		robots = _robots;
 	}
 	
 	public void run() {
@@ -54,7 +56,7 @@ public class RobotThread extends Thread{
 				TASKER.assignJobs(robot);
 				rTLogger.debug("Assigned " + robot.getRobotName() + " job: " + robot.getActiveJob());
 			}
-			RouteExecution rE = new RouteExecution(robot, networker, counter, heldPoints, jobList);
+			RouteExecution rE = new RouteExecution(robot, networker, counter, heldPoints, robots, jobList);
 			rE.run();
 			rTLogger.debug("Executing robot job");
 		}
