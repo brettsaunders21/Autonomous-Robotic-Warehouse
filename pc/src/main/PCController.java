@@ -9,6 +9,7 @@ import interfaces.Robot;
 import job.Job;
 import job.JobAssignment;
 import job.JobInput;
+import job.JobList;
 import job.JobSelection;
 import lejos.geom.Point;
 import routeplanning.AStar;
@@ -26,6 +27,7 @@ public class PCController {
 			new Robot("Marco", "001653115A7E", new Point(0, 7))
 	};
 	private static ArrayList<Job> orderedJobs;
+	private static ArrayList<Job> completedJobs;
 	private static int numOfRobots = ROBOTS.length;
 	private static RobotThread[] r = new RobotThread[numOfRobots];
 
@@ -37,10 +39,11 @@ public class PCController {
 		jobAssLogger.setLevel(Level.ALL);
 		JobInput jI = new JobInput();
 		JobSelection jS = new JobSelection(jI.getBetaValues());
+		JobList jobList = new JobList(jS);
 		Counter counter = new Counter(ROBOTS);
 		PointsHeld heldPoints = new PointsHeld();
-		orderedJobs = jS.prioritize();
-		JobAssignment jA = new JobAssignment(orderedJobs, counter, jI.getDrops(), jS);
+		//orderedJobs = jS.prioritize();
+		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops());
 		new WarehouseInterface(ROBOTS);
 		new JobsInterface(ROBOTS);
 		for (int i = 0; i<numOfRobots; i++) {
