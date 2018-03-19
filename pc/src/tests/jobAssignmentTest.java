@@ -47,7 +47,7 @@ public class jobAssignmentTest {
 	
 	public jobAssignmentTest() {
 		drops = jobInput.getDrops();
-		jAssignment = new JobAssignment(jobList, counter, drops);
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
 		jobAssignmentLogger.setLevel(Level.OFF);
 		//logger.setLevel(Level.DEBUG);
 		logger.setLevel(Level.OFF);
@@ -57,7 +57,7 @@ public class jobAssignmentTest {
 
 	@Test
 	public void checkJobAssigned() {
-		jAssignment = new JobAssignment(jobList, counter, drops);
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
 		jAssignment.assignJobs(robot1);
 		firstJobAssigned = jAssignment.getCurrentJob();
 		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
