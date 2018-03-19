@@ -19,8 +19,8 @@ public class Movement {
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		MID_BOUND = _MID_BOUND;
-		PILOT.setTravelSpeed(0.2f);
-		PILOT.setRotateSpeed(85);
+		PILOT.setTravelSpeed(0.25f);
+		PILOT.setRotateSpeed(100);
 		rInterface = _rI;
 	}
 	
@@ -37,20 +37,20 @@ public class Movement {
 			break;
 		case LEFT:
 			PILOT.travel(0.05);
-			PILOT.rotate(-50);
+			PILOT.rotate(-45);
 			while (!isRightOnLine()) {
 				PILOT.rotateRight();
 			}
-			PILOT.rotate(10);
+			PILOT.rotate(5);
 			PILOT.forward();
 			break;
 		case RIGHT: 
 			PILOT.travel(0.05);
-			PILOT.rotate(50);
+			PILOT.rotate(45);
 			while (!isLeftOnLine()) {
 				PILOT.rotateLeft();
 			}
-			PILOT.rotate(-10);
+			PILOT.rotate(-5);
 			PILOT.forward();
 			break;
 		case BACKWARD: 
@@ -65,11 +65,11 @@ public class Movement {
 			break;
 		case PICKUP:
 			PILOT.stop();
-			rInterface.pickItems(pickAmount);
+			rInterface.loadItemsMessage(pickAmount);
 			break;
 		case DROPOFF:
 			PILOT.stop();
-			rInterface.dropItems(pickAmount);
+			rInterface.unloadItemsMessage();
 			break;
 		case CANCEL:
 			break;
@@ -84,13 +84,16 @@ public class Movement {
 			PILOT.forward();
 			while (isLeftOnLine() && !isRightOnLine()) {
 				PILOT.rotateRight();
+				System.out.println("Is on left line");
 			}
 			while (!isLeftOnLine() && isRightOnLine()) {
 				PILOT.rotateLeft();
+				System.out.println("Is on right line");
 			}
 		}
 		}
 		PILOT.stop();
+		rInterface.resetQuantity();
 	}
 	
 	public boolean isOnLine(int lightValue) {

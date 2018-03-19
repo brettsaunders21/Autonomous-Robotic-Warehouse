@@ -85,7 +85,6 @@ public class RouteExecution {
 				}
 				if (currentCommand == Action.DROPOFF) {
 					network.sendObject(itemsToDrop.peek().getQUANTITY());
-					network.sendObject(whereImGoing);	
 				}
 				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
 					rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
@@ -129,6 +128,7 @@ public class RouteExecution {
 			e.printStackTrace();
 		}
 		if (!robot.getJobCancelled()) {
+			System.out.println("JOB FINISHED");
 			robot.jobFinished();
 			robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 			rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward "
