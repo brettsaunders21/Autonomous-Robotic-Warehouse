@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class TrainingAlgorithmTest {
 
 	@Test
-	public void test() {
+	public void testTraining() {
 		JobInput jI = new JobInput();
 		HashMap<Integer, ArrayList<String>> availableOrders = jI.getTrainingJobs();
 		ArrayList<String> itemNamesList = jI.itemNames();
