@@ -45,7 +45,7 @@ public class AStar {
 
 	
 	
-	public Route adjustForCollisions(Route r, Route[] rs, int startTime, int numOfInstructionsSent) {
+	public Route adjustForCollisions(Route r, Route[] rs, int startTime) {
 		if (r.getDirections().size()==0) {
 			return r;
 		}

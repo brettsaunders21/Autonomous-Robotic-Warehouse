@@ -107,7 +107,7 @@ public class RouteExecution {
 					for (int i = 0; i < robots.length; i++) {
 						routesRunning[i] = robot.getActiveJob().getCurrentroute();
 					}
-					currentRoute = routeMaker.adjustForCollisions(currentRoute,routesRunning,counter.getTime(),instructionCounter);
+					currentRoute = routeMaker.adjustForCollisions(currentRoute,routesRunning,counter.getTime());
 					currentDirections = currentRoute.getDirections();
 					
 				}

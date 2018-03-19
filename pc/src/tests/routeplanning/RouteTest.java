@@ -67,7 +67,7 @@ public class RouteTest{
 	/*conjunction constructor combines coordinates correctly*/
 	@Test
 	public void conjunctionConstructorDirectionsTest1() {
-		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.RIGHT, Action.FORWARD};
+		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.LEFT, Action.FORWARD};
 		Route r1 = aStar.generateRoute(new Point(0,0), new Point(2,0), Pose.POS_X, new Route[] {}, 0);
 		Route r2 = aStar.generateRoute(new Point(2,0), new Point(2,2), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = new Route(r1, r2);
@@ -98,7 +98,7 @@ public class RouteTest{
 	/*conjunction constructor combines coordinates correctly*/
 	@Test
 	public void conjunctionConstructorDirectionsTest3() {
-		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.LEFT, Action.FORWARD};
+		Action[] tp = new Action[] {Action.FORWARD, Action.FORWARD, Action.RIGHT, Action.FORWARD};
 		Route r1 = aStar.generateRoute(new Point(2,2), new Point(2,0), Pose.NEG_Y, new Route[] {}, 0);
 		Route r2 = aStar.generateRoute(new Point(2,0), new Point(0,0), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = new Route(r1, r2);

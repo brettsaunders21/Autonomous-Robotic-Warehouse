@@ -339,7 +339,7 @@ public class AStarTest {
 		Route[] rs1 = new Route[] {r2};
 
 		
-		r1 = aStar.adjustForCollisions(r1, rs1, 15, 6);
+		r1 = aStar.adjustForCollisions(r1, rs1, 15);
 		
 		logger.debug(r1.getDirections());
 
