@@ -24,7 +24,7 @@ public class PCController {
 	private static final Robot[] ROBOTS = {
 			//new Robot("Spike", "0016530AA681", new Point(0, 0)),
 			//new  Robot("Jeremy", "00165308E37C", new Point(11,7)),
-			new Robot("Marco", "001653115A7E", new Point(0, 7))
+			new Robot("Marco", "001653115A7E", new Point(11, 7))
 	};
 	private static ArrayList<Job> completedJobs = new ArrayList<Job>();
 	private static int numOfRobots = ROBOTS.length;

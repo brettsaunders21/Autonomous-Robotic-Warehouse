@@ -20,7 +20,7 @@ public class Movement {
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		MID_BOUND = _MID_BOUND;
 		PILOT.setTravelSpeed(0.25f);
-		PILOT.setRotateSpeed(100);
+		PILOT.setRotateSpeed(85);
 		rInterface = _rI;
 	}
 	
