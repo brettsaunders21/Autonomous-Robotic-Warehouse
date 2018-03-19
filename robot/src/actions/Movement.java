@@ -41,7 +41,7 @@ public class Movement {
 			while (!isRightOnLine()) {
 				PILOT.rotateRight();
 			}
-			PILOT.rotate(10);
+			PILOT.rotate(5);
 			PILOT.forward();
 			break;
 		case RIGHT: 
@@ -50,7 +50,7 @@ public class Movement {
 			while (!isLeftOnLine()) {
 				PILOT.rotateLeft();
 			}
-			PILOT.rotate(-10);
+			PILOT.rotate(-5);
 			PILOT.forward();
 			break;
 		case BACKWARD: 
