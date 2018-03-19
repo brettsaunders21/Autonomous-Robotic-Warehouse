@@ -46,7 +46,11 @@ public class RobotThread extends Thread{
 		
 		while(true) {
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
-				if (robot.isJobFinished()) completedJobs.add(robot.getActiveJob());
+				if (robot.isJobFinished()) {
+					if (robot.getActiveJob() != null) {
+						completedJobs.add(robot.getActiveJob());
+					}
+				}
 				robot.jobNotFinished();
 				TASKER.assignJobs(robot);
 				rTLogger.debug("Assigned " + robot.getRobotName() + " job: " + robot.getActiveJob());
