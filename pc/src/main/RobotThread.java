@@ -1,9 +1,12 @@
 package main;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 import communication.PCNetworkHandler;
 import interfaces.Robot;
+import job.Job;
 import job.JobAssignment;
 
 public class RobotThread extends Thread{
@@ -13,13 +16,15 @@ public class RobotThread extends Thread{
 	private final PCNetworkHandler networker;
 	private Counter counter;
 	private PointsHeld heldPoints;
+	private ArrayList<Job> completedJobs;
 	
-	public RobotThread(Robot _robot, JobAssignment _tasker, Counter _counter, PointsHeld _heldPoints) {
+	public RobotThread(Robot _robot, JobAssignment _tasker, Counter _counter, PointsHeld _heldPoints, ArrayList<Job> _completedJobs) {
 		this.robot = _robot;
 		this.TASKER = _tasker;
 		networker = new PCNetworkHandler(robot.getNXTInfo());
 		counter = _counter;
 		heldPoints = _heldPoints;
+		completedJobs = _completedJobs;
 	}
 	
 	public void run() {
@@ -41,6 +46,7 @@ public class RobotThread extends Thread{
 		
 		while(true) {
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
+				if (robot.isJobFinished()) completedJobs.add(robot.getActiveJob());
 				robot.jobNotFinished();
 				TASKER.assignJobs(robot);
 				rTLogger.debug("Assigned " + robot.getRobotName() + " job: " + robot.getActiveJob());

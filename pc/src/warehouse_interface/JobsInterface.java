@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 
 import interfaces.Robot;
 import job.Item;
+import job.Job;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -18,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.JLabel;
@@ -32,9 +34,10 @@ public class JobsInterface extends JFrame implements Runnable {
 	private JTextField textField;
 	private Thread thread;
 	private Robot[] robots;
+	private ArrayList<Job> completedJobs;
 	GridLayout mainLayout;
 	GridLayout cancelJobLayout = new GridLayout(2, 0);
-	Object[][] completedJobsData = {};
+	String[][] completedJobsData = new String[20][4];
 	String[][] itemsInformationData = new String[30][3];
 	String[][] robotInfoData = new String[1][4];
 	String[][] robot1Data = new String[1][5];
@@ -43,16 +46,18 @@ public class JobsInterface extends JFrame implements Runnable {
 	private JTable t;
 	String itemsCsvFile = "src/job/csv/items.csv";
 
-	public JobsInterface(Robot[] robots) {
-		mainLayout = new GridLayout((7 + robots.length * 2), 0);
+	public JobsInterface(Robot[] robots, ArrayList<Job> completedJobs) {
+		mainLayout = new GridLayout((8 + robots.length * 2), 0);
 		setFrame();
 		setPanes();
 		this.robots = robots;
+		this.completedJobs = completedJobs;
 		for (int i = 0; i < robots.length; i++) {
 			currentInfo(robots[i].getRobotName(), i);
 		}
 		itemsInformation();
 		completedJobs();
+		totalReward();
 		cancelJobs();
 		thread = new Thread(this);
 		thread.start();
@@ -83,7 +88,7 @@ public class JobsInterface extends JFrame implements Runnable {
 		contentPane.setLayout(mainLayout);
 		JLabel label = new JLabel("Completed jobs");
 		add(label);
-		String[] fields = { "Robot Name", "Item Name", "Weight of Item", "Reward" };
+		String[] fields = { "Job ID", "Total Weight", "Total Reward", "All Items" };
 		t = new JTable(completedJobsData, fields);
 		t.setFillsViewportHeight(true);
 		JScrollPane scrollPane = new JScrollPane(t);
@@ -124,6 +129,21 @@ public class JobsInterface extends JFrame implements Runnable {
 		getContentPane().add(scrollPane);
 		contentPane.add(scrollPane);
 
+	}
+	
+	//Total reward from all robots
+	public void totalReward(){
+		Float allRewardSum = 0.0f;
+		for(int i = 0; i < robots.length; i++){
+			try{
+				allRewardSum += robots[i].currentReward();
+			}
+			catch (NullPointerException e){
+				
+			}
+		}
+		JLabel totalReward = new JLabel("Total reward: " + Float.toString(allRewardSum));
+		add(totalReward);
 	}
 
 	//Button to cancel particular job
@@ -181,8 +201,8 @@ public class JobsInterface extends JFrame implements Runnable {
 				robot1Data[0][2] = Float.toString(robots[indexOfRobot].getActiveJob().getREWARD());
 				robot1Data[0][3] =  "[" + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().x)) 
 				+ ", " + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().y)) + "]";				
-				for (Item s : robots[indexOfRobot].getActiveJob().getITEMS())
-					allItems += s.getID() + ",";
+				for (Item i : robots[indexOfRobot].getActiveJob().getITEMS())
+					allItems += i.getID() + ",";
 				robot1Data[0][4] = allItems.substring(0, allItems.length() - 1);
 				allItems = "";
 			} else if (indexOfRobot == 1) {
@@ -191,8 +211,8 @@ public class JobsInterface extends JFrame implements Runnable {
 				robot2Data[0][2] = Float.toString(robots[indexOfRobot].getActiveJob().getREWARD());
 				robot2Data[0][3] =  "[" + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().x)) 
 				+ ", " + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().y)) + "]";
-				for (Item s : robots[indexOfRobot].getActiveJob().getITEMS())
-					allItems += s.getID() + ",";
+				for (Item i : robots[indexOfRobot].getActiveJob().getITEMS())
+					allItems += i.getID() + ",";
 				robot2Data[0][4] = allItems.substring(0, allItems.length() - 1);
 				allItems = "";
 			} else if (indexOfRobot == 2) {
@@ -201,8 +221,8 @@ public class JobsInterface extends JFrame implements Runnable {
 				robot3Data[0][2] = Float.toString(robots[indexOfRobot].getActiveJob().getREWARD());
 				robot3Data[0][3] =  "[" + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().x)) 
 				+ ", " + Integer.toString(Math.round(robots[indexOfRobot].getCurrentPosition().y)) + "]";
-				for (Item s : robots[indexOfRobot].getActiveJob().getITEMS())
-					allItems += s.getID() + ",";
+				for (Item i : robots[indexOfRobot].getActiveJob().getITEMS())
+					allItems += i.getID() + ",";
 				robot3Data[0][4] = allItems.substring(0, allItems.length() - 1);
 				allItems = "";
 			}
@@ -213,7 +233,18 @@ public class JobsInterface extends JFrame implements Runnable {
 	}
 
 	public void setCompletedJobsInfo() {
-
+		try{
+			for(int i = 0; i < completedJobs.size(); i++){
+				completedJobsData[i][0] = Integer.toString(completedJobs.get(i).getID()); 
+				completedJobsData[i][1] = Float.toString(completedJobs.get(i).getWEIGHT()); 
+				completedJobsData[i][2] = Float.toString(completedJobs.get(i).getREWARD()); 
+				String allItems = "";
+				for(Item item : completedJobs.get(i).getITEMS())
+					allItems += item.getID() + ",";
+				completedJobsData[i][3] = allItems.substring(0, allItems.length() - 1);
+			}
+		}catch (NullPointerException e) {
+		}
 	}
 	
 	//Thread that updated all information
@@ -227,7 +258,7 @@ public class JobsInterface extends JFrame implements Runnable {
 			contentPane.repaint();
 			contentPane.revalidate();
 			try {
-				Thread.sleep(500);
+				Thread.sleep(400);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

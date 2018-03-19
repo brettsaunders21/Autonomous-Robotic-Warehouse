@@ -47,7 +47,7 @@ public class PCController {
 		new WarehouseInterface(ROBOTS);
 		new JobsInterface(ROBOTS);
 		for (int i = 0; i<numOfRobots; i++) {
-			r[i] = new RobotThread(ROBOTS[i], jA, counter, heldPoints);
+			r[i] = new RobotThread(ROBOTS[i], jA, counter, heldPoints, completedJobs);
 			r[i].setName(ROBOTS[i].getRobotName());
 			r[i].start();
 			controllerLogger.debug("Started robot thread: " + ROBOTS[i].getRobotName());
