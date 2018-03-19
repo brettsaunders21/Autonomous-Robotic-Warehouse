@@ -84,16 +84,13 @@ public class Movement {
 			PILOT.forward();
 			while (isLeftOnLine() && !isRightOnLine()) {
 				PILOT.rotateRight();
-				System.out.println("Is on left line");
 			}
 			while (!isLeftOnLine() && isRightOnLine()) {
 				PILOT.rotateLeft();
-				System.out.println("Is on right line");
 			}
 		}
 		}
 		PILOT.stop();
-		rInterface.resetQuantity();
 	}
 	
 	public boolean isOnLine(int lightValue) {

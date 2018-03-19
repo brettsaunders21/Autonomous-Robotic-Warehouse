@@ -30,6 +30,7 @@ public class Robot {
 		this.jobsCompleted = 0;
 		this.currentCoords = _startPostion;
 		this.setCurrentPose(Pose.POS_X);
+		this.activeJob = null;
 	}
 	
 	public void jobFinished() {
