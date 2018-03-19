@@ -43,56 +43,51 @@ public class AStar {
 		this.map = map;
 	}
 
+	
+	
 	public Route adjustForCollisions(Route r, Route[] rs, int startTime, int numOfInstructionsSent) {
-		if (numOfInstructionsSent==r.getLength()-1) {
+		if (r.getDirections().size()==0) {
 			return r;
 		}
-		Action[] actions = r.getDirectionArray();
-		int timePoint = r.getLength()-1;
-		for (int i = numOfInstructionsSent; i< actions.length; i++) {
-			if (actions[i].equals(Action.HOLD)||actions[i].equals(Action.PICKUP)||actions[i].equals(Action.DROPOFF)) {
-				timePoint = i;
+		int diffFromStart = r.getCoordinatesArray().length-r.getCoordinates().size();
+		Action[] directions = new Action[r.getDirections().size()];
+		directions = r.getDirections().toArray(directions);
+		Point[] coordinates = new Point[r.getCoordinates().size()];
+		coordinates = r.getCoordinates().toArray(coordinates);
+		int endPointIndex = directions.length-1;
+		for (int i = 0; i<directions.length; i++) {
+			logger.info(directions[i]);
+			if (directions[i].equals(Action.PICKUP)||directions[i].equals(Action.DROPOFF)||directions[i].equals(Action.HOLD)) {
+				endPointIndex = i;
 				break;
 			}
 		}
-		Point[] coordinates = r.getCoordinatesArray();
-		boolean collision = false;
-		for (int i = numOfInstructionsSent; i<timePoint; i++) {
-			for (Route route : rs) {
-				Point[] otherCoords = route.getCoordinatesArray();
-				int relativeTime = ((startTime-route.getStartTime())+i)-numOfInstructionsSent;
-				if (relativeTime>=0 && relativeTime<route.getLength()) {
-					Point myCoord = coordinates[i];
-					Point theirCoord = otherCoords[relativeTime];
-					if (myCoord.equals(theirCoord)) {
-						collision = true;
-						break;
-					}
-				}
-			}
-			if (collision) {
-				break;
-			}
+		logger.info(endPointIndex);
+		BlockingQueue<Action> dirQ = r.getDirections();
+		BlockingQueue<Point> coordQ = r.getCoordinates();
+		for (int i = 0; i< endPointIndex; i++) {
+			logger.info(dirQ.poll());
+			logger.info(coordQ.poll());
 		}
-		if (collision) {
-			Point startCoord = coordinates[timePoint];
-			Point endCoord = coordinates[timePoint];
-			Pose pose = r.getPoseAt(numOfInstructionsSent);
-			Route nextSection = generateRoute(startCoord, endCoord, pose, rs, startTime);
-			boolean nextNonMove = false;
-			while (!nextNonMove) {
-				BlockingQueue<Point> coordQ = r.getCoordinates();
-				BlockingQueue<Action> directionQ = r.getDirections();
-				if (directionQ.peek().equals(Action.HOLD)||directionQ.peek().equals(Action.PICKUP)||directionQ.peek().equals(Action.DROPOFF)) {
-					nextNonMove = true;
-				}
-				else {
-					coordQ.poll();
-					directionQ.poll();
-				}
-			}
-			r = new Route(r.getCoordinates(), r.getDirections(), r.getPoseAt(timePoint), startTime, endCoord);
-			r = new Route(nextSection, r);
+		logger.warn(r.getCoordinatesArray()[diffFromStart-1]);
+		logger.warn(r.getCoordinatesArray()[diffFromStart]);
+		Point coord;
+		if (dirQ.peek().equals(Action.HOLD)||dirQ.peek().equals(Action.PICKUP)||dirQ.peek().equals(Action.DROPOFF)) {
+			coord = coordQ.peek();
+		}
+		else {
+			coord = coordQ.poll();
+			dirQ.poll();
+		}
+		Route nextStep = generateRoute(r.getCoordinatesArray()[diffFromStart-1], coord, r.getPoseAt(diffFromStart-1), rs, startTime);
+		logger.warn(coordQ.peek());
+		if (r.getCoordinates().size()==0) {	
+			r = nextStep;
+		}
+		else {
+			logger.warn(r.getCoordinates().peek());
+			logger.warn(r.getDirections().peek());
+			r = new Route(nextStep, r);				
 		}
 		return r;
 	}
@@ -387,7 +382,7 @@ public class AStar {
 		for (Route route : routes) {
 			Action[] directions = route.getDirectionArray();
 			Point[] coords = route.getCoordinatesArray();
-			for (int i = 0; i<route.getLength(); i++) {
+			for (int i = 0; i<directions.length; i++) {
 				if (directions[i].equals(Action.PICKUP)||directions[i].equals(Action.DROPOFF)||directions[i].equals(Action.HOLD)) {
 					holdCoords.add(coords[i]);
 				}
