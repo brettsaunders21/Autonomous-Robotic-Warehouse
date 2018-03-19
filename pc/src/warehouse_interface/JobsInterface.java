@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import interfaces.Robot;
 import job.Item;
 import job.Job;
+import job.JobList;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -45,13 +46,15 @@ public class JobsInterface extends JFrame implements Runnable {
 	String[][] robot3Data = new String[1][5];
 	private JTable t;
 	String itemsCsvFile = "src/job/csv/items.csv";
+	JobList jobList;
 
-	public JobsInterface(Robot[] robots, ArrayList<Job> completedJobs) {
+	public JobsInterface(Robot[] robots, ArrayList<Job> completedJobs, JobList jobList) {
 		mainLayout = new GridLayout((8 + robots.length * 2), 0);
 		setFrame();
 		setPanes();
 		this.robots = robots;
 		this.completedJobs = completedJobs;
+		this.jobList = jobList;
 		for (int i = 0; i < robots.length; i++) {
 			currentInfo(robots[i].getRobotName(), i);
 		}
@@ -274,8 +277,7 @@ public class JobsInterface extends JFrame implements Runnable {
 				try {
 					String jobTocancel = Integer.toString(robots[indexOfRobot].getActiveJob().getID());
 					if (textField.getText().equals(jobTocancel)) {
-						robots[indexOfRobot].cancelJob();
-						System.out.println("Job was removed");
+						jobList.cancelJob(Integer.parseInt(textField.getText()));
 					}
 				} catch (Exception ee) {
 					// TODO: handle exception
