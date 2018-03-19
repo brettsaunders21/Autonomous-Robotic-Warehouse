@@ -5,6 +5,7 @@ import interfaces.Action;
 import interfaces.Pose;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -28,13 +29,15 @@ public class JobAssignment {
 	private TSP tsp;
 	private Job recentJob;
 	private JobList jobList;
+	private Robot[] robots;
 	
-	public JobAssignment(JobList _jobList, Counter _counter, ArrayList<Point> _drops) {
+	public JobAssignment(JobList _jobList, Counter _counter, ArrayList<Point> _drops, Robot[] _robots) {
 		jobs = _jobList.getJobList();
 		counter = _counter;
 		drops = _drops;
 		tsp = new TSP(drops);
 		jobList = _jobList;
+		robots = _robots;
 	}
 
 
@@ -82,12 +85,12 @@ public class JobAssignment {
 		for (Item item : items) {
 			if(item.getID().equals("droppoint")){
 				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,initialPose);
-				itemRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff, initialPose, new Route[] {},timeCount);
+				itemRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff, initialPose, getCurrentRoutes(r),timeCount);
 				currentRobotPosition = nearestDropoff;
 				Route routeWithDropoff = new Route(itemRoute, Action.DROPOFF);
 				routes.add(routeWithDropoff);
 			}else{
-				itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), initialPose, new Route[] {}, timeCount);
+				itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), initialPose,getCurrentRoutes(r), timeCount);
 				currentRobotPosition = item.getPOSITION();
 				routes.add(itemRoute);
 			}
@@ -98,7 +101,7 @@ public class JobAssignment {
 			timeCount = counter.getTime();
 		}
 		Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,initialPose);
-		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , initialPose, new Route[] {},timeCount);
+		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , initialPose, getCurrentRoutes(r),timeCount);
 		routes.add(dropoffRoute);
 		logger.debug(initialPose);
 		logger.debug(routes);
@@ -107,6 +110,18 @@ public class JobAssignment {
 	
 	public Job getCurrentJob(){
 		return recentJob;
+	}
+	
+	private Route[] getCurrentRoutes(Robot currentRobot){
+		ArrayList<Route> routes = new ArrayList<Route>();
+		for (int i = 0; i < robots.length; i++) {
+			if (robots[i].getActiveJob() != null 
+					&& robots[i].getActiveJob().getCurrentroute() != null
+					&& robots[i].getRobotName() != currentRobot.getRobotName()) {
+				routes.add(robots[i].getActiveJob().getCurrentroute());
+			}
+		}
+		return routes.toArray(new Route[routes.size()]);
 	}
 		
 }
