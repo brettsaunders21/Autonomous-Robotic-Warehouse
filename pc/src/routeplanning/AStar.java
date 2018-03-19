@@ -83,7 +83,7 @@ public class AStar {
 			while (!nextNonMove) {
 				BlockingQueue<Point> coordQ = r.getCoordinates();
 				BlockingQueue<Action> directionQ = r.getDirections();
-				if (coordQ.peek().equals(Action.HOLD)||coordQ.peek().equals(Action.PICKUP)||coordQ.peek().equals(Action.DROPOFF)) {
+				if (directionQ.peek().equals(Action.HOLD)||directionQ.peek().equals(Action.PICKUP)||directionQ.peek().equals(Action.DROPOFF)) {
 					nextNonMove = true;
 				}
 				else {
