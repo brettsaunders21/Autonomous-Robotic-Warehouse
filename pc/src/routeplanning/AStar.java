@@ -144,8 +144,7 @@ public class AStar {
 				currentPosition, blockages);
 		}
 		catch (StackOverflowError e) {
-			logger.debug(currentPosition +" "+targetPosition + " " + myStartTime);
-			System.exit(-1);
+			logger.fatal(currentPosition +" "+targetPosition + " " + myStartTime);
 		}
 		// moves final coordinates to queue and finalises the length of the route
 		coordinates.addAll(ti.getCoords());
@@ -481,7 +480,7 @@ public class AStar {
 			theirPointNow = route.getStartPoint();
 		}
 		if (theirPointNow.equals(nextPoint) && theirNextPoint.equals(thisPoint)) {
-			throw new BacktrackNeededException(nextPoint, myTime);
+			//throw new BacktrackNeededException(nextPoint, myTime);
 		}
 	}
 
