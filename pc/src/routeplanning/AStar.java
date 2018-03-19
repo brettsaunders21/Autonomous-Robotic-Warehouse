@@ -12,7 +12,6 @@ import interfaces.Action;
 import interfaces.Pose;
 import lejos.geom.Point;
 import routeplanning.astarhelpers.*;
-import sun.security.x509.IssuingDistributionPointExtension;
 
 /**
  * @author ladderackroyd
@@ -56,21 +55,17 @@ public class AStar {
 		coordinates = r.getCoordinates().toArray(coordinates);
 		int endPointIndex = directions.length-1;
 		for (int i = 0; i<directions.length; i++) {
-			logger.info(directions[i]);
 			if (directions[i].equals(Action.PICKUP)||directions[i].equals(Action.DROPOFF)||directions[i].equals(Action.HOLD)) {
 				endPointIndex = i;
 				break;
 			}
 		}
-		logger.info(endPointIndex);
 		BlockingQueue<Action> dirQ = r.getDirections();
 		BlockingQueue<Point> coordQ = r.getCoordinates();
 		for (int i = 0; i< endPointIndex; i++) {
-			logger.info(dirQ.poll());
-			logger.info(coordQ.poll());
+			dirQ.poll();
+			coordQ.poll();
 		}
-		logger.warn(r.getCoordinatesArray()[diffFromStart-1]);
-		logger.warn(r.getCoordinatesArray()[diffFromStart]);
 		Point coord;
 		if (dirQ.peek().equals(Action.HOLD)||dirQ.peek().equals(Action.PICKUP)||dirQ.peek().equals(Action.DROPOFF)) {
 			coord = coordQ.peek();
@@ -80,13 +75,13 @@ public class AStar {
 			dirQ.poll();
 		}
 		Route nextStep = generateRoute(r.getCoordinatesArray()[diffFromStart-1], coord, r.getPoseAt(diffFromStart-1), rs, startTime);
-		logger.warn(coordQ.peek());
+		logger.setLevel(Level.DEBUG);
+		logger.debug(r.getPoseAt(diffFromStart-1));
+		logger.setLevel(Level.OFF);
 		if (r.getCoordinates().size()==0) {	
 			r = nextStep;
 		}
 		else {
-			logger.warn(r.getCoordinates().peek());
-			logger.warn(r.getDirections().peek());
 			r = new Route(nextStep, r);				
 		}
 		return r;
