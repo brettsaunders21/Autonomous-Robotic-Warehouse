@@ -281,9 +281,9 @@ public class AStarTest {
 	}
 
 	@Test
-	public void test1() {
+	public void holdTest1() {
 		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.POS_X, new Route[] {}, 0);
 		r1 = new Route(r1, Action.DROPOFF);
 		
@@ -298,6 +298,73 @@ public class AStarTest {
 		Point[] ps2 = new Point[] {new Point(0,1), new Point(0,0), new Point(1,0), new Point(2, 0), new Point(3, 0), new Point(4, 0), new Point(4,0), new Point(5, 0)};
 		logger.debug(r2.getDirections());
 		assertArrayEquals(ps2, r2.getCoordinates().toArray());
+		
+		
+		aStarLogger.setLevel(Level.OFF);
+		logger.setLevel(Level.OFF);
+	}
+	
+	@Test
+	public void holdTest2() {
+		aStarLogger.setLevel(Level.OFF);
+		logger.setLevel(Level.OFF);
+		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.POS_X, new Route[] {}, 0);
+		r1 = new Route(r1, Action.PICKUP);
+		Route r3 = aStar.generateRoute(new Point(5, 0), new Point(11, 0), Pose.POS_X, new Route[] {}, 0);
+		r1 = new Route(r1, r3);
+		r1 = new Route(r1, Action.DROPOFF);
+		
+		Route[] rs = new Route[] {r1};
+
+		Route r2 = aStar.generateRoute(new Point(0, 2), new Point(11, 0), Pose.POS_X, rs, 0);
+		
+		logger.debug(r1.getDirections());
+		logger.debug(r1.getCoordinates());
+		logger.debug(r2.getDirections());
+		logger.debug(r2.getCoordinates());
+		
+		Point[] ps1 = new Point[] {new Point(1, 0), new Point(2, 0), new Point(3, 0), new Point(4, 0), new Point(5,0), new Point(5,0), new Point(6,0), new Point(7,0), new Point(8,0), new Point(9,0), new Point(10,0), new Point(11,0), new Point(11,0)};
+		assertArrayEquals(ps1, r1.getCoordinates().toArray());
+
+
+		Point[] ps2 = new Point[] {new Point(0,1), new Point(0,0), new Point(1,0), new Point(2, 0), new Point(3, 0), new Point(4, 0), new Point(4,0), new Point(5, 0), new Point(6,0), new Point(7,0), new Point(8,0), new Point(9,0), new Point(10,0), new Point(11,0)};
+
+		assertArrayEquals(ps2, r2.getCoordinates().toArray());
+		
+		
+		for (int i=0; i<5; i++) {
+			r1.getDirections().poll();
+			r2.getDirections().poll();
+			r1.getCoordinates().poll();
+			r2.getCoordinates().poll();
+		}
+		r2.getDirections().poll();
+		r2.getCoordinates().poll();
+		r1.getCoordinates().poll();
+		r2.getCoordinates().poll();
+		logger.debug(r1.getDirections().poll());
+		logger.debug(r2.getDirections().poll());
+		Route[] rs1 = new Route[] {r2};
+
+		
+		r1 = aStar.adjustForCollisions(r1, rs1, 10, 6);
+		Route[] rs2 = new Route[] {r1};
+		r2 = aStar.adjustForCollisions(r2, rs2, 10, 7);
+		
+		logger.debug(r1.getDirections());
+		logger.debug(r2.getDirections());
+
+		Point[] ps3 = new Point[] {new Point(6,0), new Point(7,0), new Point(8,0), new Point(9,0), new Point(10,0), new Point(11,0), new Point(11,0)};
+		assertArrayEquals(ps3, r1.getCoordinatesArray());
+
+
+		logger.debug(r1.getCoordinates());
+		
+		Point[] ps4 = new Point[] {new Point(5,0), new Point(6,0), new Point(7,0), new Point(8,0), new Point(9,0), new Point(10,0), new Point(10,0), new Point(11,0)};
+		
+		logger.debug(r2.getCoordinates());
+		
+		assertArrayEquals(ps4, r2.getCoordinatesArray());
 		
 		
 		aStarLogger.setLevel(Level.OFF);
