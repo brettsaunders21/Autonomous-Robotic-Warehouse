@@ -48,7 +48,7 @@ public class RobotController implements StoppableRunnable {
 			try {
 				rInterface.setJobCode(networkHandler.receiveInt());
 				rInterface.setCurrentDirection(networkHandler.receiveAction());
-				rInterface.setDropLocation(networkHandler.receivePoint());
+				rInterface.setDropLocation(networkHandler.receiveString());
 				rInterface.waitingForOrdersMessage();
 				currentCommand = (Action) networkHandler.receiveAction();
 

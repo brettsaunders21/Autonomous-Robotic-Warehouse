@@ -104,14 +104,6 @@ public abstract class AbstractSenderReceiver implements Runnable {
 	public float receiveFloat() throws IOException {
 		return inputStream.readFloat();
 	}
-	
-	public String receivePoint()throws IOException {
-		return inputStream.readUTF();
-	}
-	
-	public Object receiveQueue()throws IOException {
-		return inputStream.read();
-	}
 
 	/**
 	 * Method for sending objects
