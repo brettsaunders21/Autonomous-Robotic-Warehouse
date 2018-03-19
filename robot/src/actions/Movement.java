@@ -12,7 +12,7 @@ public class Movement {
 	private  final LightSensor LEFT_SENSOR;
 	private final LightSensor RIGHT_SENSOR;
 	private final DifferentialPilot PILOT;
-	RobotInterface rI;
+	RobotInterface rInterface;
 	
 	public Movement(int _MID_BOUND, RobotInterface _rI) {
 		PILOT = new WheeledRobotSystem(Configuration.CUSTOM_EXPRESS_BOT).getPilot();
@@ -21,7 +21,7 @@ public class Movement {
 		MID_BOUND = _MID_BOUND;
 		PILOT.setTravelSpeed(0.2f);
 		PILOT.setRotateSpeed(85);
-		rI = _rI;
+		rInterface = _rI;
 	}
 	
 	public void nextAction(Action command, int pickAmount) {
@@ -65,11 +65,11 @@ public class Movement {
 			break;
 		case PICKUP:
 			PILOT.stop();
-			rI.waitForLoadingMessage(pickAmount);
+			rInterface.pickItems(pickAmount);
 			break;
 		case DROPOFF:
 			PILOT.stop();
-			rI.waitForUnloadingMessage(pickAmount);
+			rInterface.dropItems(pickAmount);
 			break;
 		case CANCEL:
 			break;
@@ -93,7 +93,7 @@ public class Movement {
 		}
 		}
 		PILOT.stop();
-		rI.resetQuantity();
+		rInterface.resetQuantity();
 	}
 	
 	public boolean isOnLine(int lightValue) {
