@@ -12,6 +12,7 @@ import interfaces.Action;
 import interfaces.Pose;
 import lejos.geom.Point;
 import routeplanning.astarhelpers.*;
+import sun.security.x509.IssuingDistributionPointExtension;
 
 /**
  * @author ladderackroyd
@@ -39,7 +40,6 @@ public class AStar {
 	 *            the map that route finding will be carried out on
 	 */
 	public AStar(Map map) {
-		logger.setLevel(Level.OFF);
 		this.map = map;
 	}
 
@@ -124,8 +124,11 @@ public class AStar {
 		if (!tempMap.withinMapBounds(currentPosition) || !tempMap.withinMapBounds(targetPosition)) {
 			throw new IllegalArgumentException("Coordinate not within map area");
 		}
+		logger.fatal("map " + map.isPassable(currentPosition));
+		logger.fatal(tempMap.isPassable(currentPosition));
 		// checks that both points are at potentially reachable positions
 		if (!tempMap.isPassable(currentPosition) || !tempMap.isPassable(targetPosition)) {
+			logger.fatal(currentPosition);
 			throw new IllegalStateException("One or both coordinates are not in the traversable area");
 		}
 		//
@@ -170,10 +173,8 @@ public class AStar {
 	 */
 	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap, Route[] routes,
 			int myStartTime, Point myStartCoord, BacktrackNeededException[] blockages) {
-		boolean collision = true;
-		TempRouteInfo finalInfo = null;
-		while (collision) {
-			collision = false;
+		
+		while (true) {
 			// finds the shortest route through the map
 			ConcurrentMap<Point, RouteCoordInfo> visitedPoints = findShortestRoute(tempMap, startPosition,
 					targetPosition, blockages);
@@ -181,22 +182,29 @@ public class AStar {
 			// produces the route information in the correct order
 			TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints);
 
+			logger.fatal("");
+			logger.fatal(tempMap.isPassable(new Point(5,0)));
+			
 			try {
-				finalInfo = addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord);
-				collision = false;
+				return addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord, tempMap);
 			} catch (BacktrackNeededException e) {
-				collision = true;
 				ArrayList<BacktrackNeededException> blockedInfo = new ArrayList<BacktrackNeededException>();
 				for (BacktrackNeededException b : blockages) {
 					blockedInfo.add(b);
 				}
-				blockedInfo.add(e);
+				Map updatedMap;
+				if (!e.isIndefinitelyBlocked()) {
+					blockedInfo.add(e);
+					updatedMap = tempMap;
+				}
+				else {
+					updatedMap = tempMap.clone(e.getBlockedPoint());
+				}
 				blockages = blockedInfo.toArray(blockages);
-				finalInfo = routeFindingAlgo(startPosition, targetPosition, tempMap, routes, myStartTime, myStartCoord,
+				return routeFindingAlgo(startPosition, targetPosition, updatedMap, routes, myStartTime, myStartCoord,
 						blockages);
 			}
 		}
-		return finalInfo;
 	}
 
 	/*
@@ -272,6 +280,9 @@ public class AStar {
 		// indexes: [0]:left, [1]:right, [2]:up, [3]:down
 		for (int allDirs = 0; allDirs < 4; allDirs++) {
 			// for each point within the bounds of the map
+			logger.warn(testPoint);
+			logger.warn(tempMap);
+			logger.warn(testDirs);
 			if (tempMap.withinMapBounds(testDirs[allDirs])) {
 				// if test point is passable and makes the route shorter than the
 				if (tempMap.isPassable(testDirs[allDirs])) {
@@ -375,16 +386,35 @@ public class AStar {
 	 * wait instruction to avoid a collision
 	 */
 	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo, Route[] routes, int myStartTime,
-			Point myStartCoord) throws BacktrackNeededException {
+			Point myStartCoord, Map tempMap) throws BacktrackNeededException {
 		ArrayList<Point> tempCoords = tempInfo.getCoords();
 		ArrayList<Integer> tempDirs = tempInfo.getDirs();
 		ArrayList<Point> holdCoords = new ArrayList<Point>();
-		for (Route route : routes) {
-			Action[] directions = route.getDirectionArray();
-			Point[] coords = route.getCoordinatesArray();
+		boolean[] heldAlreadyFound = new boolean[routes.length];
+		for (int i = 0; i<heldAlreadyFound.length; i++) {
+			heldAlreadyFound[i] = false;
+		}
+		for (int routeIndex = 0; routeIndex<routes.length; routeIndex++) {
+			if (!heldAlreadyFound[routeIndex]) {
+			Action[] directions = routes[routeIndex].getDirectionArray();
+			Point[] coords = routes[routeIndex].getCoordinatesArray();
 			for (int i = 0; i<directions.length; i++) {
 				if (directions[i].equals(Action.PICKUP)||directions[i].equals(Action.DROPOFF)||directions[i].equals(Action.HOLD)) {
 					holdCoords.add(coords[i]);
+					heldAlreadyFound[routeIndex] = true;
+					break;
+				}
+			}
+			}
+			else {
+				boolean noFurtherChecks = true;
+				for (int i = 0; i<heldAlreadyFound.length; i++) {
+					if (!heldAlreadyFound[i]) {
+						noFurtherChecks = false;
+					}
+				}
+				if (noFurtherChecks) {
+					break;
 				}
 			}
 		}
@@ -393,14 +423,20 @@ public class AStar {
 		while (i < tempCoords.size()) {
 			for (Point p : holdCoords) {
 				if (p.equals(tempCoords.get(i))) {
-					if (i > 0) {
-						tempCoords.add(i, tempCoords.get(i - 1));
-					} else {
-						tempCoords.add(i, myStartCoord);
+					if (i+1==tempCoords.size()) {
+						if (i > 0) {
+							tempCoords.add(i, tempCoords.get(i - 1));
+						} else {
+							tempCoords.add(i, myStartCoord);
+						}
+						tempDirs.add(i, HOLD);
+						holdAdded = true;
+						break;
 					}
-					tempDirs.add(i, HOLD);
-					holdAdded = true;
-					break;
+					else if (tempMap.isPassable(p)){
+						logger.fatal(p);
+						throw new BacktrackNeededException(p, -1);
+					}
 				}
 			}
 			if (holdAdded) {

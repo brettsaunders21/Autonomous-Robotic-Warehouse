@@ -23,4 +23,8 @@ public class BacktrackNeededException extends RuntimeException {
 	public int getRelTime() {
 		return relTime;
 	}
+	
+	public boolean isIndefinitelyBlocked() {
+		return (relTime==(-1));
+	}
 }

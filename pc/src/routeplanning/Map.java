@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 public class Map {
 	final static Logger logger = Logger.getLogger(Map.class);
 
-	private boolean[][] passable; // false for walls or other obstructions in the map-space
+	private final boolean[][] passable; // false for walls or other obstructions in the map-space
 	private final int height; // height of the map
 	private final int width; // width of the map
 
@@ -92,11 +92,11 @@ public class Map {
 			throw new IllegalArgumentException("More points than grid size");
 		}
 
-		this.passable = new boolean[width + 1][height + 1];
+		boolean[][] tempPassable = new boolean[width + 1][height + 1];
 		// initialises all values to true, ie no obstructions
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				passable[x][y] = true;
+				tempPassable[x][y] = true;
 			}
 		}
 
@@ -110,8 +110,9 @@ public class Map {
 				logger.debug("w " + width + " h " + height + " x " + x + " y " + y);
 				throw new IllegalArgumentException("Point not within bounds of map");
 			}
-			passable[x][y] = false;
+			tempPassable[x][y] = false;
 		}
+		this.passable = tempPassable;
 	}
 
 	/*
@@ -180,5 +181,32 @@ public class Map {
 	/**@return the array of passable flags*/
 	public boolean[][] obstructions(){
 		return passable;
+	}
+
+	public Map clone(Point p) {
+		if (withinMapBounds(p)) {
+			boolean[][] newObstructions = new boolean[width + 1][height + 1];
+			for (int x = 0; x<width; x++) {
+				for (int y = 0; y<height; y++) {
+					newObstructions[x][y] = true;
+				}
+			}
+			ArrayList<Point> ps = new ArrayList<Point>();
+			for (int x = 0; x<width; x++) {
+				for (int y = 0; y<height; y++) {
+					if (!passable[x][y]) {
+						ps.add(new Point(x,y));
+					}
+				}
+			}
+			ps.add(p);
+			for (Point point : ps) {
+				newObstructions[(int)point.x][(int)point.y] = false;
+			}
+			return new Map(newObstructions);
+		}
+		else {
+			throw new IllegalArgumentException("Point not within bounds of map");
+		}
 	}
 }
