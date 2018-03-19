@@ -65,11 +65,11 @@ public class Movement {
 			break;
 		case PICKUP:
 			PILOT.stop();
-			rInterface.pickItems(pickAmount);
+			rInterface.loadItemsMessage(pickAmount);
 			break;
 		case DROPOFF:
 			PILOT.stop();
-			rInterface.dropItems(pickAmount);
+			rInterface.unloadItemsMessage();
 			break;
 		case CANCEL:
 			break;

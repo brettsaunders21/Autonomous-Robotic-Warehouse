@@ -60,8 +60,9 @@ public class RobotThread extends Thread{
 					if (robot.getActiveJob() != null) {
 						completedJobs.add(robot.getActiveJob());
 					}
+				} else {
+					robot.jobNotFinished();
 				}
-				robot.jobNotFinished();
 				TASKER.assignJobs(robot);
 				rTLogger.debug("Assigned " + robot.getRobotName() + " job: " + robot.getActiveJob());
 			}
