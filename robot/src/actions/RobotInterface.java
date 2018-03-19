@@ -26,11 +26,7 @@ public class RobotInterface {
 	public RobotInterface(){
 		this.itemQuantity = 0;
 		
-		
-		
 	}
-// function to read job info (code and drop location)
-	//way to get the name from nxt
 	
 	public void setRobotName(String receiveString) {
 		robotName = receiveString;

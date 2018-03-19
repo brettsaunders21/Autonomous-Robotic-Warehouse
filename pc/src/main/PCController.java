@@ -45,7 +45,7 @@ public class PCController {
 		//orderedJobs = jS.prioritize();
 		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops());
 		new WarehouseInterface(ROBOTS);
-		new JobsInterface(ROBOTS, orderedJobs);
+		new JobsInterface(ROBOTS, completedJobs);
 		for (int i = 0; i<numOfRobots; i++) {
 			r[i] = new RobotThread(ROBOTS[i], jA, counter, heldPoints, completedJobs);
 			r[i].setName(ROBOTS[i].getRobotName());
