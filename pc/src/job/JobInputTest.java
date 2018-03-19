@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class JobInputTest {
 
 	@Test
-	public void test() {
+	public void testJobInput() {
 		JobInput jI = new JobInput();
 
 		HashMap<String, ArrayList<Float>> itemRewardsWeights = jI.getItemRewardsWeights();
