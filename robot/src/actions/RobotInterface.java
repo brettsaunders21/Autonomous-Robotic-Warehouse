@@ -13,6 +13,7 @@ public class RobotInterface {
 	
 	private int itemQuantity;
 	//private Robot robotInfo;
+	String robotName;
 	int jobCode;
 	String dropLocation;
 	String pickLocation;
@@ -31,51 +32,50 @@ public class RobotInterface {
 // function to read job info (code and drop location)
 	//way to get the name from nxt
 	
-	public int setJobCode(int jobID){
+	public void setRobotName(String receiveString) {
+		robotName = receiveString;
+		
+	}
+	
+	public void setJobCode(int jobID){
 		jobCode = jobID;
-		return jobCode;
 	}
 	
 	public int getJobCode(){
 		return jobCode;
 	}
 	
-	public String setDropLocation(String string){
+	public void setDropLocation(String string){
 		dropLocation = string;
-		return dropLocation;
 	}
 	
 	public String getDropLocation(){
 		return dropLocation;
 	}
 	
-	public String setPickLocation(String pickLocationPoint){
+	public void setPickLocation(String pickLocationPoint){
 		pickLocation = pickLocationPoint;
-		return pickLocation;
 	}
 	
 	public String getPickLocation() {
 		return pickLocation;
 	}
 	
-	public String setCurrentRoute(String whereImGoing){
+	public void setCurrentRoute(String whereImGoing){
 		currentRoute = whereImGoing;
-		return currentRoute;
 	}
 	
 	public String getCurrentRoute(){
 		return currentRoute;
 	}
 	
-	public Action setCurrentDirection(Action receiveAction) {
+	public void setCurrentDirection(Action receiveAction) {
 		currentDirections = receiveAction;
-		return currentDirections;
 	}
 	
 	public Action getCurrentDirection(){
 		return currentDirections;
 	}
-	
 	
 
 	/**
@@ -285,6 +285,8 @@ public class RobotInterface {
 	public int getQuantity(){
 		return itemQuantity;
 	}
+
+	
 
 	
 
