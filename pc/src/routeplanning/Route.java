@@ -57,67 +57,6 @@ public class Route {
 	}
 
 	/**
-	 * @deprecated Creates a new route from an existing one by appending the new
-	 *             directions to the end of the existing route
-	 * 
-	 * @param currentRoute
-	 *            pre-existing route
-	 * @param coordinates
-	 *            coordinates in order of traversal
-	 * @param directions
-	 *            directions in order of execution
-	 * @param length
-	 *            the total length of the route
-	 * @throws IllegalArgumentException
-	 *             route length is negative
-	 */
-	public Route(Route currentRoute, BlockingQueue<Point> coordinates, BlockingQueue<Action> directions) {
-		this.coordinates = currentRoute.getCoordinates();
-		this.coordinates.addAll(coordinates);
-		this.directions = currentRoute.getDirections();
-		this.directions.addAll(directions);
-		this.routeLength = currentRoute.getLength() + coordinates.size();
-		this.startPose = currentRoute.getStartPose();
-		this.coordsArray = (Point[]) coordinates.toArray();
-		this.dirsArray = (Action[]) directions.toArray();
-		this.myStartTime = currentRoute.getStartTime();
-		this.startPoint = currentRoute.getStartPoint();
-	}
-
-	/**
-	 * @deprecated Creates a new route from an existing one by appending the
-	 *             existing route to the new directions
-	 * 
-	 * @param currentRoute
-	 *            pre-existing route
-	 * @param coordinates
-	 *            coordinates in order of traversal
-	 * @param directions
-	 *            directions in order of execution
-	 * @param length
-	 *            the total length of the route
-	 * @param startPose
-	 *            the pose the robot is in when the first direction is executed
-	 * @param orientationAdj
-	 *            the initial adjustment needed before execution of directions
-	 * @throws IllegalArgumentException
-	 *             route length is negative
-	 */
-	public Route(Route currentRoute, BlockingQueue<Point> coordinates, BlockingQueue<Action> directions, Pose startPose,
-			Action orientationAdj, int myStartTime, Point startPoint) {
-		this.coordinates = coordinates;
-		this.coordinates.addAll(currentRoute.getCoordinates());
-		this.directions = directions;
-		this.directions.addAll(currentRoute.getDirections());
-		this.routeLength = currentRoute.getLength() + coordinates.size();
-		this.startPose = startPose;
-		this.dirsArray = (Action[]) directions.toArray();
-		this.coordsArray = (Point[]) coordinates.toArray();
-		this.myStartTime = myStartTime;
-		this.startPoint = startPoint;
-	}
-
-	/**
 	 * @param firstRoute
 	 *            the route which is to form the start of the new route
 	 * @param secondRoute
@@ -288,7 +227,7 @@ public class Route {
 		this.directions = firstRoute.getDirections();
 		this.startPoint = firstRoute.getStartPoint();
 
-		int tempRouteLength = firstRoute.getLength() + secondRoute.getLength();
+		int tempRouteLength = firstRoute.getCoordinates().size()+secondRoute.getCoordinates().size();
 
 		// the middleAction can only be null when called by the constructor which only
 		// takes in two routes

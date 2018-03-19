@@ -75,9 +75,6 @@ public class AStar {
 			dirQ.poll();
 		}
 		Route nextStep = generateRoute(r.getCoordinatesArray()[diffFromStart-1], coord, r.getPoseAt(diffFromStart-1), rs, startTime);
-		logger.setLevel(Level.DEBUG);
-		logger.debug(r.getPoseAt(diffFromStart-1));
-		logger.setLevel(Level.OFF);
 		if (r.getCoordinates().size()==0) {	
 			r = nextStep;
 		}

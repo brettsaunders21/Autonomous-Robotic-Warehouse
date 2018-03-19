@@ -19,8 +19,8 @@ public class Movement {
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		MID_BOUND = _MID_BOUND;
-		PILOT.setTravelSpeed(0.25f);
-		PILOT.setRotateSpeed(85);
+		PILOT.setTravelSpeed(0.2f);
+		PILOT.setRotateSpeed(60);
 		rInterface = _rI;
 	}
 	
@@ -84,11 +84,9 @@ public class Movement {
 			PILOT.forward();
 			while (isLeftOnLine() && !isRightOnLine()) {
 				PILOT.rotateRight();
-				System.out.println("Is on left line");
 			}
 			while (!isLeftOnLine() && isRightOnLine()) {
 				PILOT.rotateLeft();
-				System.out.println("Is on right line");
 			}
 		}
 		}

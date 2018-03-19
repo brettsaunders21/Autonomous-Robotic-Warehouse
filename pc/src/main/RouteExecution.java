@@ -73,6 +73,7 @@ public class RouteExecution {
 				} else {
 					Point heldCoord = arrayOfCoords[instructionCounter];
 					heldPoints.holdAt(heldCoord);
+					counter.isNonMove(robot.getRobotName());
 				}
 				network.sendObject(currentJob.getID());
 				network.sendObject(currentCommand);
@@ -97,17 +98,26 @@ public class RouteExecution {
 					while (heldPoints.isStillHeld(heldCoord)) {
 						Thread.sleep(100);
 					}
+					heldPoints.freeUp(arrayOfCoords[instructionCounter]);
+					counter.isMoveable(robot.getRobotName());
 				}
 				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
 						|| currentCommand.equals(Action.HOLD))) {
 					Point heldCoord = arrayOfCoords[instructionCounter];
 					heldPoints.freeUp(heldCoord);
+					counter.isMoveable(robot.getRobotName());
 					Route currentRoute = currentJob.getCurrentroute();
-					Route[] routesRunning = new Route[robots.length];
+					Route[] routesRunning = new Route[robots.length-1];
+					int j = 0;
 					for (int i = 0; i < robots.length; i++) {
-						routesRunning[i] = robot.getActiveJob().getCurrentroute();
+						if (!robots[i].equals(robot)) {
+							routesRunning[j] = robots[j].getActiveJob().getCurrentroute();
+							j++;
+						}
 					}
 					currentRoute = routeMaker.adjustForCollisions(currentRoute,routesRunning,counter.getTime());
+					rELogger.debug(currentRoute.getStartPose());
+					currentJob.assignCurrentroute(currentRoute);
 					currentDirections = currentRoute.getDirections();
 					
 				}
