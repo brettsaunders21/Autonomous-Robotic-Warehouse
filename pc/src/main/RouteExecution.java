@@ -49,7 +49,9 @@ public class RouteExecution {
 		try {
 			network.sendObject(robot.getRobotName());
 			currentJob = robot.getActiveJob();
-			if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) robot.cancelJob();
+			if (jobList.getJob(robot.getActiveJob().getID()) != null) {
+				if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) robot.cancelJob();
+			}
 			network.sendObject(currentJob.getID());
 			ITEMS = currentJob.getITEMS();
 			currentDirections = currentJob.getCurrentroute().getDirections();
