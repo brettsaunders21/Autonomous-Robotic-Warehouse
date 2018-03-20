@@ -7,6 +7,7 @@ import communication.RobotNetworkHandler;
 import interfaces.Action;
 import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
+import lejos.nxt.SensorPort;
 import rp.systems.StoppableRunnable;
 
 public class RobotController implements StoppableRunnable {
@@ -23,9 +24,9 @@ public class RobotController implements StoppableRunnable {
 	private int low = 999;
 
 	public RobotController() {
+		LEFT_SENSOR = new LightSensor(SensorPort.S1);
+		RIGHT_SENSOR = new LightSensor(SensorPort.S3);
 		rInterface = new RobotInterface();
-		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
-		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		running = true;
 		MID_BOUND = 0;
 		networkHandler = new RobotNetworkHandler();
