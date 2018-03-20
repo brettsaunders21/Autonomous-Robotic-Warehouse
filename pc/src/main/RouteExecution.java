@@ -34,8 +34,11 @@ public class RouteExecution {
 	private Robot[] robots;
 	private AStar routeMaker;
 
+
 	
-	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints, Robot[] _robots, JobList _jobList) {
+	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints,
+			Robot[] _robots, JobList _jobList) {
+
 		this.robot = _robot;
 		this.network = _network;
 		itemsToDrop = new LinkedList<Item>();
@@ -52,7 +55,8 @@ public class RouteExecution {
 			//checking active job ID exists and job is not cancelled
 			currentJob = robot.getActiveJob();
 			if (jobList.getJob(robot.getActiveJob().getID()) != null) {
-				if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) robot.cancelJob();
+				if (jobList.getJob(robot.getActiveJob().getID()).isCanceled())
+					robot.cancelJob();
 			}
 			//retrieving Arraylist of items
 			ITEMS = currentJob.getITEMS();
@@ -120,7 +124,7 @@ public class RouteExecution {
 					heldPoints.freeUp(heldCoord);
 					counter.isMoveable(robot.getRobotName());
 					Route currentRoute = currentJob.getCurrentroute();
-					Route[] routesRunning = new Route[robots.length-1];
+					Route[] routesRunning = new Route[robots.length - 1];
 					int j = 0;
 					for (int i = 0; i < robots.length; i++) {
 						if (!robots[i].equals(robot)) {
@@ -128,11 +132,13 @@ public class RouteExecution {
 							j++;
 						}
 					}
-					currentRoute = routeMaker.adjustForCollisions(currentRoute,routesRunning,counter.getTime());
+					currentRoute = routeMaker.adjustForCollisions(currentRoute, routesRunning, counter.getTime());
 					rELogger.debug(currentRoute.getStartPose());
 					currentJob.assignCurrentroute(currentRoute);
 					currentDirections = currentRoute.getDirections();
-					
+					instructionCounter = -1;
+					arrayOfCoords = currentRoute.getCoordinatesArray();
+
 				}
 				//setting weight for number of items, weight being adjusted for pickup and drop-off
 				if (currentCommand == Action.PICKUP) {
