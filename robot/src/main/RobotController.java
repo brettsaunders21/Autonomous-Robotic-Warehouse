@@ -60,12 +60,7 @@ public class RobotController implements StoppableRunnable {
 					if (currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)) {
 						pickAmount = (int) networkHandler.receiveInt();
 					}
-					if (currentCommand.equals(Action.PICKUP)) rInterface.loadItemsMessage();
-					if (currentCommand.equals(Action.DROPOFF)) rInterface.unloadItemsMessage();
-					if (currentCommand.equals(Action.DROPOFF)) rInterface.setDropLocation(networkHandler.receiveString());
-
 					move.nextAction(currentCommand, pickAmount);
-
 				} else {
 					System.out.println("Error: No command received");
 					break;

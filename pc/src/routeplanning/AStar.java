@@ -5,7 +5,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import interfaces.Action;
@@ -39,13 +38,12 @@ public class AStar {
 	 *            the map that route finding will be carried out on
 	 */
 	public AStar(Map map) {
-		logger.setLevel(Level.OFF);
 		this.map = map;
 	}
 
 	
 	
-	public Route adjustForCollisions(Route r, Route[] rs, int startTime, int numOfInstructionsSent) {
+	public Route adjustForCollisions(Route r, Route[] rs, int startTime) {
 		if (r.getDirections().size()==0) {
 			return r;
 		}
@@ -56,21 +54,17 @@ public class AStar {
 		coordinates = r.getCoordinates().toArray(coordinates);
 		int endPointIndex = directions.length-1;
 		for (int i = 0; i<directions.length; i++) {
-			logger.info(directions[i]);
 			if (directions[i].equals(Action.PICKUP)||directions[i].equals(Action.DROPOFF)||directions[i].equals(Action.HOLD)) {
 				endPointIndex = i;
 				break;
 			}
 		}
-		logger.info(endPointIndex);
 		BlockingQueue<Action> dirQ = r.getDirections();
 		BlockingQueue<Point> coordQ = r.getCoordinates();
 		for (int i = 0; i< endPointIndex; i++) {
-			logger.info(dirQ.poll());
-			logger.info(coordQ.poll());
+			dirQ.poll();
+			coordQ.poll();
 		}
-		logger.warn(r.getCoordinatesArray()[diffFromStart-1]);
-		logger.warn(r.getCoordinatesArray()[diffFromStart]);
 		Point coord;
 		if (dirQ.peek().equals(Action.HOLD)||dirQ.peek().equals(Action.PICKUP)||dirQ.peek().equals(Action.DROPOFF)) {
 			coord = coordQ.peek();
@@ -80,13 +74,10 @@ public class AStar {
 			dirQ.poll();
 		}
 		Route nextStep = generateRoute(r.getCoordinatesArray()[diffFromStart-1], coord, r.getPoseAt(diffFromStart-1), rs, startTime);
-		logger.warn(coordQ.peek());
 		if (r.getCoordinates().size()==0) {	
 			r = nextStep;
 		}
 		else {
-			logger.warn(r.getCoordinates().peek());
-			logger.warn(r.getDirections().peek());
 			r = new Route(nextStep, r);				
 		}
 		return r;
@@ -126,6 +117,8 @@ public class AStar {
 		}
 		// checks that both points are at potentially reachable positions
 		if (!tempMap.isPassable(currentPosition) || !tempMap.isPassable(targetPosition)) {
+			logger.fatal(currentPosition + " " +tempMap.isPassable(currentPosition));
+			logger.fatal(targetPosition + " " +tempMap.isPassable(targetPosition));
 			throw new IllegalStateException("One or both coordinates are not in the traversable area");
 		}
 		//
@@ -141,8 +134,10 @@ public class AStar {
 				currentPosition, blockages);
 		}
 		catch (StackOverflowError e) {
-			logger.debug(currentPosition +" "+targetPosition + " " + myStartTime);
-			System.exit(-1);
+			logger.fatal(currentPosition + " " +targetPosition + " " + myStartTime);
+			for (int i = 0; i<blockages.length; i++) {
+				logger.fatal(blockages[i].getBlockedPoint() + " " + blockages[i].getRelTime());
+			}
 		}
 		// moves final coordinates to queue and finalises the length of the route
 		coordinates.addAll(ti.getCoords());
@@ -170,33 +165,35 @@ public class AStar {
 	 */
 	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap, Route[] routes,
 			int myStartTime, Point myStartCoord, BacktrackNeededException[] blockages) {
-		boolean collision = true;
-		TempRouteInfo finalInfo = null;
-		while (collision) {
-			collision = false;
+		
+		while (true) {
 			// finds the shortest route through the map
 			ConcurrentMap<Point, RouteCoordInfo> visitedPoints = findShortestRoute(tempMap, startPosition,
 					targetPosition, blockages);
 
 			// produces the route information in the correct order
 			TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints);
-
+			
 			try {
-				finalInfo = addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord);
-				collision = false;
+				return addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord, tempMap);
 			} catch (BacktrackNeededException e) {
-				collision = true;
 				ArrayList<BacktrackNeededException> blockedInfo = new ArrayList<BacktrackNeededException>();
 				for (BacktrackNeededException b : blockages) {
 					blockedInfo.add(b);
 				}
-				blockedInfo.add(e);
+				Map updatedMap;
+				if (e.isIndefinitelyBlocked()) {
+					updatedMap = tempMap.clone(e.getBlockedPoint());
+				}
+				else {
+					blockedInfo.add(e);
+					updatedMap = tempMap;
+				}
 				blockages = blockedInfo.toArray(blockages);
-				finalInfo = routeFindingAlgo(startPosition, targetPosition, tempMap, routes, myStartTime, myStartCoord,
+				return routeFindingAlgo(startPosition, targetPosition, updatedMap, routes, myStartTime, myStartCoord,
 						blockages);
 			}
 		}
-		return finalInfo;
 	}
 
 	/*
@@ -251,8 +248,8 @@ public class AStar {
 
 			routeTime++;
 
-			logger.info(testPoint);
-			logger.info(visitedPoints.get(testPoint).getTotalPointDist());
+			logger.trace(testPoint);
+			logger.trace(visitedPoints.get(testPoint).getTotalPointDist());
 		}
 		return visitedPoints;
 	}
@@ -269,6 +266,7 @@ public class AStar {
 				new Point(testPoint.x + 1, testPoint.y), // right
 				new Point(testPoint.x, testPoint.y + 1) }; // down
 
+		logger.trace(testPoint);
 		// indexes: [0]:left, [1]:right, [2]:up, [3]:down
 		for (int allDirs = 0; allDirs < 4; allDirs++) {
 			// for each point within the bounds of the map
@@ -284,6 +282,7 @@ public class AStar {
 						}
 					}
 					if (!blocked) {
+						logger.trace(testDirs[allDirs]);
 						points.add(testDirs[allDirs]);
 					}
 				}
@@ -301,18 +300,20 @@ public class AStar {
 		// the shortest route found so far
 		double nextDist = Double.POSITIVE_INFINITY;
 		// the point corresponding to the shortest route
-		Point nextPoint = new Point(-1, -1);
+		Point nextPoint = null;
 		for (int i = 0; i < visitedCoords.size(); i++) {
 			Point p = visitedCoords.get(i);
+			logger.trace("v "+p);
 			RouteCoordInfo pInfo = visitedPoints.get(p);
 			if (!traversedCoords.contains(p)) {
+				logger.trace("t " +p);
 				if (pInfo.getTotalPointDist() < nextDist) {
 					nextPoint = p;
 					nextDist = pInfo.getTotalPointDist();
-					traversedCoords.add(p);
 				}
 			}
 		}
+		traversedCoords.add(nextPoint);
 		return nextPoint;
 	}
 
@@ -375,16 +376,35 @@ public class AStar {
 	 * wait instruction to avoid a collision
 	 */
 	private TempRouteInfo addRobotAvoidInstructions(TempRouteInfo tempInfo, Route[] routes, int myStartTime,
-			Point myStartCoord) throws BacktrackNeededException {
+			Point myStartCoord, Map tempMap) throws BacktrackNeededException {
 		ArrayList<Point> tempCoords = tempInfo.getCoords();
 		ArrayList<Integer> tempDirs = tempInfo.getDirs();
 		ArrayList<Point> holdCoords = new ArrayList<Point>();
-		for (Route route : routes) {
-			Action[] directions = route.getDirectionArray();
-			Point[] coords = route.getCoordinatesArray();
+		boolean[] heldAlreadyFound = new boolean[routes.length];
+		for (int i = 0; i<heldAlreadyFound.length; i++) {
+			heldAlreadyFound[i] = false;
+		}
+		for (int routeIndex = 0; routeIndex<routes.length; routeIndex++) {
+			if (!heldAlreadyFound[routeIndex]) {
+			Action[] directions = routes[routeIndex].getDirectionArray();
+			Point[] coords = routes[routeIndex].getCoordinatesArray();
 			for (int i = 0; i<directions.length; i++) {
 				if (directions[i].equals(Action.PICKUP)||directions[i].equals(Action.DROPOFF)||directions[i].equals(Action.HOLD)) {
 					holdCoords.add(coords[i]);
+					heldAlreadyFound[routeIndex] = true;
+					break;
+				}
+			}
+			}
+			else {
+				boolean noFurtherChecks = true;
+				for (int i = 0; i<heldAlreadyFound.length; i++) {
+					if (!heldAlreadyFound[i]) {
+						noFurtherChecks = false;
+					}
+				}
+				if (noFurtherChecks) {
+					break;
 				}
 			}
 		}
@@ -393,14 +413,20 @@ public class AStar {
 		while (i < tempCoords.size()) {
 			for (Point p : holdCoords) {
 				if (p.equals(tempCoords.get(i))) {
-					if (i > 0) {
-						tempCoords.add(i, tempCoords.get(i - 1));
-					} else {
-						tempCoords.add(i, myStartCoord);
+					if (i+1==tempCoords.size()) {
+						if (i > 0) {
+							tempCoords.add(i, tempCoords.get(i - 1));
+						} else {
+							tempCoords.add(i, myStartCoord);
+						}
+						tempDirs.add(i, HOLD);
+						holdAdded = true;
+						break;
 					}
-					tempDirs.add(i, HOLD);
-					holdAdded = true;
-					break;
+					else if (tempMap.isPassable(p)){
+						logger.info(p);
+						throw new BacktrackNeededException(p, -1);
+					}
 				}
 			}
 			if (holdAdded) {
@@ -464,10 +490,10 @@ public class AStar {
 				directions.add(Action.HOLD);
 			}
 			else {
-				logger.debug(startPose);
+				logger.trace(startPose);
 				Action action = generateDirectionInstruction(startPose, tempDirs.get(i));
 				directions.add(action);
-				logger.debug(action);
+				logger.trace(action);
 				switch (action) {
 				case RIGHT: {
 					startPose = startPose - 1;

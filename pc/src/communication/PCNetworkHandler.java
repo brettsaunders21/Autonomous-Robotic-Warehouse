@@ -43,7 +43,7 @@ public class PCNetworkHandler extends AbstractSenderReceiver {
 	@Override
 	public void run() {
 		// Amount of connection retries
-		final int MAX_CONNECTION_RETRIES = 20;
+		final int MAX_CONNECTION_RETRIES = 30;
 
 		// Time delay between attempting a reconnect
 		final int RETRY_DELAY = 1000;

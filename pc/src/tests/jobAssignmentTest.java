@@ -48,7 +48,7 @@ public class jobAssignmentTest {
 	public jobAssignmentTest() {
 		drops = jobInput.getDrops();
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
-		jobAssignmentLogger.setLevel(Level.OFF);
+		jobAssignmentLogger.setLevel(Level.INFO);
 		//logger.setLevel(Level.DEBUG);
 		logger.setLevel(Level.OFF);
 		AStarLogger.setLevel(Level.OFF);

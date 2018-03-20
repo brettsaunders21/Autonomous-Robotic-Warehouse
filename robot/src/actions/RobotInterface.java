@@ -12,19 +12,22 @@ import lejos.nxt.LCD;
 public class RobotInterface {
 	
 	private int itemQuantity;
+	private int itemsHeld;
 	//private Robot robotInfo;
 	String robotName;
 	int jobCode;
 	String dropLocation;
 	String pickLocation;
 	String currentRoute;
-	Action currentDirections;
+	Action currentDirection;
 	
 	//public String brickName = RemoteNXT.getBrickName();
 	
 	
 	public RobotInterface(){
 		this.itemQuantity = 0;
+		this.itemsHeld = 0;
+		this.robotName = "";
 		
 	}
 	
@@ -37,41 +40,26 @@ public class RobotInterface {
 		jobCode = jobID;
 	}
 	
-	public int getJobCode(){
-		return jobCode;
-	}
 	
 	public void setDropLocation(String string){
 		dropLocation = string;
 	}
 	
-	public String getDropLocation(){
-		return dropLocation;
-	}
 	
 	public void setPickLocation(String pickLocationPoint){
 		pickLocation = pickLocationPoint;
 	}
 	
-	public String getPickLocation() {
-		return pickLocation;
-	}
 	
 	public void setCurrentRoute(String whereImGoing){
 		currentRoute = whereImGoing;
 	}
 	
-	public String getCurrentRoute(){
-		return currentRoute;
-	}
 	
 	public void setCurrentDirection(Action receiveAction) {
-		currentDirections = receiveAction;
+		currentDirection = receiveAction;
 	}
 	
-	public Action getCurrentDirection(){
-		return currentDirections;
-	}
 	
 
 	/**
@@ -80,9 +68,9 @@ public class RobotInterface {
 	
 	 public void sensorCalibrationMessage(){
 		LCD.clear();
-		
-		LCD.drawString("brickName", 1, 0);
-		System.out.println("Press a button to calibrate the sensors.");
+		LCD.drawString("Press a button", 1, 0 );
+		LCD.drawString("to calibrate", 1, 1 );
+		LCD.drawString("the sensors", 1, 2 );
 		Button.waitForAnyPress();
 	
 	}
@@ -94,14 +82,15 @@ public class RobotInterface {
 	 */
 	public void networkMessage(String message) {
 		LCD.clear();
-		LCD.drawString("brickName", 1, 0);
-		System.out.println("Status: " + message);
+		LCD.drawString(robotName, 1, 0);
+		LCD.drawString("Status", 1, 1 );
+		LCD.drawString(message, 1, 2 );
 		
 	}
 	
 	public void networkMessage(Action currentCommand) {
 		LCD.clear();
-		LCD.drawString("brickName", 1, 0);
+		LCD.drawString(robotName, 1, 0);
 		System.out.println(currentCommand);
 		
 	}
@@ -111,21 +100,11 @@ public class RobotInterface {
 	 */
 	public void waitingForOrdersMessage(){
 		LCD.clear();
-		System.out.println("brickName" + "is waiting for orders.");
+		LCD.drawString(robotName, 1, 0 );
+		LCD.drawString("is waiting",1, 1 );
+		LCD.drawString("for orders.", 1, 2);
 		
-	}
-	
-	/**
-	 * Prints a message when the robot is travelling. Different messages are used depending on whether 
-	 * the robot is travelling towards the item or the drop off location.
-	 */
-	 public void movingMessage(){
-		if(getDropLocation() != null){
-			movingToDestinationMessage();	
-		}
-		else{
-			movingToItemMessage();
-		}
+		
 	}
 	
 	/**
@@ -133,9 +112,13 @@ public class RobotInterface {
 	 */
 	 public void movingToDestinationMessage(){
 		LCD.clear();
-		System.out.println("brickName" + " is moving to the drop point.");
-		System.out.println("Job ID: " + getJobCode());
-		System.out.println("Destination Coordinates: " + getDropLocation());
+		LCD.drawString(robotName, 1, 0 );
+		LCD.drawString("is moving to", 1, 1 );
+		LCD.drawString("the drop point.", 1, 2 );
+		LCD.drawString("Job ID: ", 1, 3);
+		System.out.println(jobCode);
+		LCD.drawString("Destination Coordinates: ", 1, 5);
+		LCD.drawString(dropLocation, 1,6);
 	}
 	
 	/**
@@ -143,45 +126,27 @@ public class RobotInterface {
 	 */
 	 public void movingToItemMessage(){
 		LCD.clear();
-		System.out.println("brickName" + " is moving to the collection point.");
-		System.out.println("Job ID: " + getJobCode());
-		System.out.println("Destination Coordinates: " + getDropLocation()); 
-	}
-	
-	
-	/**
-	 * Prints a message when the robot arrives at the drop off location. Message dependent on whether the robot is preparing to load or unload.
-	 */
-	 public void destinationMessage(){
-		if(getDropLocation() != null){
-			unloadItemsMessage();	
-		}
-		else{
-			loadItemsMessage();
-		}
-		
+		LCD.drawString(robotName + " is", 1, 0);
+		LCD.drawString("moving to the collection point", 1, 1);
+		LCD.drawString("Job ID: " + jobCode, 1, 2);
+		LCD.drawString("Destination Coordinates: ", 1, 3);
+		LCD.drawString(dropLocation, 1,4);
 	}
 	
 	/**
 	 * A method to drop and pick items and cancel orders.
 	 */
 	public void waitForLoadingMessage(int amount){
-		System.out.println("Pick up: " + amount);
 		while (itemQuantity != amount) {
-			switch (Button.waitForAnyPress()) {
-			case Button.ID_LEFT:
-				dropItems(itemQuantity);
-				break;
-			case Button.ID_RIGHT:
-				pickItems(itemQuantity);
-				break;
+			LCD.drawString("Current items " + itemQuantity, 1,0);
+			Button.waitForAnyPress();
+//			case Button.ID_LEFT:
+//				itemQuantity = dropItems(itemQuantity);
+//				break;
+//			case Button.ID_RIGHT:
+				itemQuantity = pickItems(itemQuantity);
+	//			break;
 			}
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		}
 //			if(Button.waitForAnyPress() == Button.ID_ESCAPE){
 //				LCD.clear();
@@ -195,43 +160,42 @@ public class RobotInterface {
 //				}
 //			}
 			
-	}
+	
 		
 	
 	/**
 	 * A method to pick items after the previous job has been unloaded.
 	 */
-	public void waitForUnloadingMessage(int amount){
-		System.out.println("Drop off: " + itemQuantity);
-		itemQuantity = 1;
-		while (itemQuantity != 0) {
-			switch (Button.waitForAnyPress()) {
-			case Button.ID_LEFT:
-				dropItems(itemQuantity);
+	public void waitForUnloadingMessage(){
+		while (itemsHeld != 0) {
+			System.out.println("Current items " + itemsHeld);
+			Button.waitForAnyPress(); 
+			//case Button.ID_LEFT:
+				itemsHeld = dropItems(itemsHeld);
 				break;
-			case Button.ID_RIGHT:
-				pickItems(itemQuantity);
-				break;
+//			case Button.ID_RIGHT:
+//				itemsHeld = pickItems(itemsHeld);
+//				break;
 			}
+			
 		}
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}
+		
 		
 	/**
 	 * Prints a message to tell the user to load items.
 	 */
-	 public void loadItemsMessage(){
+	 public void loadItemsMessage(int amount){
 		LCD.clear();
-		LCD.drawString("brickName", 1, 0);
-		System.out.println("Job ID: " + getJobCode());
-		System.out.println("Please load " + itemQuantity + "items.");
-		System.out.println("Press a button to load the items.");
-		waitForLoadingMessage(itemQuantity);
+		LCD.drawString(robotName, 1, 0);
+		LCD.drawString("Job ID: " + jobCode, 1, 1);
+		LCD.drawString("Please load ", 1, 2);
+		LCD.drawString(amount + " items.", 1, 3);
+		LCD.drawString("Press a button", 1, 4);
+		LCD.drawString("to load the", 1, 5);
+		LCD.drawString("items.", 1, 6);
+		waitForLoadingMessage(amount);
+		itemsHeld += itemQuantity;
+		resetQuantity();
 	}
 	
 	/**
@@ -239,32 +203,36 @@ public class RobotInterface {
 	 */
 	 public void unloadItemsMessage(){
 		LCD.clear();
-		LCD.drawString("brickName", 1, 0);
-		System.out.println("Job ID: " + getJobCode());
-		System.out.println("Please unload " + itemQuantity + "items.");
-		System.out.println("Press a button to unload the items.");
-		waitForUnloadingMessage(itemQuantity);
+		LCD.drawString(robotName, 1, 0);
+		LCD.drawString("Job ID: " + jobCode, 1, 1);
+		LCD.drawString("Please unload ", 1, 2);
+		LCD.drawString(itemsHeld + " items.", 1, 3);
+		LCD.drawString("Press a button", 1, 4);
+		LCD.drawString("to unload the", 1, 5);
+		LCD.drawString("items.", 1, 6);
+		LCD.drawString("Current items " + itemsHeld, 1, 7);
+		waitForUnloadingMessage();
+		LCD.clear();
 	}
 	
 	/**
 	 * A method to pick up items.
 	 * @param noOfItems The number of items to be picked up.
 	 */
-	public void pickItems(int noOfItems){
-		itemQuantity++;
-		System.out.println(itemQuantity);
+	public int pickItems(int noOfItems){
+		return noOfItems + 1;
 	}
 	
 	/**
 	 * A method to drop items off. 
 	 * @param noOfItems The number of items to be dropped off.
 	 */
-	public void dropItems(int noOfItems){
-		itemQuantity--;
-		System.out.println(itemQuantity);
-		if(itemQuantity < 0){
-			itemQuantity = 0;
+	public int dropItems(int noOfItems){
+		noOfItems = noOfItems - 1;
+		if(noOfItems <= 0){
+			noOfItems = 0;
 		}
+		return noOfItems;
 	}
 
 	/** 
@@ -280,6 +248,26 @@ public class RobotInterface {
 	 */
 	public int getQuantity(){
 		return itemQuantity;
+	}
+
+	public void getRobotName() {
+		// TODO Auto-generated method stub
+		System.out.println(robotName);
+	}
+
+	public void getJobCode() {
+		// TODO Auto-generated method stub
+		System.out.println(jobCode);
+	}
+
+	public void getDropLocation() {
+		// TODO Auto-generated method stub
+		System.out.println(dropLocation);
+	}
+
+	public void getCurrentDirection() {
+		// TODO Auto-generated method stub
+		System.out.println(currentDirection);
 	}
 
 	

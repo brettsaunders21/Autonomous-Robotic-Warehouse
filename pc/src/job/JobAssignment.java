@@ -213,8 +213,6 @@ public class JobAssignment {
 				int robotVal = Integer.MAX_VALUE;
 				for (Item item : items) {
 					if (robotWeight + item.getWEIGHT() < 50.0f) {
-						//Point robotPosition = positionMap.get(robot);
-						//int cost = calculateCost(item,itemMap,robot,robotPosition);
 						int cost = calculateCost(item,itemMap,robot,robot.getCurrentPosition());
 						if (cost < bidVal) {
 							robotPick = item;

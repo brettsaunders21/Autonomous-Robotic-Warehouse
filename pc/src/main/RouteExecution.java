@@ -73,6 +73,7 @@ public class RouteExecution {
 				} else {
 					Point heldCoord = arrayOfCoords[instructionCounter];
 					heldPoints.holdAt(heldCoord);
+					counter.isNonMove(robot.getRobotName());
 				}
 				network.sendObject(currentJob.getID());
 				network.sendObject(currentCommand);
@@ -85,31 +86,48 @@ public class RouteExecution {
 				}
 				if (currentCommand == Action.DROPOFF) {
 					network.sendObject(itemsToDrop.peek().getQUANTITY());
-					network.sendObject(whereImGoing);	
 				}
-				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
+				try {
+					if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
+						rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
+						robot.cancelJob();
+						break;
+					}
+				} catch (IOException e) {
 					rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
 					robot.cancelJob();
 					break;
 				}
+				
 				if (currentCommand.equals(Action.HOLD)) {
 					// hold instruction cannot be the last instruction
 					Point heldCoord = arrayOfCoords[instructionCounter + 1];
 					while (heldPoints.isStillHeld(heldCoord)) {
 						Thread.sleep(100);
 					}
+					heldPoints.freeUp(arrayOfCoords[instructionCounter]);
+					counter.isMoveable(robot.getRobotName());
 				}
 				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
 						|| currentCommand.equals(Action.HOLD))) {
 					Point heldCoord = arrayOfCoords[instructionCounter];
 					heldPoints.freeUp(heldCoord);
+					counter.isMoveable(robot.getRobotName());
 					Route currentRoute = currentJob.getCurrentroute();
-					Route[] routesRunning = new Route[robots.length];
+					Route[] routesRunning = new Route[robots.length-1];
+					int j = 0;
 					for (int i = 0; i < robots.length; i++) {
-						routesRunning[i] = robot.getActiveJob().getCurrentroute();
+						if (!robots[i].equals(robot)) {
+							routesRunning[j] = robots[j].getActiveJob().getCurrentroute();
+							j++;
+						}
 					}
-					currentRoute = routeMaker.adjustForCollisions(currentRoute,routesRunning,counter.getTime(),instructionCounter);
+					currentRoute = routeMaker.adjustForCollisions(currentRoute,routesRunning,counter.getTime());
+					rELogger.debug(currentRoute.getStartPose());
+					currentJob.assignCurrentroute(currentRoute);
 					currentDirections = currentRoute.getDirections();
+					instructionCounter = -1;
+					arrayOfCoords = currentRoute.getCoordinatesArray();
 					
 				}
 				if (currentCommand == Action.PICKUP) {
@@ -129,6 +147,7 @@ public class RouteExecution {
 			e.printStackTrace();
 		}
 		if (!robot.getJobCancelled()) {
+			System.out.println("JOB FINISHED");
 			robot.jobFinished();
 			robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 			rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward "
