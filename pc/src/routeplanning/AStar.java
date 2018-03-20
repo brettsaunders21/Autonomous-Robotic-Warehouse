@@ -5,7 +5,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import interfaces.Action;
@@ -116,11 +115,10 @@ public class AStar {
 		if (!tempMap.withinMapBounds(currentPosition) || !tempMap.withinMapBounds(targetPosition)) {
 			throw new IllegalArgumentException("Coordinate not within map area");
 		}
-		logger.fatal("map " + map.isPassable(currentPosition));
-		logger.fatal(tempMap.isPassable(currentPosition));
 		// checks that both points are at potentially reachable positions
 		if (!tempMap.isPassable(currentPosition) || !tempMap.isPassable(targetPosition)) {
-			logger.fatal(currentPosition);
+			logger.fatal(currentPosition + " " +tempMap.isPassable(currentPosition));
+			logger.fatal(targetPosition + " " +tempMap.isPassable(targetPosition));
 			throw new IllegalStateException("One or both coordinates are not in the traversable area");
 		}
 		//
@@ -136,7 +134,10 @@ public class AStar {
 				currentPosition, blockages);
 		}
 		catch (StackOverflowError e) {
-			logger.fatal(currentPosition +" "+targetPosition + " " + myStartTime);
+			logger.fatal(currentPosition + " " +targetPosition + " " + myStartTime);
+			for (int i = 0; i<blockages.length; i++) {
+				logger.fatal(blockages[i].getBlockedPoint() + " " + blockages[i].getRelTime());
+			}
 		}
 		// moves final coordinates to queue and finalises the length of the route
 		coordinates.addAll(ti.getCoords());
@@ -172,9 +173,6 @@ public class AStar {
 
 			// produces the route information in the correct order
 			TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints);
-
-			logger.fatal("");
-			logger.fatal(tempMap.isPassable(new Point(5,0)));
 			
 			try {
 				return addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord, tempMap);
@@ -184,12 +182,12 @@ public class AStar {
 					blockedInfo.add(b);
 				}
 				Map updatedMap;
-				if (!e.isIndefinitelyBlocked()) {
-					blockedInfo.add(e);
-					updatedMap = tempMap;
+				if (e.isIndefinitelyBlocked()) {
+					updatedMap = tempMap.clone(e.getBlockedPoint());
 				}
 				else {
-					updatedMap = tempMap.clone(e.getBlockedPoint());
+					blockedInfo.add(e);
+					updatedMap = tempMap;
 				}
 				blockages = blockedInfo.toArray(blockages);
 				return routeFindingAlgo(startPosition, targetPosition, updatedMap, routes, myStartTime, myStartCoord,
@@ -250,8 +248,8 @@ public class AStar {
 
 			routeTime++;
 
-			logger.info(testPoint);
-			logger.info(visitedPoints.get(testPoint).getTotalPointDist());
+			logger.trace(testPoint);
+			logger.trace(visitedPoints.get(testPoint).getTotalPointDist());
 		}
 		return visitedPoints;
 	}
@@ -268,12 +266,10 @@ public class AStar {
 				new Point(testPoint.x + 1, testPoint.y), // right
 				new Point(testPoint.x, testPoint.y + 1) }; // down
 
+		logger.trace(testPoint);
 		// indexes: [0]:left, [1]:right, [2]:up, [3]:down
 		for (int allDirs = 0; allDirs < 4; allDirs++) {
 			// for each point within the bounds of the map
-			logger.warn(testPoint);
-			logger.warn(tempMap);
-			logger.warn(testDirs);
 			if (tempMap.withinMapBounds(testDirs[allDirs])) {
 				// if test point is passable and makes the route shorter than the
 				if (tempMap.isPassable(testDirs[allDirs])) {
@@ -286,6 +282,7 @@ public class AStar {
 						}
 					}
 					if (!blocked) {
+						logger.trace(testDirs[allDirs]);
 						points.add(testDirs[allDirs]);
 					}
 				}
@@ -303,18 +300,20 @@ public class AStar {
 		// the shortest route found so far
 		double nextDist = Double.POSITIVE_INFINITY;
 		// the point corresponding to the shortest route
-		Point nextPoint = new Point(-1, -1);
+		Point nextPoint = null;
 		for (int i = 0; i < visitedCoords.size(); i++) {
 			Point p = visitedCoords.get(i);
+			logger.trace("v "+p);
 			RouteCoordInfo pInfo = visitedPoints.get(p);
 			if (!traversedCoords.contains(p)) {
+				logger.trace("t " +p);
 				if (pInfo.getTotalPointDist() < nextDist) {
 					nextPoint = p;
 					nextDist = pInfo.getTotalPointDist();
-					traversedCoords.add(p);
 				}
 			}
 		}
+		traversedCoords.add(nextPoint);
 		return nextPoint;
 	}
 
@@ -425,7 +424,7 @@ public class AStar {
 						break;
 					}
 					else if (tempMap.isPassable(p)){
-						logger.fatal(p);
+						logger.info(p);
 						throw new BacktrackNeededException(p, -1);
 					}
 				}
@@ -472,7 +471,7 @@ public class AStar {
 			theirPointNow = route.getStartPoint();
 		}
 		if (theirPointNow.equals(nextPoint) && theirNextPoint.equals(thisPoint)) {
-			//throw new BacktrackNeededException(nextPoint, myTime);
+			throw new BacktrackNeededException(nextPoint, myTime);
 		}
 	}
 
@@ -491,10 +490,10 @@ public class AStar {
 				directions.add(Action.HOLD);
 			}
 			else {
-				logger.debug(startPose);
+				logger.trace(startPose);
 				Action action = generateDirectionInstruction(startPose, tempDirs.get(i));
 				directions.add(action);
-				logger.debug(action);
+				logger.trace(action);
 				switch (action) {
 				case RIGHT: {
 					startPose = startPose - 1;
