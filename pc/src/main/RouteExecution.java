@@ -87,11 +87,18 @@ public class RouteExecution {
 				if (currentCommand == Action.DROPOFF) {
 					network.sendObject(itemsToDrop.peek().getQUANTITY());
 				}
-				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
+				try {
+					if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
+						rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
+						robot.cancelJob();
+						break;
+					}
+				} catch (IOException e) {
 					rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
 					robot.cancelJob();
 					break;
 				}
+				
 				if (currentCommand.equals(Action.HOLD)) {
 					// hold instruction cannot be the last instruction
 					Point heldCoord = arrayOfCoords[instructionCounter + 1];
@@ -119,6 +126,8 @@ public class RouteExecution {
 					rELogger.debug(currentRoute.getStartPose());
 					currentJob.assignCurrentroute(currentRoute);
 					currentDirections = currentRoute.getDirections();
+					instructionCounter = -1;
+					arrayOfCoords = currentRoute.getCoordinatesArray();
 					
 				}
 				if (currentCommand == Action.PICKUP) {

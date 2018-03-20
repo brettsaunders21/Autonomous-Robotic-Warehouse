@@ -62,6 +62,9 @@ public abstract class AbstractSenderReceiver implements Runnable {
 		case "ACTION_COMPLETE":
 			receivedAction = Action.ACTION_COMPLETE;
 			break;
+		case "HOLD":
+			receivedAction = Action.HOLD;
+			break;
 		default:
 			break;
 		}

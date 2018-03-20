@@ -33,7 +33,7 @@ public class PCController {
 	
 	public static void main(String[] args) {
 		controllerLogger.setLevel(Level.ALL);
-		aStarLogger.setLevel(Level.FATAL);
+		aStarLogger.setLevel(Level.OFF);
 		routeExeLogger.setLevel(Level.ALL);
 		jobAssLogger.setLevel(Level.ALL);
 		JobInput jI = new JobInput();
