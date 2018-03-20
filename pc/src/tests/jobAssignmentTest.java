@@ -18,6 +18,7 @@ import job.JobAssignment;
 import job.JobInput;
 import job.JobList;
 import job.JobSelection;
+import job.TSP;
 import lejos.geom.Point;
 import main.Counter;
 import routeplanning.AStar;
@@ -37,6 +38,7 @@ public class jobAssignmentTest {
 	final static Logger jobAssignmentLogger = Logger.getLogger(JobAssignment.class);
 	final static Logger AStarLogger = Logger.getLogger(AStar.class);
 	final static Logger routeLog = Logger.getLogger(Route.class);
+	final static Logger TSPLog = Logger.getLogger(TSP.class);
 	Counter counter = new Counter(robotList);
 	Job firstJobAssigned;
 	ArrayList<Point> drops;
@@ -49,11 +51,11 @@ public class jobAssignmentTest {
 	public jobAssignmentTest() {
 		drops = jobInput.getDrops();
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
-		jobAssignmentLogger.setLevel(Level.INFO);
-		//logger.setLevel(Level.DEBUG);
+		jobAssignmentLogger.setLevel(Level.OFF);
 		logger.setLevel(Level.OFF);
 		AStarLogger.setLevel(Level.OFF);
 		routeLog.setLevel(Level.OFF);
+		TSPLog.setLevel(Level.OFF);
 	}
 
 	@Test
