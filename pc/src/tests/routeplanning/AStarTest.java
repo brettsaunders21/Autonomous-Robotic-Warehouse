@@ -1,6 +1,5 @@
 package tests.routeplanning;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import lejos.geom.Point;
 import routeplanning.AStar;
@@ -20,25 +19,17 @@ import interfaces.Pose;
 public class AStarTest {
 	private final static Logger logger = Logger.getLogger(AStarTest.class);
 	private final static Logger aStarLogger = Logger.getLogger(AStar.class);
-
-	/*
-	 * private Map map = Map.createTestMap(12,8, new Point[] {new Point(1,2), new
-	 * Point(1,3), new Point(1,4), new Point(1,5), new Point(1,6), new Point(4,2),
-	 * new Point(4,3), new Point(4,4), new Point(4,5), new Point(4,6), new
-	 * Point(7,2), new Point(4,3), new Point(7,4), new Point(7,5), new Point(7,6),
-	 * new Point(10,2), new Point(10,3), new Point(10,4), new Point(10,5), new
-	 * Point(10,6)});
-	 */
+	private final static Level myLevel = Level.OFF;
+	private final static Level aStarLevel = Level.OFF;
 
 	private Map map = Map.generateRealWarehouseMap();
-
 	private AStar aStar;
 
 	/* Initialises each parameter for each test */
 	public AStarTest() {
 		aStar = new AStar(map);
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// Starts facing left and wants to travel left
@@ -47,6 +38,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.POS_X, new Route[] {}, 0);
 		assertEquals(Action.FORWARD, r.getDirections().peek());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// Starts facing up and wants to travel left
@@ -55,6 +48,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.NEG_Y, new Route[] {}, 0);
 		assertEquals(Action.LEFT, r.getDirections().peek());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// Starts facing down and wants to travel left
@@ -63,6 +58,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.POS_Y, new Route[] {}, 0);
 		assertEquals(Action.RIGHT, r.getDirections().peek());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// Starts facing right and wants to travel left
@@ -71,6 +68,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.NEG_X, new Route[] {}, 0);
 		assertEquals(Action.BACKWARD, r.getDirections().peek());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// Starts facing negativeX
@@ -79,6 +78,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.NEG_X, new Route[] {}, 0);
 		assertEquals(Pose.NEG_X, r.getStartPose());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// Starts facing positiveX
@@ -87,6 +88,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.POS_X, new Route[] {}, 0);
 		assertEquals(Pose.POS_X, r.getStartPose());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// Starts facing negativeY
@@ -95,6 +98,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.NEG_Y, new Route[] {}, 0);
 		assertEquals(Pose.NEG_Y, r.getStartPose());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// Starts facing positiveY
@@ -103,6 +108,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.POS_Y, new Route[] {}, 0);
 		assertEquals(Pose.POS_Y, r.getStartPose());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// travels between two points that share a common axis
@@ -111,6 +118,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.NEG_X, new Route[] {}, 0);
 		assertEquals(5, r.getLength());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// travels between two points that share a common axis
@@ -120,6 +129,8 @@ public class AStarTest {
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.NEG_X, new Route[] {}, 0);
 		Action[] ds = new Action[] { Action.BACKWARD, Action.FORWARD, Action.FORWARD, Action.FORWARD, Action.FORWARD };
 		assertArrayEquals(ds, r.getDirections().toArray());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// travels between two points that share a common axis
@@ -130,6 +141,8 @@ public class AStarTest {
 		Point[] ps = new Point[] { new Point(1, 0), new Point(2, 0), new Point(3, 0), new Point(4, 0),
 				new Point(5, 0) };
 		assertArrayEquals(ps, r.getCoordinates().toArray());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// travels between two points that are do not share a common axis
@@ -138,6 +151,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(3, 2), Pose.NEG_X, new Route[] {}, 0);
 		assertEquals(5, r.getLength());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// travels between two points that are do not share a common axis
@@ -147,6 +162,8 @@ public class AStarTest {
 		Route r = aStar.generateRoute(new Point(0, 0), new Point(3, 2), Pose.NEG_X, new Route[] {}, 0);
 		Action[] ds = new Action[] { Action.BACKWARD, Action.FORWARD, Action.LEFT, Action.RIGHT, Action.LEFT };
 		assertArrayEquals(ds, r.getDirections().toArray());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// travels between two points that are do not share a common axis
@@ -157,6 +174,8 @@ public class AStarTest {
 		Point[] ps = new Point[] { new Point(1, 0), new Point(2, 0), new Point(2, 1), new Point(3, 1),
 				new Point(3, 2) };
 		assertArrayEquals(ps, r.getCoordinates().toArray());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// reverse route of routeLengthNoObstructionTurn
@@ -165,6 +184,8 @@ public class AStarTest {
 		logger.trace("");
 		Route r = aStar.generateRoute(new Point(3, 2), new Point(0, 0), Pose.NEG_X, new Route[] {}, 0);
 		assertEquals(5, r.getLength());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// reverse route of directionsNoObstructionTurn
@@ -174,6 +195,8 @@ public class AStarTest {
 		Route r = aStar.generateRoute(new Point(3, 2), new Point(0, 0), Pose.NEG_X, new Route[] {}, 0);
 		Action[] ds = new Action[] { Action.FORWARD, Action.LEFT, Action.FORWARD, Action.RIGHT, Action.FORWARD };
 		assertArrayEquals(ds, r.getDirections().toArray());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// reverse route of coordinatesNoObstructionTurn
@@ -184,6 +207,8 @@ public class AStarTest {
 		Point[] ps = new Point[] { new Point(2, 2), new Point(2, 1), new Point(2, 0), new Point(1, 0),
 				new Point(0, 0) };
 		assertArrayEquals(ps, r.getCoordinates().toArray());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// Route finding around an obstacle
@@ -194,6 +219,8 @@ public class AStarTest {
 		Point[] ps = new Point[] { new Point(0, 1), new Point(0, 2), new Point(0, 3), new Point(0, 4), new Point(0, 5),
 				new Point(0, 6), new Point(1, 6), new Point(2, 6) };
 		assertArrayEquals(ps, r.getCoordinates().toArray());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// tests that two robots will not occupy the same space
@@ -217,7 +244,8 @@ public class AStarTest {
 
 		Point[] ps2 = new Point[] { new Point(2, 0), new Point(3, 0), new Point(4, 0), new Point(5, 0) };
 		assertArrayEquals(ps2, r2.getCoordinates().toArray());
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// tests that two robots will not occupy the same space, when three robots are
@@ -241,6 +269,8 @@ public class AStarTest {
 
 		Point[] ps3 = new Point[] { new Point(1, 0), new Point(2, 0), new Point(3, 0), new Point(4, 0) };
 		assertArrayEquals(ps3, r3.getCoordinates().toArray());
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
 	// tests that two robots will not occupy the same space
@@ -266,14 +296,13 @@ public class AStarTest {
 		logger.debug(r2.getCoordinates());
 		
 		assertArrayEquals(ps2, r2.getCoordinates().toArray());
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
+	// tests that two robots will avoid each other
 	@Test
 	public void multiRobotRouteCoords4() {
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(2, 5), new Point(2, 2), Pose.POS_X, new Route[] {}, 0);
 		Route[] rs = new Route[1];
 		rs[0] = r1;
@@ -290,14 +319,13 @@ public class AStarTest {
 		logger.debug(r2.getCoordinates());
 
 		assertArrayEquals(ps2, r2.getCoordinates().toArray());
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
+	// tests that two robots will avoid each other in a more complicated encounter
 	@Test(timeout = 1000)
 	public void multiRobotRouteCoords5() {
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(0, 5), Pose.POS_X, new Route[] {}, 0);
 		Route[] rs = new Route[1];
 		rs[0] = r1;
@@ -316,29 +344,13 @@ public class AStarTest {
 		logger.debug(r2.getCoordinates());
 
 		assertArrayEquals(ps2, r2.getCoordinates().toArray());
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
-	@Ignore
-	@Test
-	public void whatAreCoords() {
-		boolean[][] b = map.obstructions();
-		logger.debug(map.getWidth() + " " + map.getHeight());
-		for (int x = 0; x < map.getWidth(); x++) {
-			for (int y = 0; y < map.getHeight(); y++) {
-				if (!b[x][y]) {
-					logger.debug(new Point(x, y));
-				}
-			}
-		}
-		assertTrue(map.withinMapBounds(new Point(11, 7)));
-	}
-
+	// tests that a robot will correctly generate a hold instruction
 	@Test(timeout = 1000)
 	public void holdTest1() {
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.POS_X, new Route[] {}, 0);
 		r1 = new Route(r1, Action.DROPOFF);
 
@@ -356,14 +368,13 @@ public class AStarTest {
 		logger.debug(r2.getDirections());
 		assertArrayEquals(ps2, r2.getCoordinates().toArray());
 
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
+	// checks that a robot will not unnecessarily generate a hold instruction
 	@Test(timeout = 1000)
 	public void holdTest2() {
-		logger.setLevel(Level.OFF);
-		aStarLogger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.NEG_X, new Route[] {}, 0);
 		r1 = new Route(r1, Action.PICKUP);
 		Route r3 = aStar.generateRoute(new Point(5, 0), new Point(11, 0), Pose.NEG_X, new Route[] {}, 0);
@@ -409,13 +420,13 @@ public class AStarTest {
 
 		logger.debug(r1.getCoordinates());
 
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
+	// checks that a robot can generate a hold instruction when adjusting after a pickup/dropoff/hold instruction
 	@Test
-	public void holdTest4() {
-		logger.setLevel(Level.OFF);
+	public void holdTest3() {
 		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.NEG_X, new Route[] {}, 0);
 		r1 = new Route(r1, Action.PICKUP);
 		Route r3 = aStar.generateRoute(new Point(5, 0), new Point(11, 0), Pose.NEG_X, new Route[] {}, 0);
@@ -470,13 +481,13 @@ public class AStarTest {
 
 		assertArrayEquals(ps4, r1.getCoordinates().toArray());
 
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
+	// checks that a robot will correctly avoid other robots when re-calculating route
 	@Test
 	public void adjustTest1() {
-		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(3, 3), new Point(5, 6), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = aStar.generateRoute(new Point(5, 6), new Point(8, 3), Pose.POS_X, new Route[] {}, 0);
 		r1 = new Route(r1, Action.PICKUP);
@@ -560,13 +571,13 @@ public class AStarTest {
 		Point[] ps5 = new Point[] { new Point(2, 3), new Point(2, 4), new Point(2, 4) };
 		assertArrayEquals(ps5, r1.getCoordinatesArray());
 
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
+	// checks that a robot will correctly generate a route when facing the same direction as its next travel direction
 	@Test
 	public void adjustTest2() {
-		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(3, 3), new Point(3, 6), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = aStar.generateRoute(new Point(3, 6), new Point(5, 6), Pose.POS_X, new Route[] {}, 0);
 		r1 = new Route(r1, Action.PICKUP);
@@ -593,14 +604,13 @@ public class AStarTest {
 		Point[] ps2 = new Point[] { new Point(4, 6), new Point(5, 6), new Point(5, 6) };
 		assertArrayEquals(ps2, r1.getCoordinatesArray());
 		
-		
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 
+	// checks that a robot will correctly generate a route when at an angle relative to its next travel direction
 	@Test
 	public void adjustTest3() {
-		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(3, 3), new Point(3, 6), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = aStar.generateRoute(new Point(3, 6), new Point(1, 6), Pose.POS_X, new Route[] {}, 0);
 		r1 = new Route(r1, Action.PICKUP);
@@ -627,14 +637,13 @@ public class AStarTest {
 		Point[] ps2 = new Point[] { new Point(2, 6), new Point(1, 6), new Point(1, 6) };
 		assertArrayEquals(ps2, r1.getCoordinatesArray());
 		
-		
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
-		
+
+	//checks that a robot will correctly generate a route when moving from the same point in any direction relative to its current orientation
 	@Test
 	public void adjustTest4() {
-		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(3, 3), new Point(3, 6), Pose.POS_X, new Route[] {}, 0);
 		Route r3 = aStar.generateRoute(new Point(3, 6), new Point(3, 4), Pose.POS_X, new Route[] {}, 0);
 		r1 = new Route(r1, Action.PICKUP);
@@ -661,8 +670,7 @@ public class AStarTest {
 		Point[] ps2 = new Point[] { new Point(3, 5), new Point(3, 4), new Point(3, 4) };
 		assertArrayEquals(ps2, r1.getCoordinatesArray());
 		
-		
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
 	}
 }

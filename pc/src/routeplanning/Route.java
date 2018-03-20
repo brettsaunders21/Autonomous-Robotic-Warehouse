@@ -220,7 +220,7 @@ public class Route {
 			
 		}
 
-		
+		//adds first part of route information to route
 		this.coordinates = firstRoute.getCoordinates();
 		this.startPose = firstRoute.getStartPose();
 		this.myStartTime = firstRoute.getStartTime();
@@ -259,6 +259,7 @@ public class Route {
 		this.dirsArray = directions.toArray(a);
 	}
 
+	/*checks if the given instruction is a non-movement action*/
 	private boolean nonMoveFirst(Action action) {
 		return (action.equals(Action.DROPOFF)||action.equals(Action.HOLD)|| action.equals(Action.PICKUP));
 	}
@@ -279,7 +280,7 @@ public class Route {
 
 	/*
 	 * checks that only non move instructions are added to the route from outside an
-	 * existing route object
+	 * existing route object (only instructions which cannot be produced by AStar)
 	 */
 	private boolean nonMovementAction(Action a) {
 		if (a == null) {
@@ -394,6 +395,7 @@ public class Route {
 		return myStartTime;
 	}
 
+	/**@return the starting coordinate of this route before any instructions are executed*/
 	public Point getStartPoint() {
 		return startPoint;
 	}

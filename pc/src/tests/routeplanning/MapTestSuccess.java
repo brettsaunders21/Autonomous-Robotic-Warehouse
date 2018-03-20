@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import lejos.geom.Point;
 import routeplanning.Map;
+import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.runner.RunWith;
@@ -42,14 +43,31 @@ public class MapTestSuccess {
 		this.pointy = pointy;
 	}
 
+	//checks that all the above parameters are valid inputs
 	@Test
 	public void constructorTest() {
 		logger.debug("w: "+width+" h: "+height+" p: ("+pointx+","+pointy+")");
 		Map.createTestMap(width, height, new Point[] { new Point(pointx, pointy) });
 	}
 	
+	//checks that the generateRealWarehouseMap() method produces a warehouse of the expected layout
 	@Test
 	public void warehouseConstructorTest() {
-		Map.generateRealWarehouseMap();
+		Map map = Map.generateRealWarehouseMap();
+		boolean[][] p = map.getPassable();
+		assertEquals(12, p.length);
+		assertEquals(8, p[0].length);
+		boolean[][] obstr = new boolean[12][8];
+		for (int x = 0; x<12; x++) {
+			for (int y = 0; y<8; y++) {
+				obstr[x][y] = false;
+			}
+		}
+		for (int x = 1; x<11; x=x+3) {
+			for (int y = 1; y<6; y++) {
+				obstr[x][y] = true;
+			}
+		}
+		assertArrayEquals(obstr, p);
 	}
 }

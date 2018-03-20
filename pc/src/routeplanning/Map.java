@@ -14,8 +14,10 @@ import org.apache.log4j.Logger;
  * @author Lewis Ackroyd
  * */
 
-
-/**Map objects can only be constructed using the static methods generateRealWarehouseMap() and createTestMap()*/
+/**
+ * Map objects can only be constructed using the static methods
+ * generateRealWarehouseMap() and createTestMap()
+ */
 public class Map {
 	final static Logger logger = Logger.getLogger(Map.class);
 
@@ -23,15 +25,18 @@ public class Map {
 	private final int height; // height of the map
 	private final int width; // width of the map
 
-	/**Creates the map that will be used on the robot warehouse assignment
-	 * @return the warehouse assignment map in the format required by AStar class*/
+	/**
+	 * Creates the map that will be used on the robot warehouse assignment
+	 * 
+	 * @return the warehouse assignment map in the format required by AStar class
+	 */
 	public static Map generateRealWarehouseMap() {
 		logger.setLevel(Level.OFF);
 		GridMap map = MapUtils.createRealWarehouse();
 		int width = map.getXSize();
 		int height = map.getYSize();
 		ArrayList<Point> obstructions = new ArrayList<Point>();
-		for (int x = width-1; x>=0; x--) {
+		for (int x = width - 1; x >= 0; x--) {
 			for (int y = 0; y < height; y++) {
 				if (map.isObstructed(x, y)) {
 					obstructions.add(new Point(x, y));
@@ -42,17 +47,25 @@ public class Map {
 		outArray = obstructions.toArray(outArray);
 		return new Map(width, height, outArray);
 	}
-	
-	/**Creates a map based upon the parameters given. Should only be used for testing purposes
-	 * @param width The map width
-	 * @param height The map height
-	 * @param obstructions The coordinates of points on the grid that are not
-	 * possible to traverse. Must be integer coordinates stored as float
-	 * @throws IllegalArgumentException width or height is less than 0
-	 * @throws IllegalArgumentException more obstruction coordinates than map
-	 * coordinates
-	 * @throws IllegalArgumentException obstruction coordinate not within bounds of
-	 * map*/
+
+	/**
+	 * Creates a map based upon the parameters given. Should only be used for
+	 * testing purposes
+	 * 
+	 * @param width
+	 *            The map width
+	 * @param height
+	 *            The map height
+	 * @param obstructions
+	 *            The coordinates of points on the grid that are not possible to
+	 *            traverse. Must be integer coordinates stored as float
+	 * @throws IllegalArgumentException
+	 *             width or height is less than 0
+	 * @throws IllegalArgumentException
+	 *             more obstruction coordinates than map coordinates
+	 * @throws IllegalArgumentException
+	 *             obstruction coordinate not within bounds of map
+	 */
 	public static Map createTestMap(int width, int height, Point[] array) {
 		return new Map(width, height, array);
 	}
@@ -87,12 +100,12 @@ public class Map {
 		}
 		// throws an exception if there are more coordinates for obstructions than there
 		// are coordinates
-		if (obstructions.length >= ((width + 1) * (height + 1))) {
+		if (obstructions.length >= ((width) * (height))) {
 			logger.debug("Num on map " + width * height + " num given " + obstructions.length);
 			throw new IllegalArgumentException("More points than grid size");
 		}
 
-		boolean[][] tempPassable = new boolean[width + 1][height + 1];
+		boolean[][] tempPassable = new boolean[width][height];
 		// initialises all values to true, ie no obstructions
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -178,35 +191,48 @@ public class Map {
 		return height;
 	}
 
-	/**@return the array of passable flags*/
-	public boolean[][] obstructions(){
+	/** @return the array of passable flags */
+	public boolean[][] obstructions() {
 		return passable;
 	}
 
+	/**
+	 * @param p
+	 *            the point which is now an obstruction in the mapspace
+	 * @return an identical map which also has the specified point marked as an
+	 *         obstruction
+	 * @throws IllegalArgumentException
+	 *             the specified point is not within the bounds of the map
+	 */
 	public Map clone(Point p) {
-		if (withinMapBounds(p)) {
-			boolean[][] newObstructions = new boolean[width + 1][height + 1];
-			for (int x = 0; x<width; x++) {
-				for (int y = 0; y<height; y++) {
-					newObstructions[x][y] = true;
-				}
-			}
-			ArrayList<Point> ps = new ArrayList<Point>();
-			for (int x = 0; x<width; x++) {
-				for (int y = 0; y<height; y++) {
-					if (!passable[x][y]) {
-						ps.add(new Point(x,y));
-					}
-				}
-			}
-			ps.add(p);
-			for (Point point : ps) {
-				newObstructions[(int)point.x][(int)point.y] = false;
-			}
-			return new Map(newObstructions);
-		}
-		else {
+		// checks that the specified point is within the bounds of the map
+		if (!withinMapBounds(p)) {
 			throw new IllegalArgumentException("Point not within bounds of map");
 		}
+		// initialises every element to the same as that in the current passable array
+		boolean[][] newObstructions = new boolean[width][height];
+		for (int x = 0; x<width; x++) {
+			for (int y = 0; y<height; y++) {
+				if (passable[x][y]) {
+					newObstructions[x][y] = true;
+				}
+				else {
+					newObstructions[x][y] = false;
+				}
+			}
+		}
+		// sets the value of the specified coordinate to false
+		newObstructions[(int) p.x][(int) p.y] = false;
+		
+		return new Map(newObstructions);
+	}
+
+	/**
+	 * @deprecated returns the array of passable values, should only be used for
+	 *             testing
+	 * @return the 2d array of passable coordinates
+	 */
+	public boolean[][] getPassable() {
+		return passable;
 	}
 }
