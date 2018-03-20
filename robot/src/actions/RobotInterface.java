@@ -3,7 +3,7 @@ package actions;
 import interfaces.Action;
 import lejos.nxt.Button;
 import lejos.nxt.LCD;
-//import lejos.nxt.remote.RemoteNXT;
+import lejos.nxt.Sound;
 
 /*
  * @author Huda Khan <hik649@student.bham.ac.uk>
@@ -13,7 +13,6 @@ public class RobotInterface {
 	
 	private int itemQuantity;
 	private int itemsHeld;
-	//private Robot robotInfo;
 	String robotName;
 	int jobCode;
 	String dropLocation;
@@ -21,7 +20,6 @@ public class RobotInterface {
 	String currentRoute;
 	Action currentDirection;
 	
-	//public String brickName = RemoteNXT.getBrickName();
 	
 	
 	public RobotInterface(){
@@ -115,8 +113,8 @@ public class RobotInterface {
 		LCD.drawString(robotName, 1, 0 );
 		LCD.drawString("is moving to", 1, 1 );
 		LCD.drawString("the drop point.", 1, 2 );
-		LCD.drawString("Job ID: ", 1, 3);
-		System.out.println(jobCode);
+		//LCD.drawString("Job ID: ", 1, 3);
+		//LCD.drawInt(jobCode, 1,4);
 		LCD.drawString("Destination Coordinates: ", 1, 5);
 		LCD.drawString(dropLocation, 1,6);
 	}
@@ -140,12 +138,7 @@ public class RobotInterface {
 		while (itemQuantity != amount) {
 			LCD.drawString("Current items " + itemQuantity, 1,0);
 			Button.waitForAnyPress();
-//			case Button.ID_LEFT:
-//				itemQuantity = dropItems(itemQuantity);
-//				break;
-//			case Button.ID_RIGHT:
-				itemQuantity = pickItems(itemQuantity);
-	//			break;
+			itemQuantity = pickItems(itemQuantity);
 			}
 		}
 //			if(Button.waitForAnyPress() == Button.ID_ESCAPE){
@@ -170,12 +163,8 @@ public class RobotInterface {
 		while (itemsHeld != 0) {
 			System.out.println("Current items " + itemsHeld);
 			Button.waitForAnyPress(); 
-			//case Button.ID_LEFT:
-				itemsHeld = dropItems(itemsHeld);
-				break;
-//			case Button.ID_RIGHT:
-//				itemsHeld = pickItems(itemsHeld);
-//				break;
+			itemsHeld = dropItems(itemsHeld);
+			break;
 			}
 			
 		}
@@ -186,6 +175,7 @@ public class RobotInterface {
 	 */
 	 public void loadItemsMessage(int amount){
 		LCD.clear();
+		Sound.twoBeeps();
 		LCD.drawString(robotName, 1, 0);
 		LCD.drawString("Job ID: " + jobCode, 1, 1);
 		LCD.drawString("Please load ", 1, 2);
@@ -203,6 +193,7 @@ public class RobotInterface {
 	 */
 	 public void unloadItemsMessage(){
 		LCD.clear();
+		Sound.twoBeeps();
 		LCD.drawString(robotName, 1, 0);
 		LCD.drawString("Job ID: " + jobCode, 1, 1);
 		LCD.drawString("Please unload ", 1, 2);
@@ -249,6 +240,7 @@ public class RobotInterface {
 	public int getQuantity(){
 		return itemQuantity;
 	}
+	
 
 	public void getRobotName() {
 		// TODO Auto-generated method stub
