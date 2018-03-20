@@ -53,7 +53,7 @@ public class JobAssignment {
 
 
 
-	public synchronized void assignJobs(Robot robot) {
+	public void assignJobs(Robot robot) {
 		logger.debug("");
 		if (robot.getActiveJob() != null) {
 			jobList.removeRobotFromJob(robot.getActiveJob(), robot);

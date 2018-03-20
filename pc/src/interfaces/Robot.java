@@ -9,9 +9,9 @@ public class Robot {
 	public static final int MAX_WEIGHT = 50;	//max weight any robot can carry
 	private Point currentCoords;
 	private float weight;
-	private volatile Job activeJob;
+	private Job activeJob;
 	private boolean routeSet;
-	private volatile String robotName;
+	private String robotName;
 	private boolean jobCancelled;
 	private boolean jobFinished;
 	private float reward;
