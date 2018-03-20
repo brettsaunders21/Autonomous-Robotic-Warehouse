@@ -73,7 +73,7 @@ public class AStar {
 			dirQ.poll();
 		}
 		Route nextStep = generateRoute(r.getCoordinatesArray()[diffFromStart - 1], coord,
-				r.getPoseAt(diffFromStart - 1), rs, startTime);
+				r.getPoseAt(diffFromStart-1), rs, startTime);
 		if (r.getCoordinates().size() == 0) {
 			r = nextStep;
 		} else {

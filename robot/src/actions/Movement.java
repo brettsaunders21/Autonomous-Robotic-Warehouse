@@ -2,10 +2,10 @@ package actions;
 
 import interfaces.Action;
 import lejos.nxt.LightSensor;
-import lejos.nxt.Motor;
-import lejos.nxt.SensorPort;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.Delay;
+import main.Configuration;
+import rp.systems.WheeledRobotSystem;
 
 public class Movement {
 	private final int MID_BOUND;
@@ -15,9 +15,9 @@ public class Movement {
 	RobotInterface rInterface;
 	
 	public Movement(int _MID_BOUND, RobotInterface _rI) {
-		PILOT = new DifferentialPilot(56, 110.5, Motor.A, Motor.C);
-		LEFT_SENSOR = new LightSensor(SensorPort.S1);
-		RIGHT_SENSOR = new LightSensor(SensorPort.S3);
+		PILOT = new WheeledRobotSystem(Configuration.CUSTOM_EXPRESS_BOT).getPilot();
+		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
+		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		MID_BOUND = _MID_BOUND;
 		PILOT.setTravelSpeed(0.2f);
 		PILOT.setRotateSpeed(60);

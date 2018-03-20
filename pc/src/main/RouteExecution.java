@@ -129,6 +129,7 @@ public class RouteExecution {
 					int j = 0;
 					for (int i = 0; i < robots.length; i++) {
 						if (!robots[i].equals(robot)) {
+							rELogger.debug(robots[i].getRobotName());
 							routesRunning[j] = robots[j].getActiveJob().getCurrentroute();
 							j++;
 						}

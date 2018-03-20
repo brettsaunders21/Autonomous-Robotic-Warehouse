@@ -64,10 +64,6 @@ public class WarehouseInterface extends JFrame implements Runnable{
 	@Override
 	public void run() {	
 		while(true){
-			//check and update the current position of each robot on a map
-			for(int i = 0; i < robots.length; i++){
-				robots[i].setCurrentPosition(new Point(robots[i].getCurrentPosition().x, robots[i].getCurrentPosition().y));
-			}
 			revalidate();
 			repaint();
 			try {
