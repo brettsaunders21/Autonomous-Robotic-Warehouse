@@ -58,9 +58,10 @@ public class jobAssignmentTest {
 	@Test
 	public void checkTSP() {
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 100; i++) {
 			jAssignment.assignJobs(robot1);
 			jAssignment.assignJobs(robot2);
+			System.out.println(jobList.getJobsCompleted());
 			//System.out.println(i + "completed");
 		}
 		jAssignment.assignJobs(robot1);
@@ -68,34 +69,5 @@ public class jobAssignmentTest {
 		assertEquals(true,true);
 	}
 	
-	@Test
-	public void checkJobAssigned() {
-		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot2);
-		firstJobAssigned = jAssignment.getCurrentJob();
-		Job firstJobAssigned2 = jAssignment.getCurrentJob();
-		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
-		assertEquals(firstJobAssigned2.getID(), robot2.getActiveJob().getID());
-	}
-	
-
-	
-	@Test
-	public void dropoffAtEndOfJob() {
-		//robot1.setCurrentPosition(new Point(0,0));
-		jAssignment.assignJobs(robot1);
-		Job currentJob = robot1.getActiveJob();
-		Route route = currentJob.getCurrentroute();
-		Action[] routeArray = route.getDirectionArray();
-		assertEquals(Action.DROPOFF, routeArray[routeArray.length-1]);	
-	}
-	
-	@Test
-	public void checkJobGetsCancelled(){
-		int j1 = jobList.getNewJob(robot1).getID();
-		jobList.cancelJob(j1);
-		assertEquals(true, jobList.getJob(j1).isCanceled());
-	}
 	}
 	

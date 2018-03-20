@@ -70,6 +70,7 @@ public class TSP {
 		if (tempItems.size() > 1) 
 		for (int i = 1; i <= tempItems.size() - 1; i++) {
 			distance += routeMaker.generateRoute(tempItems.get(i-1).getPOSITION(), tempItems.get(i).getPOSITION(), Pose.POS_X, new Route[] {}, 0).getLength();
+			tempR.setCurrentPosition(tempItems.get(i).getPOSITION());
 		}
 		distance += routeMaker.generateRoute(robot.getCurrentPosition(), tempItems.get(0).getPOSITION(), robot.getCurrentPose(), new Route[] {}, 0).getLength();
 		return distance;
@@ -80,7 +81,10 @@ public class TSP {
 		Item nearestItemSoFar = items.get(0);
 		int smallestDistance = Integer.MAX_VALUE;
 		for (Item item : items) {
-			int distance = routeMaker.generateRoute(point, item.getPOSITION(), Pose.POS_X,  new Route[] {}, 0).getLength();
+			int distance = 0;
+			if (!point.equals(item.getPOSITION())) {
+				distance = routeMaker.generateRoute(point, item.getPOSITION(), Pose.POS_X,  new Route[] {}, 0).getLength();
+			}
 			if (distance < smallestDistance) {
 				nearestItemSoFar = item;
 				smallestDistance = distance;

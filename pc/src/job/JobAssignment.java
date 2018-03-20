@@ -36,6 +36,7 @@ public class JobAssignment {
 	private JobList jobList;
 	private Robot[] robots;
 	private ConcurrentHashMap<Robot, Optional<Job>> waitingMap;
+	HashMap<Robot, Point> positionMap;
 	
 	public JobAssignment(JobList _jobList, Counter _counter, ArrayList<Point> _drops, Robot[] _robots) {
 		jobs = _jobList.getJobList();
@@ -45,15 +46,18 @@ public class JobAssignment {
 		jobList = _jobList;
 		robots = _robots;
 		waitingMap = new ConcurrentHashMap<>();
+		positionMap = new HashMap<>();
 		for (Robot robot : _robots)
 			waitingMap.put(robot, Optional.empty());
 	}
 
 
+
 	public void assignJobs(Robot robot) {
-		jobs = jobList.getJobList();
+		//jobs = jobList.getJobList();
 		if (robot.getActiveJob() != null) {
 			jobList.removeRobotFromJob(robot.getActiveJob(), robot);
+			jobs = jobList.getJobList();
 		}
 		Job job;
 		if (waitingMap.get(robot).isPresent()) {
@@ -64,30 +68,39 @@ public class JobAssignment {
 			HashMap<Robot, ArrayList<Item>> itemsForRobots = splitItemsBetweenRobots(preJob);
 			job = createSubJob(robot, preJob,itemsForRobots);
 			waitingMap.put(robot, Optional.empty());
+			jobs.removeIf(i -> i.getID() == preJob.getID());
 		}else{	
 			return;	
 		}
-		System.out.println(job);
 		if (job == null) {
 			return;
 		}
 		jobList.addJobToProgressMap(job, robot);
+
 		jobList.addRobotToJob(job, robot);
-		jobs.removeIf(i -> i.getID() == job.getID());
+
+		//jobs.removeIf(i -> i.getID() == job.getID());
+
 		ArrayList<Item> orderedItems = job.getITEMS();
 		//ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
+
 		job.setItems(orderedItems);
+
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
+
 		ArrayList<Action> actions = calculateActions(routes);
+
 		Route routeForAllItems = new Route(routes, actions);
+
 		Route routeWithDropoff = new Route(routeForAllItems, Action.DROPOFF);
+
 		job.assignCurrentroute(routeWithDropoff);
 		robot.setActiveJob(job);
 		recentJob = job;
 		logger.info(robot);
 		logger.info(routeWithDropoff);
 		logger.info(job);
-		//logger.info(items);
+
 	
 	}
 
@@ -106,15 +119,19 @@ public class JobAssignment {
 		ArrayList<Route> routes = new ArrayList<Route>();
 		Route itemRoute;
 		Pose initialPose = r.getCurrentPose();
+
 		for (Item item : items) {
 			if(item.getID().equals("droppoint")){
 				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,initialPose);
+
 				itemRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff, initialPose, getCurrentRoutes(r),timeCount);
 				currentRobotPosition = nearestDropoff;
 				Route routeWithDropoff = new Route(itemRoute, Action.DROPOFF);
 				routes.add(routeWithDropoff);
+
 			}else{
 				itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), initialPose,getCurrentRoutes(r), timeCount);
+
 				currentRobotPosition = item.getPOSITION();
 				routes.add(itemRoute);
 			}
@@ -173,7 +190,6 @@ public class JobAssignment {
 	}
 	
 	private HashMap<Robot, ArrayList<Item>> splitItemsBetweenRobots(Job j) {
-		HashMap<Robot, Point> positionMap = new HashMap<>();
 		HashMap<Robot, ArrayList<Item>> itemMap = new HashMap<>();
 		ArrayList<Item> items = j.getITEMS();
 		
@@ -197,7 +213,9 @@ public class JobAssignment {
 				int robotVal = Integer.MAX_VALUE;
 				for (Item item : items) {
 					if (robotWeight + item.getWEIGHT() < 50.0f) {
-						int cost = calculateCost(item,itemMap,robot);
+						//Point robotPosition = positionMap.get(robot);
+						//int cost = calculateCost(item,itemMap,robot,robotPosition);
+						int cost = calculateCost(item,itemMap,robot,robot.getCurrentPosition());
 						if (cost < bidVal) {
 							robotPick = item;
 							robotVal = cost;
@@ -215,6 +233,7 @@ public class JobAssignment {
 			items.remove(bidPick);
 			Float currentWeight = weightMap.get(bidPickRobot);
 			weightMap.put(bidPickRobot, currentWeight + bidPick.getWEIGHT());
+			logger.info(bidPickRobot.getRobotName() + " assigned item " + bidPick.getID() + " in job " + j.getID());;
 			positionMap.put(bidPickRobot, bidPick.getPOSITION());
 		}
 		return itemMap;
@@ -234,10 +253,11 @@ public class JobAssignment {
 	}
 
 
-	private int calculateCost(Item item, HashMap<Robot, ArrayList<Item>> itemList, Robot _robot) {
+	private int calculateCost(Item item, HashMap<Robot, ArrayList<Item>> itemList, Robot _robot, Point robotPosition) {
+		Robot robotCopy = new Robot("TestRobot", "", robotPosition);
 		ArrayList<Item> itemArrayList = new ArrayList<>(itemList.get(_robot));
 		itemArrayList.add(item);
-		int distance = tsp.calculateJobDistance(itemArrayList, _robot);
+		int distance = tsp.calculateJobDistance(itemArrayList, robotCopy);
 		return distance;
 	}
 	
