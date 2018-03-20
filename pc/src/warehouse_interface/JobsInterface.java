@@ -21,7 +21,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -30,6 +29,7 @@ import javax.swing.JTextField;
 
 public class JobsInterface extends JFrame implements Runnable {
 
+	private static final long serialVersionUID = -3461390707886324932L;
 	private JPanel contentPane;
 	private JPanel cancelJobPane;
 	private JLabel totalReward;

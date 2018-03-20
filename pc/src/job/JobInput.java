@@ -5,13 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.swing.plaf.synth.SynthInternalFrameUI;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
-
 import lejos.geom.Point;
 
 /*
@@ -126,15 +121,11 @@ public class JobInput {
 	
 	public ArrayList<Point> getDrops() {
 		try (BufferedReader br = new BufferedReader(new FileReader(dropsFile))) {
-			int i = 1;
 			while ((line = br.readLine()) != null) {
                 
 				String[] data = line.split(csvSplitBy);
 				Point dropOffPoint = new Point(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
 				dropoffPoints.add(dropOffPoint);
-				
-				i += 1;
-
 			}
 
 		} catch (IOException e) {

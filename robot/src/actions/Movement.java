@@ -12,7 +12,10 @@ public class Movement {
 	private  final LightSensor LEFT_SENSOR;
 	private final LightSensor RIGHT_SENSOR;
 	private final DifferentialPilot PILOT;
-	RobotInterface rInterface;
+	private RobotInterface rInterface;
+	private final float DEGREETURN = 90f;
+	private final float HALFLENGTH = 0.09f;
+	
 	
 	public Movement(int _MID_BOUND, RobotInterface _rI) {
 		PILOT = new WheeledRobotSystem(Configuration.CUSTOM_EXPRESS_BOT).getPilot();
@@ -20,7 +23,7 @@ public class Movement {
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		MID_BOUND = _MID_BOUND;
 		PILOT.setTravelSpeed(0.2f);
-		PILOT.setRotateSpeed(60);
+		PILOT.setRotateSpeed(PILOT.getRotateMaxSpeed());
 		rInterface = _rI;
 	}
 	
@@ -33,34 +36,22 @@ public class Movement {
 			Delay.msDelay(100);
 			return;
 		case FORWARD:
-			PILOT.travel(0.05);
+			PILOT.travel(0.01);
 			break;
 		case LEFT:
-			PILOT.travel(0.05);
-			PILOT.rotate(-45);
-			while (!isRightOnLine()) {
-				PILOT.rotateRight();
-			}
-			PILOT.rotate(5);
+			PILOT.travel(HALFLENGTH);
+			PILOT.rotate(-DEGREETURN);
 			PILOT.forward();
 			break;
 		case RIGHT: 
-			PILOT.travel(0.05);
-			PILOT.rotate(45);
-			while (!isLeftOnLine()) {
-				PILOT.rotateLeft();
-			}
-			PILOT.rotate(-5);
+			PILOT.travel(HALFLENGTH);
+			PILOT.rotate(DEGREETURN);
 			PILOT.forward();
 			break;
 		case BACKWARD: 
 			PILOT.stop();
-			PILOT.travel(-0.1);
-			PILOT.rotate(20);
-			while (!isRightOnLine()) {
-				PILOT.rotateLeft();
-			}
-			PILOT.rotate(20);
+			PILOT.travel(-HALFLENGTH);
+			PILOT.rotate(DEGREETURN*2);
 			PILOT.forward();
 			break;
 		case PICKUP:
@@ -78,15 +69,16 @@ public class Movement {
 		default:
 			break;
 		}
-		
 		if (!(command.equals(Action.PICKUP) || command.equals(Action.DROPOFF)|| command.equals(Action.WAIT)|| command.equals(Action.HOLD))) {
-		while (!(isRightOnLine() && isLeftOnLine())) {
+			while (!(isRightOnLine() && isLeftOnLine())) {
 			PILOT.forward();
-			while (isLeftOnLine() && !isRightOnLine()) {
-				PILOT.rotateRight();
+			if (isLeftOnLine() && !isRightOnLine()) {
+				PILOT.rotate(-5);
+				Delay.msDelay(500);
 			}
-			while (!isLeftOnLine() && isRightOnLine()) {
-				PILOT.rotateLeft();
+			if  (!isLeftOnLine() && isRightOnLine()) {
+				PILOT.rotate(5);
+				Delay.msDelay(500);
 			}
 		}
 		}
@@ -103,10 +95,12 @@ public class Movement {
 	}
 	
 	public boolean isRightOnLine() {
+		System.out.println("One right");
 		return isOnLine(RIGHT_SENSOR.getNormalizedLightValue());
 	}
 	
 	public boolean isLeftOnLine() {
+		System.out.println("Left");
 		return isOnLine(LEFT_SENSOR.getNormalizedLightValue());
 	}
 

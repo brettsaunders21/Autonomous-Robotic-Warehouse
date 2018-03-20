@@ -1,8 +1,6 @@
 package job;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import interfaces.Pose;
 import interfaces.Robot;
 import lejos.geom.Point;

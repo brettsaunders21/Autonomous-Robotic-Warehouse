@@ -10,6 +10,7 @@ import lejos.geom.Point;
 
 public class WarehouseInterface extends JFrame implements Runnable{
 
+	private static final long serialVersionUID = 713503829945531420L;
 	private Image bg = new ImageIcon("src/warehouse_interface/Map.jpg").getImage();	
 	private Image robotMarco = new ImageIcon("src/warehouse_interface/nxtMarco.png").getImage();
 	private Image robotSpike = new ImageIcon("src/warehouse_interface/nxtSPIKE.png").getImage();

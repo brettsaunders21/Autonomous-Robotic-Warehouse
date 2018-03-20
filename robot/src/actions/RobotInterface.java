@@ -13,7 +13,6 @@ public class RobotInterface {
 	
 	private int itemQuantity;
 	private int itemsHeld;
-	//private Robot robotInfo;
 	String robotName;
 	int jobCode;
 	String dropLocation;
@@ -28,7 +27,6 @@ public class RobotInterface {
 		this.itemQuantity = 0;
 		this.itemsHeld = 0;
 		this.robotName = "";
-		
 	}
 	
 	public void setRobotName(String receiveString) {
