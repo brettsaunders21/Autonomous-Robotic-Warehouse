@@ -307,15 +307,15 @@ public class AStarTest {
 	@Test(timeout = 1000)
 	public void holdTest2() {
 		logger.setLevel(Level.DEBUG);
-		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.POS_X, new Route[] {}, 0);
+		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(5, 0), Pose.NEG_X, new Route[] {}, 0);
 		r1 = new Route(r1, Action.PICKUP);
-		Route r3 = aStar.generateRoute(new Point(5, 0), new Point(11, 0), Pose.POS_X, new Route[] {}, 0);
+		Route r3 = aStar.generateRoute(new Point(5, 0), new Point(11, 0), Pose.NEG_X, new Route[] {}, 0);
 		r1 = new Route(r1, r3);
 		r1 = new Route(r1, Action.DROPOFF);
 		
 		Route[] rs = new Route[] {r1};
 
-		Route r2 = aStar.generateRoute(new Point(0, 2), new Point(11, 0), Pose.POS_X, rs, 0);
+		Route r2 = aStar.generateRoute(new Point(0, 2), new Point(11, 0), Pose.NEG_X, rs, 0);
 		r2 = new Route(r2, Action.DROPOFF);
 		
 		logger.debug(r1.getDirections());
