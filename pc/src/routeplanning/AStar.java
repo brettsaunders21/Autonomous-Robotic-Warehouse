@@ -471,7 +471,7 @@ public class AStar {
 			theirPointNow = route.getStartPoint();
 		}
 		if (theirPointNow.equals(nextPoint) && theirNextPoint.equals(thisPoint)) {
-			throw new BacktrackNeededException(nextPoint, myTime);
+			//throw new BacktrackNeededException(nextPoint, myTime);
 		}
 	}
 
