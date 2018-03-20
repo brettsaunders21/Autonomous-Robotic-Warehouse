@@ -67,6 +67,10 @@ public class JobAssignment {
 		}else{	
 			return;	
 		}
+		System.out.println(job);
+		if (job == null) {
+			return;
+		}
 		jobList.addJobToProgressMap(job, robot);
 		jobList.addRobotToJob(job, robot);
 		jobs.removeIf(i -> i.getID() == job.getID());
@@ -148,6 +152,8 @@ public class JobAssignment {
 			Job subJob = new Job(j.getID(), _itemMap.get(robot));
 			if (!subJob.getITEMS().isEmpty()) {
 				waitingMap.put(robot, Optional.of(subJob));
+			}else {
+				return null;
 			}
 		}
 		return waitingMap.get(r).get();

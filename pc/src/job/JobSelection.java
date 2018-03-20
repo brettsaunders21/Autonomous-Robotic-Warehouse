@@ -144,8 +144,8 @@ public class JobSelection {
 		HashMap<Float,Integer> ratioJob = new HashMap<Float,Integer>();
 		ArrayList<Integer> orderedOrders2 = new ArrayList<Integer>();
 		ArrayList<Job> orderedJobs2 = new ArrayList<Job>();
-
 		for (int i = 0; i < jobs.size(); i++) {
+			
 			int totalDistance = tsp.calculateJobDistance(jobs.get(i), robot);
 
 			float totalWeight = jobs.get(i).calculateWeight();

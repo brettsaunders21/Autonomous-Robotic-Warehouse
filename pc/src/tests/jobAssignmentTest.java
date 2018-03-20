@@ -45,7 +45,6 @@ public class jobAssignmentTest {
 	JobList jobList = new JobList(jobSelection);
 	
 
-	@Test
 	public jobAssignmentTest() {
 		drops = jobInput.getDrops();
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
@@ -59,11 +58,13 @@ public class jobAssignmentTest {
 	@Test
 	public void checkTSP() {
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 50; i++) {
 			jAssignment.assignJobs(robot1);
 			jAssignment.assignJobs(robot2);
 			//System.out.println(i + "completed");
 		}
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot2);
 		assertEquals(true,true);
 	}
 	
