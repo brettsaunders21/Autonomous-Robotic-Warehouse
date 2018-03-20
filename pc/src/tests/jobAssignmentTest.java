@@ -29,7 +29,8 @@ public class jobAssignmentTest {
 	JobInput jobInput =  new JobInput();
 	private Robot robot1 = new Robot("Spike", "0016530AA681", new Point(0,0));
 	private Robot robot2 = new Robot("Marco", "001653115A7E", new Point(11, 7));
-	private Robot[] robotList = {robot1,robot2};
+	private Robot robot3 = new  Robot("Jeremy", "00165308E37C", new Point(0,7));
+	private Robot[] robotList = {robot1,robot2,robot3};
 	private JobAssignment jAssignment;
 	private HashMap<String, Double> betaValues = jobInput.getBetaValues();
 	final static Logger logger = Logger.getLogger(jobAssignmentTest.class);
@@ -58,14 +59,13 @@ public class jobAssignmentTest {
 	@Test
 	public void checkTSP() {
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 80; i++) {
 			jAssignment.assignJobs(robot1);
 			jAssignment.assignJobs(robot2);
-			System.out.println(jobList.getJobsCompleted());
+			jAssignment.assignJobs(robot3);
+			//System.out.println(jobList.getJobsCompleted());
 			//System.out.println(i + "completed");
 		}
-		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot2);
 		assertEquals(true,true);
 	}
 	

@@ -15,7 +15,7 @@ public class Job {
 	private final float WEIGHT;
 	private final float REWARD;
 	private Point dropLocation;
-	private Route currentroute;
+	private volatile Route currentroute;
 	private boolean canceled;
 
 	public Job(int _ID, ArrayList<Item> _ITEMS) {

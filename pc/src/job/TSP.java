@@ -1,7 +1,12 @@
 package job;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import interfaces.Pose;
 import interfaces.Robot;
@@ -50,7 +55,7 @@ public class TSP {
 	public int calculateJobDistance(Job job, Robot robot) {
 		ArrayList<Item> tempItems = new ArrayList<Item>(job.getITEMS());
 		Robot tempR = robot;
-		tempItems = orderItems(tempItems, tempR);
+		//tempItems = orderItems(tempItems, tempR);
 		//tempItems = addDropPoints(tempItems);
 		int distance = 0;
 		if (tempItems.size() > 1) 
@@ -64,7 +69,7 @@ public class TSP {
 	public int calculateJobDistance(ArrayList<Item> items, Robot robot) {
 		ArrayList<Item> tempItems = new ArrayList<Item>(items);
 		Robot tempR = robot;
-		tempItems = orderItems(tempItems, tempR);
+		//tempItems = orderItems(tempItems, tempR);
 		//tempItems = addDropPoints(tempItems);
 		int distance = 0;
 		if (tempItems.size() > 1) 
@@ -104,5 +109,46 @@ public class TSP {
 			}
 		}
 		return closestPoint;
+	}
+
+	public Point bestDropPoint(ConcurrentHashMap<Robot, ArrayList<Item>> itemsForRobots, Job j) {
+		// TODO Auto-generated method stub
+		HashMap<Point, Integer> dropMap = new HashMap<>();
+		Entry<Point, Integer> bestDropPoint = null;
+		for (Entry<Robot, ArrayList<Item>> entry : itemsForRobots.entrySet()) {
+			Robot thisRobot = entry.getKey();
+			if (entry.getValue().isEmpty()) {
+				continue;
+			}
+			Item lastItem = entry.getValue().get(entry.getValue().size()-1);
+			Point bestDrop = nearestDropPoint(lastItem.getPOSITION(), thisRobot.getCurrentPose());
+			if (dropMap.containsKey(bestDrop)) {
+				dropMap.put(bestDrop, dropMap.get(bestDrop)+1);
+			}else{
+				dropMap.put(bestDrop, 1);
+			}
+		}
+		for (Entry<Point, Integer> entry : dropMap.entrySet()) {
+			if (bestDropPoint == null || entry.getValue() > bestDropPoint.getValue()) {
+				bestDropPoint = entry;
+			}
+		}
+		//j.setDropLocation(bestDropPoint.getKey());
+		return bestDropPoint.getKey();
+	}
+	
+	public synchronized List<Route> getCurrentRoutes(Robot currentRobot, Robot[] robots){
+		//ArrayList<Route> routes = new ArrayList<Route>();
+		List<Route> routes = Collections.synchronizedList(new ArrayList<Route>());
+		for (int i = 0; i < robots.length; i++) {
+			if (robots[i].getActiveJob() != null 
+					&& robots[i].getActiveJob().getCurrentroute() != null
+					&& robots[i].getRobotName() != currentRobot.getRobotName()) {
+				routes.add(robots[i].getActiveJob().getCurrentroute());
+			}
+		}
+		//logger.info(routes);
+		//return routes.toArray(new Route[routes.size()]);
+		return routes;
 	}
 }
