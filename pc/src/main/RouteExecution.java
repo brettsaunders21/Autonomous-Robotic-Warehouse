@@ -65,6 +65,7 @@ public class RouteExecution {
 			Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
 			int instructionCounter = -1;
 			rELogger.debug(currentDirections);
+			rELogger.debug(currentJob.getCurrentroute().getStartTime());
 			rELogger.debug(ITEMS);
 			//sending instructions (actions)
 			while (!currentDirections.isEmpty()) {

@@ -93,21 +93,13 @@ public class RobotController implements StoppableRunnable {
 	}
 	
 	private void userCalibration() {
-		for (int i = 0; i < 3; i ++) {
-			System.out.println("Place the bot's sensors over line (" + i + ").");
+			System.out.println("Place the bot's sensors over line.");
 			Button.waitForAnyPress();
-			int readValue = getAverageLight();
-			if (readValue > high) high = readValue;
-		}
-		
-		for (int i = 0; i < 3; i ++) {
-			System.out.println("Place the bot's sensors over background (" + i + ").");
+			high = getAverageLight();
+			System.out.println("Place the bot's sensors over background.");
 			Button.waitForAnyPress();
-			int readValue = getAverageLight();
-			if (readValue < low) low = readValue;
+			low = getAverageLight();
 		}
-		
-	}
 
 	public static void main(String[] args) {
 		RobotController rc = new RobotController();
