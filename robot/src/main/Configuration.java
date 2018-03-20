@@ -2,12 +2,10 @@ package main;
 
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
-import rp.config.WheeledRobotConfiguration;
+import lejos.robotics.navigation.DifferentialPilot;
 
 public class Configuration {
-	
-	public static final WheeledRobotConfiguration CUSTOM_EXPRESS_BOT = new WheeledRobotConfiguration(2.205f, 1.02f,
-			8.0f, Motor.A, Motor.C);
+	public static final DifferentialPilot PILOT = new DifferentialPilot(56, 110.5, Motor.A, Motor.C);
 	
 	public static final SensorPort LEFT_LIGHT_SENSOR = SensorPort.S1;
 	public static final SensorPort RIGHT_LIGHT_SENSOR = SensorPort.S3;

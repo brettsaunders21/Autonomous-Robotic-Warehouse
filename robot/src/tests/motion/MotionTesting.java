@@ -40,7 +40,7 @@ public class MotionTesting implements StoppableRunnable{
 		Button.waitForAnyPress();
 		move = new Movement(MID_BOUND, rInterface);
 		System.out.println("Test 1");
-		//Test1();
+		Test1();
 		Button.waitForAnyPress();
 		System.out.println("Test 2");
 		Test2();
@@ -66,29 +66,46 @@ public class MotionTesting implements StoppableRunnable{
 	}
 	
 	private void userCalibration() {
-		for (int i = 0; i < 1; i ++) {
-			System.out.println("Place the bot's sensors over line (" + i + ").");
+			System.out.println("Place the bot's sensors over line.");
 			Button.waitForAnyPress();
-			int readValue = getAverageLight();
-			if (readValue > high) high = readValue;
-		}
-		
-		for (int i = 0; i < 1; i ++) {
-			System.out.println("Place the bot's sensors over background (" + i + ").");
+			high = getAverageLight();
+			System.out.println("Place the bot's sensors over background.");
 			Button.waitForAnyPress();
-			int readValue = getAverageLight();
-			if (readValue < low) low = readValue;
+			low = getAverageLight();
 		}
-		
-	}
 	
 	public void Test1() {
 		move.nextAction(Action.FORWARD, 0);
 		move.nextAction(Action.FORWARD, 0);
 		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.RIGHT,0);
+		move.nextAction(Action.RIGHT,0);
+		move.nextAction(Action.RIGHT,0);
+		move.nextAction(Action.LEFT,0);
+		move.nextAction(Action.BACKWARD,0);
 		move.nextAction(Action.FORWARD, 0);
 		move.nextAction(Action.FORWARD, 0);
 		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.RIGHT,0);
+		move.nextAction(Action.LEFT,0);
+		move.nextAction(Action.RIGHT,0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.RIGHT,0);
+		move.nextAction(Action.RIGHT,0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.RIGHT, 0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.LEFT, 0);
+		move.nextAction(Action.LEFT, 0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.FORWARD, 0);
+		move.nextAction(Action.LEFT, 0);
+		move.nextAction(Action.RIGHT, 0);
 		move.nextAction(Action.FORWARD, 0);
 	} 
 	

@@ -2,10 +2,10 @@ package actions;
 
 import interfaces.Action;
 import lejos.nxt.LightSensor;
+import lejos.nxt.Motor;
 import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.Delay;
 import main.Configuration;
-import rp.systems.WheeledRobotSystem;
 
 public class Movement {
 	private final int MID_BOUND;
@@ -14,15 +14,15 @@ public class Movement {
 	private final DifferentialPilot PILOT;
 	private RobotInterface rInterface;
 	private final float DEGREETURN = 90f;
-	private final float HALFLENGTH = 0.09f;
+	private final float HALFLENGTH = 24.5f;
 	
 	
 	public Movement(int _MID_BOUND, RobotInterface _rI) {
-		PILOT = new WheeledRobotSystem(Configuration.CUSTOM_EXPRESS_BOT).getPilot();
+		PILOT = new DifferentialPilot(56, 110.5, Motor.A, Motor.C);
 		LEFT_SENSOR = new LightSensor(Configuration.LEFT_LIGHT_SENSOR);
 		RIGHT_SENSOR = new LightSensor(Configuration.RIGHT_LIGHT_SENSOR);
 		MID_BOUND = _MID_BOUND;
-		PILOT.setTravelSpeed(0.2f);
+		PILOT.setTravelSpeed(PILOT.getMaxTravelSpeed());
 		PILOT.setRotateSpeed(PILOT.getRotateMaxSpeed());
 		rInterface = _rI;
 	}
@@ -36,7 +36,6 @@ public class Movement {
 			Delay.msDelay(100);
 			return;
 		case FORWARD:
-			PILOT.travel(0.01);
 			break;
 		case LEFT:
 			PILOT.travel(HALFLENGTH);
@@ -73,13 +72,14 @@ public class Movement {
 			while (!(isRightOnLine() && isLeftOnLine())) {
 			PILOT.forward();
 			if (isLeftOnLine() && !isRightOnLine()) {
-				PILOT.rotate(-5);
-				Delay.msDelay(500);
+				Motor.C.setSpeed(Motor.C.getSpeed() * 0.70f);
+				Delay.msDelay(20);
 			}
 			if  (!isLeftOnLine() && isRightOnLine()) {
-				PILOT.rotate(5);
-				Delay.msDelay(500);
+				Motor.A.setSpeed(Motor.A.getSpeed() * 0.70f);
+				Delay.msDelay(20);
 			}
+			PILOT.setRotateSpeed(PILOT.getRotateMaxSpeed());
 		}
 		}
 		PILOT.stop();
@@ -95,12 +95,10 @@ public class Movement {
 	}
 	
 	public boolean isRightOnLine() {
-		System.out.println("One right");
 		return isOnLine(RIGHT_SENSOR.getNormalizedLightValue());
 	}
 	
 	public boolean isLeftOnLine() {
-		System.out.println("Left");
 		return isOnLine(LEFT_SENSOR.getNormalizedLightValue());
 	}
 
