@@ -10,16 +10,19 @@ public class PointsHeld {
 	public PointsHeld() {
 	}
 	
+	//keeps the robot at point p
 	public void holdAt(Point p) {
 		if (!pointsHeld.contains(p)) {
 			pointsHeld.add(p);
 		}
 	}
 	
+	//checks to see if the robot is still held at point p
 	public boolean isStillHeld(Point p) {
 		return pointsHeld.contains(p);
 	}
 	
+	//frees up point p for robot to move into
 	public void freeUp(Point p) {
 		if (pointsHeld.contains(p)) {
 			pointsHeld.remove(p);

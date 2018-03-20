@@ -30,11 +30,12 @@ public class Counter {
 			i++;
 		}
 	}
-	
+	//sets the boolean as true if robot is ready to move 
 	public synchronized void readyToMove(String robotName) {
 		readyToMove.set(nameIndex.get(robotName), true);
 	}
 	
+	//checks if the robot can move
 	public synchronized boolean canMove() {
 		boolean flag = true;
 		for (int i = 0; i<readyToMove.size(); i++) {
@@ -44,6 +45,7 @@ public class Counter {
 		}
 		return flag;
 	}
+	
 	
 	public void iMoved(){
 		robotsMoved.incrementAndGet();
@@ -60,10 +62,12 @@ public class Counter {
 		return time.get();
 	}
 
+	//sets whether the robot can move to false
 	public synchronized void isNonMove(String robotName) {
 		moveable.set(nameIndex.get(robotName), false);
 	}
 	
+	//sets whether the robot can move to true
 	public synchronized void isMoveable(String robotName) {
 		moveable.set(nameIndex.get(robotName), true);
 	}

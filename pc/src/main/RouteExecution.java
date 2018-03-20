@@ -34,6 +34,7 @@ public class RouteExecution {
 	private Robot[] robots;
 	private AStar routeMaker;
 
+	
 	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints, Robot[] _robots, JobList _jobList) {
 		this.robot = _robot;
 		this.network = _network;
@@ -45,18 +46,23 @@ public class RouteExecution {
 		robots = _robots;
 	}
 
+	
 	public void run() {
 		try {
+			//checking active job ID exists and job is not cancelled
 			currentJob = robot.getActiveJob();
 			if (jobList.getJob(robot.getActiveJob().getID()) != null) {
 				if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) robot.cancelJob();
 			}
+			//retrieving Arraylist of items
 			ITEMS = currentJob.getITEMS();
 			currentDirections = currentJob.getCurrentroute().getDirections();
+			//retrieving coordinates for job
 			Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
 			int instructionCounter = -1;
 			rELogger.debug(currentDirections);
 			rELogger.debug(ITEMS);
+			//sending instructions (actions)
 			while (!currentDirections.isEmpty()) {
 				instructionCounter++;
 				currentCommand = currentDirections.poll();
@@ -64,6 +70,7 @@ public class RouteExecution {
 					network.sendObject(Action.CANCEL);
 					break;
 				}
+				// if action received is not pickup, drop-off or hold, robot will sleep
 				counter.readyToMove(robot.getRobotName());
 				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
 						|| currentCommand.equals(Action.HOLD))) {
@@ -75,23 +82,28 @@ public class RouteExecution {
 					heldPoints.holdAt(heldCoord);
 					counter.isNonMove(robot.getRobotName());
 				}
+				//sending job ID and currentCommand to RobotController
 				network.sendObject(currentJob.getID());
 				network.sendObject(currentCommand);
 				counter.iMoved();
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				rELogger.debug(whereImGoing);
+				// if PICKUP is received, no of items to be picked up is sent to RobotController
 				if (currentCommand == Action.PICKUP) {
 					rELogger.debug(ITEMS.get(0) + " " + ITEMS.get(0).getQUANTITY());
 					network.sendObject(ITEMS.get(0).getQUANTITY());
 				}
+				// if DROPOFF is received, no of items to be dropped off is sent to RobotController
 				if (currentCommand == Action.DROPOFF) {
 					network.sendObject(itemsToDrop.peek().getQUANTITY());
 				}
+				//if action complete message is not received job is cancelled
 				if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
 					rELogger.error(robot.getRobotName() + " did not complete an action. Canceling Job");
 					robot.cancelJob();
 					break;
 				}
+				//if HOLD is received, robot will pause
 				if (currentCommand.equals(Action.HOLD)) {
 					// hold instruction cannot be the last instruction
 					Point heldCoord = arrayOfCoords[instructionCounter + 1];
@@ -101,6 +113,7 @@ public class RouteExecution {
 					heldPoints.freeUp(arrayOfCoords[instructionCounter]);
 					counter.isMoveable(robot.getRobotName());
 				}
+				//robot will run route
 				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
 						|| currentCommand.equals(Action.HOLD))) {
 					Point heldCoord = arrayOfCoords[instructionCounter];
@@ -121,6 +134,7 @@ public class RouteExecution {
 					currentDirections = currentRoute.getDirections();
 					
 				}
+				//setting weight for number of items, weight being adjusted for pickup and drop-off
 				if (currentCommand == Action.PICKUP) {
 					robot.setWeight(robot.getWeight() + ITEMS.get(0).getTOTAL_WEIGHT());
 					itemsToDrop.add(ITEMS.get(0));
@@ -137,6 +151,7 @@ public class RouteExecution {
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
+		//checking job finished and calculating reward
 		if (!robot.getJobCancelled()) {
 			System.out.println("JOB FINISHED");
 			robot.jobFinished();
@@ -146,6 +161,12 @@ public class RouteExecution {
 		}
 	}
 
+	/**
+	 * gets the direction for the robot to travel
+	 * @param firstPoint
+	 * @param secondPoint
+	 * @return direction
+	 */
 	public static Pose getDirection(Point firstPoint, Point secondPoint) {
 		Pose direction;
 		Point difference = secondPoint.subtract(firstPoint);

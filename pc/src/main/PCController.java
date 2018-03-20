@@ -32,16 +32,19 @@ public class PCController {
 
 	
 	public static void main(String[] args) {
-		controllerLogger.setLevel(Level.ALL);
+		//sets the levels for the loggers in different classes
+		controllerLogger.setLevel(Level.ALL); 
 		aStarLogger.setLevel(Level.FATAL);
 		routeExeLogger.setLevel(Level.ALL);
 		jobAssLogger.setLevel(Level.ALL);
+		//creates new JobInput, JobSelection, JobList, PointHeld and JobAssignment
 		JobInput jI = new JobInput();
 		JobSelection jS = new JobSelection(jI.getBetaValues());
 		JobList jobList = new JobList(jS);
 		Counter counter = new Counter(ROBOTS);
 		PointsHeld heldPoints = new PointsHeld();
 		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops(), ROBOTS);
+		//creates new interfaces for warehouse and jobs
 		new WarehouseInterface(ROBOTS);
 		new JobsInterface(ROBOTS, completedJobs, jobList);
 		for (int i = 0; i<numOfRobots; i++) {

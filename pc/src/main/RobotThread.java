@@ -50,13 +50,16 @@ public class RobotThread extends Thread{
 			return;
 		}
 		try {
+			//sending robot name to RobotController
 			networker.sendObject(robot.getRobotName());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		while(true) {
+			//checks if the job is finished or cancelled
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
 				if (robot.isJobFinished()) {
+					//if job is finished, it is added to completedJobs
 					if (robot.getActiveJob() != null) {
 						completedJobs.add(robot.getActiveJob());
 					}
