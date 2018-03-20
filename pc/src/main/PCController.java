@@ -23,7 +23,7 @@ public class PCController {
 	private static final Logger jobAssLogger = Logger.getLogger(JobAssignment.class);
 	private static final Robot[] ROBOTS = {
 			new Robot("Spike", "0016530AA681", new Point(0, 0)),
-			//new  Robot("Jeremy", "00165308E37C", new Point(0,7)),
+			new Robot("Jeremy", "00165308E37C", new Point(0,7)),
 			new Robot("Marco", "001653115A7E", new Point(11, 7))
 	};
 	private static ArrayList<Job> completedJobs = new ArrayList<Job>();
@@ -33,7 +33,7 @@ public class PCController {
 	
 	public static void main(String[] args) {
 		controllerLogger.setLevel(Level.ALL);
-		aStarLogger.setLevel(Level.FATAL);
+		aStarLogger.setLevel(Level.OFF);
 		routeExeLogger.setLevel(Level.ALL);
 		jobAssLogger.setLevel(Level.ALL);
 		JobInput jI = new JobInput();
