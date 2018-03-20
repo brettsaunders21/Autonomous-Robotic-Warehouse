@@ -28,7 +28,8 @@ public class jobAssignmentTest {
 	//private final static Logger logger = Logger.getLogger(AssignmentTest.class);;
 	JobInput jobInput =  new JobInput();
 	private Robot robot1 = new Robot("Spike", "0016530AA681", new Point(0,0));
-	private Robot[] robotList = {robot1};
+	private Robot robot2 = new Robot("Marco", "001653115A7E", new Point(11, 7));
+	private Robot[] robotList = {robot1,robot2};
 	private JobAssignment jAssignment;
 	private HashMap<String, Double> betaValues = jobInput.getBetaValues();
 	final static Logger logger = Logger.getLogger(jobAssignmentTest.class);
@@ -44,7 +45,7 @@ public class jobAssignmentTest {
 	JobList jobList = new JobList(jobSelection);
 	
 
-	
+	@Test
 	public jobAssignmentTest() {
 		drops = jobInput.getDrops();
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
@@ -56,23 +57,28 @@ public class jobAssignmentTest {
 	}
 
 	@Test
-	public void checkJobAssigned() {
+	public void checkTSP() {
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
-		jAssignment.assignJobs(robot1);
-		firstJobAssigned = jAssignment.getCurrentJob();
-		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
+		for (int i = 0; i < 5; i++) {
+			jAssignment.assignJobs(robot1);
+			jAssignment.assignJobs(robot2);
+			//System.out.println(i + "completed");
+		}
+		assertEquals(true,true);
 	}
 	
 	@Test
-	public void checkTSP() {
-		for (int i = 0; i < 1000; i++) {
-			jAssignment.assignJobs(robot1);
-			//System.out.println(i + "completed");
-		}
+	public void checkJobAssigned() {
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
 		jAssignment.assignJobs(robot1);
-		jAssignment.assignJobs(robot1);
-		assertEquals(true,true);
+		jAssignment.assignJobs(robot2);
+		firstJobAssigned = jAssignment.getCurrentJob();
+		Job firstJobAssigned2 = jAssignment.getCurrentJob();
+		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
+		assertEquals(firstJobAssigned2.getID(), robot2.getActiveJob().getID());
 	}
+	
+
 	
 	@Test
 	public void dropoffAtEndOfJob() {

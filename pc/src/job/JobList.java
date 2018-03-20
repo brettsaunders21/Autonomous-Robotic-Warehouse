@@ -22,7 +22,7 @@ public class JobList {
 		jS = _jS;
 		jobs = Collections.synchronizedList(new ArrayList<Job>(jS.prioritize()));
 		jobInProgressMap = new ConcurrentHashMap<Integer, ArrayList<Robot>>();
-		jobsCompleted = new ArrayList<>();
+		jobsCompleted = Collections.synchronizedList(new ArrayList<>());
 	}
 
 	public synchronized Job getNewJob(Robot robot){
@@ -86,5 +86,11 @@ public class JobList {
 			jobInProgressMap.remove(j);
 		}
 	}
+	
+	public ArrayList<Job> getJobsCompleted() {	
+		ArrayList<Job> jobsCompleteAL = new ArrayList<>(jobsCompleted);
+		return jobsCompleteAL;
+	}
+
 }
 

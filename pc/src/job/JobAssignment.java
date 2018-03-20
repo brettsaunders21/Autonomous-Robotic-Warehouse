@@ -63,6 +63,7 @@ public class JobAssignment {
 			Job preJob = jobList.getNewJob(robot);
 			HashMap<Robot, ArrayList<Item>> itemsForRobots = splitItemsBetweenRobots(preJob);
 			job = createSubJob(robot, preJob,itemsForRobots);
+			waitingMap.put(robot, Optional.empty());
 		}else{	
 			return;	
 		}
@@ -145,7 +146,9 @@ public class JobAssignment {
 	private Job createSubJob(Robot r, Job j, HashMap<Robot, ArrayList<Item>> _itemMap) {
 		for (Robot robot : robots) {
 			Job subJob = new Job(j.getID(), _itemMap.get(robot));
-			waitingMap.put(robot, Optional.of(subJob));
+			if (!subJob.getITEMS().isEmpty()) {
+				waitingMap.put(robot, Optional.of(subJob));
+			}
 		}
 		return waitingMap.get(r).get();
 	}
@@ -204,7 +207,6 @@ public class JobAssignment {
 			itemListForRobot.add(bidPick);
 			itemMap.put(bidPickRobot, itemListForRobot);
 			items.remove(bidPick);
-			//items.removeIf(i -> i.getID() == bidPick.getID());
 			Float currentWeight = weightMap.get(bidPickRobot);
 			weightMap.put(bidPickRobot, currentWeight + bidPick.getWEIGHT());
 			positionMap.put(bidPickRobot, bidPick.getPOSITION());
