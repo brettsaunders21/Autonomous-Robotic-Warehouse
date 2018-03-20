@@ -403,7 +403,7 @@ public class AStar {
 						break;
 					} else if (tempMap.isPassable(p)) {
 						logger.info(p);
-						throw new BacktrackNeededException(p, -1);
+						throw new BacktrackNeededException(p);
 					}
 				}
 			}
