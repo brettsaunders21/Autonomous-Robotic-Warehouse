@@ -65,7 +65,7 @@ public class RouteExecution {
 			Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
 			int instructionCounter = -1;
 			
-			heldPoints.holdAt(currentJob.getCurrentroute().getStartPoint());
+			heldPoints.holdAt(currentJob.getCurrentroute().getStartPoint(), new Point(-1, -1));
 			
 			Point previousPoint = currentJob.getCurrentroute().getStartPoint();
 			
@@ -79,16 +79,24 @@ public class RouteExecution {
 				currentCommand = currentDirections.poll();
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				
-				boolean messageSent = false;
-				while (heldPoints.isStillHeld(whereImGoing)) {
-					if (!messageSent) {
-						rELogger.debug("Waiting for coordinate (" + whereImGoing.x + ", " + whereImGoing.y + ") to free up.");
+				rELogger.debug(currentCommand);
+				rELogger.debug(whereImGoing);
+				
+				
+				if (!(currentCommand.equals(Action.PICKUP)||currentCommand.equals(Action.DROPOFF))) {
+					boolean messageSent = false;
+					counter.isNonMove(robot.getRobotName());
+					while (heldPoints.isStillHeld(whereImGoing)) {
+						if (!messageSent) {
+							rELogger.debug("Waiting for coordinate (" + whereImGoing.x + ", " + whereImGoing.y + ") to free up.");
+							messageSent = true;
+						}
+						Thread.sleep(1);
 					}
-					Thread.sleep(1);
+					counter.isMoveable(robot.getRobotName());
 				}
 				
-				heldPoints.freeUp(previousPoint);
-				heldPoints.holdAt(whereImGoing);
+				heldPoints.holdAt(whereImGoing, previousPoint);
 				previousPoint = whereImGoing;
 				if (robot.getJobCancelled()) {
 					network.sendObject(Action.CANCEL);
