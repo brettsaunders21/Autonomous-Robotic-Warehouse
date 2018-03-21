@@ -16,7 +16,8 @@ public class RouteCoordInfo{
 	/**@param thisPoint the coordinates of the point this object relates to
 	 * @param originPoint the coordinates of the point that was traversed through to reach this point
 	 * @param distanceToTest the absolute distance to the target position
-	 * @param distFromStart the shortest distance in grid units from the start coordinate*/
+	 * @param distFromStart the shortest distance in grid units from the start coordinate
+	 * @throws IllegalArgumentException if a negative distance is given*/
 	public RouteCoordInfo(Point thisPoint, Point originPoint, double distanceToDest, int distFromStart) {
 		if (distanceToDest<0) {
 			throw new IllegalArgumentException("distance to destination must be positive or 0");

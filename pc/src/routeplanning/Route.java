@@ -220,7 +220,7 @@ public class Route {
 			
 		}
 
-		
+		//adds first part of route information to route
 		this.coordinates = firstRoute.getCoordinates();
 		this.startPose = firstRoute.getStartPose();
 		this.myStartTime = firstRoute.getStartTime();
@@ -259,6 +259,7 @@ public class Route {
 		this.dirsArray = directions.toArray(a);
 	}
 
+	/*checks if the given instruction is a non-movement action*/
 	private boolean nonMoveFirst(Action action) {
 		return (action.equals(Action.DROPOFF)||action.equals(Action.HOLD)|| action.equals(Action.PICKUP));
 	}
@@ -279,7 +280,7 @@ public class Route {
 
 	/*
 	 * checks that only non move instructions are added to the route from outside an
-	 * existing route object
+	 * existing route object (only instructions which cannot be produced by AStar)
 	 */
 	private boolean nonMovementAction(Action a) {
 		if (a == null) {
@@ -348,7 +349,7 @@ public class Route {
 	 */
 	public Pose getPoseAt(int relativeTime) {
 		Pose p;
-		if (relativeTime > 0 && relativeTime < routeLength) {
+		if (relativeTime > 1 && relativeTime < routeLength) {
 			if (!coordsArray[relativeTime - 1].equals(coordsArray[relativeTime])) {
 				int direction = AStar.getDirection(coordsArray[relativeTime - 1], coordsArray[relativeTime]);
 				switch (direction) {
@@ -376,6 +377,35 @@ public class Route {
 			} else {
 				return getPoseAt(relativeTime - 1);
 			}
+		} else if (relativeTime == 1) {
+			if (!coordsArray[0].equals(startPoint)) {
+				int direction = AStar.getDirection(startPoint, coordsArray[0]);
+				switch (direction) {
+				case 0: {
+					p = Pose.NEG_X;
+					break;
+				}
+				case 1: {
+					p = Pose.NEG_Y;
+					break;
+				}
+				case 2: {
+					p = Pose.POS_X;
+					break;
+				}
+				case 3: {
+					p = Pose.POS_Y;
+					break;
+				}
+				default: { // should not be possible to reach
+					p = Pose.POS_X;
+					break;
+				}
+				}
+			}
+			else {
+				return getPoseAt(0);
+			}
 		} else if (relativeTime == 0) {
 			p = this.getStartPose();
 		} else {
@@ -394,6 +424,7 @@ public class Route {
 		return myStartTime;
 	}
 
+	/**@return the starting coordinate of this route before any instructions are executed*/
 	public Point getStartPoint() {
 		return startPoint;
 	}
