@@ -18,7 +18,7 @@ import lejos.util.Delay;
 public class DetectJunction extends AbstractBehaviour {
 	private RobotNetworkHandler networkHandler;
 	private RobotInterface rInterface;
-	
+	private Movement move;
 
 	/**
 	 * Constructor.
@@ -32,10 +32,11 @@ public class DetectJunction extends AbstractBehaviour {
 	 * @param _config The WheeledRobotConfiguration being used by the robot
 	 * @param route 
 	 */
-	public DetectJunction(int _MID_BOUND, RobotNetworkHandler _networkHandler, RobotInterface _rInterface) {
+	public DetectJunction(int _MID_BOUND, RobotNetworkHandler _networkHandler, RobotInterface _rInterface, Movement _move) {
 		super(_MID_BOUND);
 		networkHandler = _networkHandler;
 		rInterface = _rInterface;
+		move = _move;
 	}
 
 	@Override

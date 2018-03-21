@@ -42,6 +42,7 @@ public class RobotController implements StoppableRunnable {
 
 	@Override
 	public void run() {
+		running = true;
 		rInterface.sensorCalibrationMessage();
 		userCalibration();
 		lineValue = getLine();
@@ -59,7 +60,7 @@ public class RobotController implements StoppableRunnable {
 		Behavior correctLeft = new LeftOfLine(MID_BOUND);
 		Behavior correctRight = new RightOfLine(MID_BOUND);
 		Behavior forward = new DriveForward(MID_BOUND);
-		Behavior junction = new DetectJunction(MID_BOUND, networkHandler, rInterface);
+		Behavior junction = new DetectJunction(MID_BOUND, networkHandler, rInterface, move);
 		Arbitrator arby = new Arbitrator(new Behavior[] { forward, correctLeft, correctRight, junction});
 		arby.start();
 	}
@@ -98,6 +99,11 @@ public class RobotController implements StoppableRunnable {
 	public static void main(String[] args) {
 		RobotController rc = new RobotController();
 		rc.run();
+	}
+
+	@Override
+	public void stop() {
+		running = false;
 	}
 
 }
