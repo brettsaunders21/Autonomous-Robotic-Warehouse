@@ -5,13 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import javax.swing.plaf.synth.SynthInternalFrameUI;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-
-
 import lejos.geom.Point;
 
 /*
@@ -27,29 +22,23 @@ public class JobInput {
 	private HashMap<String, Double> betaValuesFromTraining = new HashMap<>();
 	private HashMap<Integer, ArrayList<String>> trainingJobs = new HashMap<>();
 	private ArrayList<Point> dropoffPoints = new ArrayList<>();
-	
-
-
 
 	// Change this depending on your file path
 	String filePath = "";
-	String itemRewardsWeightsFile =  filePath + "src/job/csv/items.csv";
+	String itemRewardsWeightsFile = filePath + "src/job/csv/items.csv";
 	String itemLocationsFile = filePath + "src/job/csv/locations.csv";
-	String availableOrdersFile = filePath +  "src/job/csv/jobs.csv";
-	String dropsFile = filePath +  "src/job/csv/drops.csv";
+	String availableOrdersFile = filePath + "src/job/csv/jobs.csv";
+	String dropsFile = filePath + "src/job/csv/drops.csv";
 	String betaValuesFromTrainingFile = filePath + "src/job/csv/betaValuesFromTraining.csv";
-	String trainingJobsFile = filePath +  "src/job/csv/training_jobs.csv";
-	
+	String trainingJobsFile = filePath + "src/job/csv/training_jobs.csv";
 
 	private String line = "";
 	private String csvSplitBy = ",";
 
-
-
 	public JobInput() {
 		log4j.setLevel(Level.OFF);
 	}
-	
+
 	public HashMap<String, ArrayList<Float>> getItemRewardsWeights() {
 
 		try (BufferedReader br = new BufferedReader(new FileReader(itemRewardsWeightsFile))) {
@@ -94,7 +83,7 @@ public class JobInput {
 			e.printStackTrace();
 			log4j.debug("File not found");
 		}
-        log4j.debug("X cord,Ycord : " + itemLocations.get("aa").toString());
+		log4j.debug("X cord,Ycord : " + itemLocations.get("aa").toString());
 		return itemLocations;
 
 	}
@@ -123,18 +112,14 @@ public class JobInput {
 		return availableOrders;
 
 	}
-	
+
 	public ArrayList<Point> getDrops() {
 		try (BufferedReader br = new BufferedReader(new FileReader(dropsFile))) {
-			int i = 1;
 			while ((line = br.readLine()) != null) {
-                
+
 				String[] data = line.split(csvSplitBy);
 				Point dropOffPoint = new Point(Integer.parseInt(data[0]), Integer.parseInt(data[1]));
 				dropoffPoints.add(dropOffPoint);
-				
-				i += 1;
-
 			}
 
 		} catch (IOException e) {
@@ -145,18 +130,14 @@ public class JobInput {
 		log4j.debug("Drop point 2: " + dropoffPoints.get(1).toString());
 		return dropoffPoints;
 	}
-	
-	
-	
-	public HashMap<String,Double> getBetaValues() {
+
+	public HashMap<String, Double> getBetaValues() {
 		try (BufferedReader br = new BufferedReader(new FileReader(betaValuesFromTrainingFile))) {
 			while ((line = br.readLine()) != null) {
-                
+
 				String[] data = line.split(csvSplitBy);
 
-				
-				
-				betaValuesFromTraining.put(data[0],Double.parseDouble(data[1]));
+				betaValuesFromTraining.put(data[0], Double.parseDouble(data[1]));
 
 			}
 
@@ -167,18 +148,18 @@ public class JobInput {
 		log4j.debug(betaValuesFromTraining.toString());
 		return betaValuesFromTraining;
 	}
-	
-	
-	//This is method for TrainingAlg and JobSelect
-	
+
+	// This is method for TrainingAlg and JobSelect
+
 	private ArrayList<String> itemNamesList = new ArrayList<String>();
-	public ArrayList<String>  itemNames() {
-		
+
+	public ArrayList<String> itemNames() {
+
 		try (BufferedReader br = new BufferedReader(new FileReader(itemRewardsWeightsFile))) {
 
 			while ((line = br.readLine()) != null) {
-		    String[] data = line.split(csvSplitBy);
-            itemNamesList.add(data[0]);
+				String[] data = line.split(csvSplitBy);
+				itemNamesList.add(data[0]);
 
 			}
 
@@ -189,7 +170,7 @@ public class JobInput {
 		log4j.debug(itemNamesList.toString());
 		return itemNamesList;
 	}
-	
+
 	public HashMap<Integer, ArrayList<String>> getTrainingJobs() {
 		try (BufferedReader br = new BufferedReader(new FileReader(trainingJobsFile))) {
 
@@ -214,8 +195,5 @@ public class JobInput {
 		return trainingJobs;
 
 	}
-	
-	
-	
 
 }

@@ -237,6 +237,12 @@ public class RobotInterface {
 		itemQuantity = 0;
 		
 	}
+	
+	public void dropAll() {
+		itemQuantity = 0;
+		itemsHeld = 0;
+	}
+	
 	/**
 	 * A method to return the quantity of items.
 	 * @return the amount of items.

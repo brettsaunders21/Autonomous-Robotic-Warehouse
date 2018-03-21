@@ -1,6 +1,5 @@
 package job;
 
-
 import static org.junit.Assert.*;
 
 import org.junit.Test;
@@ -42,21 +41,19 @@ public class JobInputTest {
 
 		ArrayList<Point> drops = jI.getDrops();
 		assertEquals(false, drops.isEmpty());
-		
+
 		assertEquals(4, drops.get(0).x, 0);
 		assertEquals(7, drops.get(1).y, 0);
-		
-		
-		
+
 		HashMap<String, Double> betaValuesFromTraining = jI.getBetaValues();
 		assertEquals(true, betaValuesFromTraining.containsKey("aa"));
-		
+
 		HashMap<Integer, ArrayList<String>> trainingJobs = jI.getTrainingJobs();
 		assertEquals(true, trainingJobs.containsKey(10100));
-		
+
 		ArrayList<String> itemNamesList = jI.itemNames();
 		assertEquals("aa", itemNamesList.get(0));
-		
+
 	}
 
 }

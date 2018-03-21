@@ -4,12 +4,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import interfaces.Robot;
 import job.Item;
 import job.Job;
 import job.JobList;
-
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -21,8 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -32,31 +28,32 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	private JPanel contentPane;
 	private JPanel cancelJobPane;
-	private JLabel totalReward;
+	private JLabel totalRewardLabel;
 	private JTextField textField;
 	private Thread thread;
 	private Robot[] robots;
 	private ArrayList<Job> completedJobs;
+	float totalReward;
 	GridLayout mainLayout;
 	GridLayout cancelJobLayout = new GridLayout(2, 0);
-	String[][] completedJobsData = new String[20][4];
+	String[][] completedJobsData = new String[20][3];
 	String[][] itemsInformationData = new String[30][3];
 	String[][] robotInfoData = new String[1][4];
 	String[][] robot1Data = new String[1][5];
 	String[][] robot2Data = new String[1][5];
 	String[][] robot3Data = new String[1][5];
-	private float allRewardSum;
 	private JTable t;
 	String itemsCsvFile = "src/job/csv/items.csv";
 	JobList jobList;
 
-	public JobsInterface(Robot[] robots, ArrayList<Job> completedJobs, JobList jobList) {
+	public JobsInterface(Robot[] robots, ArrayList<Job> completedJobs, JobList jobList, float totalReward) {
 		mainLayout = new GridLayout((8 + robots.length * 2), 0);
 		setFrame();
 		setPanes();
 		this.robots = robots;
 		this.completedJobs = completedJobs;
 		this.jobList = jobList;
+		this.totalReward = totalReward;
 		for (int i = 0; i < robots.length; i++) {
 			currentInfo(robots[i].getRobotName(), i);
 		}
@@ -94,7 +91,7 @@ public class JobsInterface extends JFrame implements Runnable {
 		contentPane.setLayout(mainLayout);
 		JLabel label = new JLabel("Completed jobs");
 		add(label);
-		String[] fields = { "Job ID", "Total Weight", "Total Reward", "All Items" };
+		String[] fields = { "Job ID", "Total Weight", "Total Reward" };
 		t = new JTable(completedJobsData, fields);
 		t.setFillsViewportHeight(true);
 		JScrollPane scrollPane = new JScrollPane(t);
@@ -139,8 +136,8 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	// Total reward from all robots
 	public void totalReward() {
-		totalReward = new JLabel("Total reward: " + Float.toString(allRewardSum));
-		contentPane.add(totalReward);
+		totalRewardLabel = new JLabel("Total reward: " + Float.toString(totalReward));
+		contentPane.add(totalRewardLabel);
 	}
 
 	// Button to cancel particular job
@@ -236,10 +233,6 @@ public class JobsInterface extends JFrame implements Runnable {
 				completedJobsData[i][0] = Integer.toString(completedJobs.get(i).getID());
 				completedJobsData[i][1] = Float.toString(completedJobs.get(i).getWEIGHT());
 				completedJobsData[i][2] = Float.toString(completedJobs.get(i).getREWARD());
-				String allItems = "";
-				for (Item item : completedJobs.get(i).getITEMS())
-					allItems += item.getID() + ",";
-				completedJobsData[i][3] = allItems.substring(0, allItems.length() - 1);
 			}
 		} catch (NullPointerException e) {
 		}
@@ -247,14 +240,7 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	// Method that updates total reward
 	public void updateTotalReward() {
-		for (int i = 0; i < robots.length; i++) {
-			try {
-				allRewardSum += robots[i].currentReward();
-			} catch (NullPointerException e) {
-
-			}
-		}
-		totalReward.setText("Total reward: " + Float.toString(allRewardSum));
+		totalRewardLabel.setText("Total reward: " + Float.toString(totalReward));
 	}
 
 	// Thread that updated all information
@@ -281,11 +267,14 @@ public class JobsInterface extends JFrame implements Runnable {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
+			System.out.println("yep");
 			for (int indexOfRobot = 0; indexOfRobot < robots.length; indexOfRobot++) {
 				try {
 					String jobTocancel = Integer.toString(robots[indexOfRobot].getActiveJob().getID());
 					if (textField.getText().equals(jobTocancel)) {
-						jobList.cancelJob(Integer.parseInt(textField.getText()));
+						int jobCanceled = Integer.parseInt(textField.getText());
+						System.out.println(jobCanceled);
+						jobList.cancelJob(jobCanceled);
 					}
 				} catch (Exception ee) {
 					// TODO: handle exception

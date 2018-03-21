@@ -18,8 +18,9 @@ public class Robot {
 	private int jobsCompleted;
 	private NXTInfo nxtInfo;
 	private Pose currentPose;
+	private float totalReward;
 	
-	public Robot(String _robotName, String _btAddress, Point _startPostion){
+	public Robot(String _robotName, String _btAddress, Point _startPostion, float _totalReward, Pose startPos){
 		this.robotName = _robotName;
 		this.nxtInfo = new NXTInfo(NXTCommFactory.BLUETOOTH,_robotName,_btAddress);
 		this.routeSet = false;
@@ -29,14 +30,16 @@ public class Robot {
 		this.reward = 0;
 		this.jobsCompleted = 0;
 		this.currentCoords = _startPostion;
-		this.setCurrentPose(Pose.POS_X);
+		this.setCurrentPose(startPos);
 		this.activeJob = null;
+		totalReward = _totalReward;
 	}
 	
 	public void jobFinished() {
 		jobFinished = true;
 		reward += activeJob.getREWARD();
 		jobsCompleted += 1;
+		totalReward += reward;
 	}
 	
 	public NXTInfo getNXTInfo() {

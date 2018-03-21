@@ -48,7 +48,7 @@ public class jobAssignmentTest {
 	public jobAssignmentTest() {
 		drops = jobInput.getDrops();
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
-		jobAssignmentLogger.setLevel(Level.OFF);
+		jobAssignmentLogger.setLevel(Level.INFO);
 		//logger.setLevel(Level.DEBUG);
 		logger.setLevel(Level.OFF);
 		AStarLogger.setLevel(Level.OFF);
@@ -64,7 +64,7 @@ public class jobAssignmentTest {
 	}
 	
 	@Test
-	public void checkTSP() {
+	public void checkMultipleJobsCanAssignWithoutError() {
 		for (int i = 0; i < 1000; i++) {
 			jAssignment.assignJobs(robot1);
 			//System.out.println(i + "completed");

@@ -1,8 +1,6 @@
 package job;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import interfaces.Pose;
 import interfaces.Robot;
 import lejos.geom.Point;
@@ -35,10 +33,11 @@ public class TSP {
 	private ArrayList<Item> addDropPoints(ArrayList<Item> items) {
 		int weightRunningTotal = 0;
 		ArrayList<Item> withDrops = new ArrayList<Item>();
+		Item finalItem = items.get(items.size()- 1);
 		for (Item item : items) {
 			weightRunningTotal += item.getTOTAL_WEIGHT();
 			if (weightRunningTotal >= 50) {
-				Item dropPoint = new Item("droppoint", 0, 0, nearestDropPoint(item.getPOSITION(), Pose.POS_X), 0);
+				Item dropPoint = new Item("droppoint", 0, 0, nearestDropPoint(finalItem.getPOSITION(), Pose.POS_X), 0);
 				withDrops.add(dropPoint);
 				weightRunningTotal = 0;
 			}
@@ -51,7 +50,6 @@ public class TSP {
 		ArrayList<Item> tempItems = new ArrayList<Item>(job.getITEMS());
 		Robot tempR = robot;
 		tempItems = orderItems(tempItems, tempR);
-		//tempItems = addDropPoints(tempItems);
 		int distance = 0;
 		if (tempItems.size() > 1) 
 		for (int i = 1; i <= tempItems.size() - 1; i++) {

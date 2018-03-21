@@ -5,9 +5,6 @@ import interfaces.Action;
 import interfaces.Pose;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -53,6 +50,9 @@ public class JobAssignment {
 		ArrayList<Item> items = job.getITEMS();
 		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
 		job.setItems(orderedItems);
+		Item finalItem = orderedItems.get(orderedItems.size()-1);
+		Point dropOff = tsp.nearestDropPoint(finalItem.getPOSITION(), Pose.POS_X);
+		job.setDropLocation(dropOff);
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
@@ -60,10 +60,10 @@ public class JobAssignment {
 		job.assignCurrentroute(routeWithDropoff);
 		robot.setActiveJob(job);
 		recentJob = job;
-		logger.info(robot);
-		logger.info(routeWithDropoff);
-		logger.info(job);
-		logger.info(items);
+		logger.debug(robot);
+		logger.debug(routeWithDropoff);
+		logger.debug(job);
+		logger.debug(items);
 	
 	}
 
@@ -84,9 +84,10 @@ public class JobAssignment {
 		Pose initialPose = r.getCurrentPose();
 		for (Item item : items) {
 			if(item.getID().equals("droppoint")){
-				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,initialPose);
-				itemRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff, initialPose, getCurrentRoutes(r),timeCount);
-				currentRobotPosition = nearestDropoff;
+				logger.info("Dropoff at " + job.getDropLocation() + " added for job " + job.getID());
+
+				itemRoute = routeMaker.generateRoute(currentRobotPosition,job.getDropLocation(), initialPose, getCurrentRoutes(r),timeCount);
+				currentRobotPosition = job.getDropLocation();
 				Route routeWithDropoff = new Route(itemRoute, Action.DROPOFF);
 				routes.add(routeWithDropoff);
 			}else{
@@ -99,11 +100,12 @@ public class JobAssignment {
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
 		}
-		Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition,initialPose);
-		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,nearestDropoff , initialPose, getCurrentRoutes(r),timeCount);
+		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,job.getDropLocation() , initialPose, getCurrentRoutes(r),timeCount);
+		logger.info("Dropoff at " + job.getDropLocation() + " added for job " + job.getID());
 		routes.add(dropoffRoute);
 		logger.debug(dropoffRoute.getStartPose());
 		logger.debug(routes);
+		logger.info(" ");
 		return routes;
 	}
 	
