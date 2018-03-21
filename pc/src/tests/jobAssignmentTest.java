@@ -71,7 +71,7 @@ public class jobAssignmentTest {
 		assertEquals(true,true);
 	}
 	
-	/*@Test
+	@Test
 	public void checkJobAssigned() {
 		jAssignment = new JobAssignment(jobList, counter, drops, robotList,tsp);
 		jAssignment.assignJobs(robot1);
@@ -109,7 +109,7 @@ public class jobAssignmentTest {
 		int j1 = jobList.getNewJob(testArray).getID();
 		jobList.cancelJob(j1);
 		assertEquals(true, jobList.getJob(j1).isCanceled());
-	}*/
+	}
 	
 	}
 	
