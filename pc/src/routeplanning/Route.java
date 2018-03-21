@@ -248,6 +248,9 @@ public class Route {
 			Point p2 = secondRoute.getCoordinatesArray()[0];
 
 			// adds correct direction instruction
+			Level currentLevel = logger.getLevel();
+			logger.setLevel(Level.DEBUG);
+			logger.debug(secondRoute.getDirections().peek());
 			this.directions.add(generateRotation(p1, p2, firstRoute.getFinalPose()));
 		}
 		this.directions.addAll(temp);
