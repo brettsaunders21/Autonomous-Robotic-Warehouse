@@ -61,9 +61,6 @@ public class RouteExecution {
 			//retrieving Arraylist of items
 			ITEMS = currentJob.getITEMS();
 			currentDirections = currentJob.getCurrentroute().getDirections();
-			//retrieving coordinates for job
-			Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
-			int instructionCounter = -1;
 			
 			heldPoints.holdAt(currentJob.getCurrentroute().getStartPoint(), new Point(-1, -1));
 			
@@ -72,16 +69,12 @@ public class RouteExecution {
 			rELogger.debug(currentDirections);
 			rELogger.debug(currentJob.getCurrentroute().getDirections());
 			rELogger.debug(currentJob.getCurrentroute().getStartTime());
+			rELogger.debug(counter.getTime());
 			rELogger.debug(ITEMS);
 			//sending instructions (actions)
 			while (!currentDirections.isEmpty()) {
-				instructionCounter++;
 				currentCommand = currentDirections.poll();
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
-				
-				rELogger.debug(currentCommand);
-				rELogger.debug(whereImGoing);
-				
 				
 				if (!(currentCommand.equals(Action.PICKUP)||currentCommand.equals(Action.DROPOFF))) {
 					boolean messageSent = false;
@@ -134,14 +127,11 @@ public class RouteExecution {
 				}
 				//if HOLD is received, robot will pause
 				if (currentCommand.equals(Action.HOLD)) {
-					// hold instruction cannot be the last instruction
-					Point heldCoord = arrayOfCoords[instructionCounter + 1];
 					counter.isMoveable(robot.getRobotName());
 				}
 				//robot will run route
 				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
 						|| currentCommand.equals(Action.HOLD))) {
-					Point heldCoord = arrayOfCoords[instructionCounter];
 					counter.isMoveable(robot.getRobotName());
 					Route currentRoute = currentJob.getCurrentroute();
 					Route[] routesRunning = new Route[robots.length - 1];
@@ -154,15 +144,14 @@ public class RouteExecution {
 						}
 					}
 					currentRoute = routeMaker.adjustForCollisions(currentRoute, routesRunning, counter.getTime());
+					rELogger.debug(whereImGoing);
+					rELogger.debug(currentRoute.getStartPoint());
 					rELogger.debug(currentRoute.getStartTime());
 					rELogger.debug(currentRoute.getStartPose());
-					rELogger.debug(currentDirections);
-					rELogger.debug(currentJob.getCurrentroute().getDirections());
-					rELogger.debug(currentJob.getCurrentroute().getStartTime());
+					rELogger.debug(currentRoute.getDirections());
+					rELogger.debug(currentRoute.getCoordinates());
 					currentJob.assignCurrentroute(currentRoute);
 					currentDirections = currentRoute.getDirections();
-					instructionCounter = -1;
-					arrayOfCoords = currentRoute.getCoordinatesArray();
 
 				}
 				//setting weight for number of items, weight being adjusted for pickup and drop-off
