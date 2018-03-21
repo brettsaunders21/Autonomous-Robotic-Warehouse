@@ -57,6 +57,67 @@ public class Route {
 	}
 
 	/**
+	 * @deprecated Creates a new route from an existing one by appending the new
+	 *             directions to the end of the existing route
+	 * 
+	 * @param currentRoute
+	 *            pre-existing route
+	 * @param coordinates
+	 *            coordinates in order of traversal
+	 * @param directions
+	 *            directions in order of execution
+	 * @param length
+	 *            the total length of the route
+	 * @throws IllegalArgumentException
+	 *             route length is negative
+	 */
+	public Route(Route currentRoute, BlockingQueue<Point> coordinates, BlockingQueue<Action> directions) {
+		this.coordinates = currentRoute.getCoordinates();
+		this.coordinates.addAll(coordinates);
+		this.directions = currentRoute.getDirections();
+		this.directions.addAll(directions);
+		this.routeLength = currentRoute.getLength() + coordinates.size();
+		this.startPose = currentRoute.getStartPose();
+		this.coordsArray = (Point[]) coordinates.toArray();
+		this.dirsArray = (Action[]) directions.toArray();
+		this.myStartTime = currentRoute.getStartTime();
+		this.startPoint = currentRoute.getStartPoint();
+	}
+
+	/**
+	 * @deprecated Creates a new route from an existing one by appending the
+	 *             existing route to the new directions
+	 * 
+	 * @param currentRoute
+	 *            pre-existing route
+	 * @param coordinates
+	 *            coordinates in order of traversal
+	 * @param directions
+	 *            directions in order of execution
+	 * @param length
+	 *            the total length of the route
+	 * @param startPose
+	 *            the pose the robot is in when the first direction is executed
+	 * @param orientationAdj
+	 *            the initial adjustment needed before execution of directions
+	 * @throws IllegalArgumentException
+	 *             route length is negative
+	 */
+	public Route(Route currentRoute, BlockingQueue<Point> coordinates, BlockingQueue<Action> directions, Pose startPose,
+			Action orientationAdj, int myStartTime, Point startPoint) {
+		this.coordinates = coordinates;
+		this.coordinates.addAll(currentRoute.getCoordinates());
+		this.directions = directions;
+		this.directions.addAll(currentRoute.getDirections());
+		this.routeLength = currentRoute.getLength() + coordinates.size();
+		this.startPose = startPose;
+		this.dirsArray = (Action[]) directions.toArray();
+		this.coordsArray = (Point[]) coordinates.toArray();
+		this.myStartTime = myStartTime;
+		this.startPoint = startPoint;
+	}
+
+	/**
 	 * @param firstRoute
 	 *            the route which is to form the start of the new route
 	 * @param secondRoute
@@ -206,71 +267,48 @@ public class Route {
 		}
 		// checks that the end of the first route is only one grid space away from the
 		// start of the second
-		boolean nonMoveInstructionFirst = false;
-		if (!adjacentCoords(firstRoute.getCoordinatesArray()[firstRoute.getCoordinatesArray().length - 1],
+		else if (!adjacentCoords(firstRoute.getCoordinatesArray()[firstRoute.getCoordinatesArray().length - 1],
 				secondRoute.getCoordinatesArray()[0])) {
+			throw new IllegalArgumentException(
+					"last coordinate of first route is not adjacent to first coordinate of second route");
+		} else {
+			this.coordinates = firstRoute.getCoordinates();
+			this.startPose = firstRoute.getStartPose();
+			this.myStartTime = firstRoute.getStartTime();
+			this.directions = firstRoute.getDirections();
+			this.startPoint = firstRoute.getStartPoint();
 
-			if (nonMoveFirst(secondRoute.getDirections().peek()) && !secondRoute.getCoordinates().peek().equals(firstRoute.getCoordinatesArray()[firstRoute.getLength()-1])) {
-				throw new IllegalArgumentException(
-						"last coordinate of first route is not adjacent to first coordinate of second route");
+			int tempRouteLength = firstRoute.getLength() + secondRoute.getLength();
+
+			// the middleAction can only be null when called by the constructor which only
+			// takes in two routes
+			if (nonMovementAction(middleAction)) {
+				this.coordinates.add(firstRoute.getCoordinatesArray()[firstRoute.getLength() - 1]);
+				this.directions.add(middleAction);
+				tempRouteLength = tempRouteLength + 1;
 			}
-			else {
-				nonMoveInstructionFirst = true;
-			}
-			
-		}
+			this.routeLength = tempRouteLength;
 
-		//adds first part of route information to route
-		this.coordinates = firstRoute.getCoordinates();
-		this.startPose = firstRoute.getStartPose();
-		this.myStartTime = firstRoute.getStartTime();
-		this.directions = firstRoute.getDirections();
-		this.startPoint = firstRoute.getStartPoint();
-
-		int tempRouteLength = firstRoute.getCoordinates().size()+secondRoute.getCoordinates().size();
-
-		// the middleAction can only be null when called by the constructor which only
-		// takes in two routes
-		if (nonMovementAction(middleAction)) {
-			this.coordinates.add(firstRoute.getCoordinatesArray()[firstRoute.getLength() - 1]);
-			this.directions.add(middleAction);
-			tempRouteLength = tempRouteLength + 1;
-		}
-		this.routeLength = tempRouteLength;
-
-		BlockingQueue<Action> temp = secondRoute.getDirections();
-		// the first instructon of the second route has to be changed to change the
-		// direction the robot is travelling in
-		if (secondRoute.getCoordinates().peek().equals(firstRoute.getCoordinatesArray()[firstRoute.getLength()-1])) {
-			this.directions.addAll(temp);
-		}
-		else {
+			BlockingQueue<Action> temp = secondRoute.getDirections();
+			// the first instructon of the second route has to be changed to change the
+			// direction the robot is travelling in
 			temp.remove();
 			Point[] ps = firstRoute.getCoordinatesArray();
 			Point p1 = ps[ps.length - 1];
-			Point p2 = secondRoute.getCoordinates().peek();
+			Point p2 = secondRoute.getCoordinatesArray()[0];
 
 			// adds correct direction instruction
-			Level currentLevel = logger.getLevel();
-			logger.setLevel(Level.DEBUG);
-			logger.debug(secondRoute.getDirections().peek());
-			logger.setLevel(currentLevel);
 			this.directions.add(generateRotation(p1, p2, firstRoute.getFinalPose()));
 			this.directions.addAll(temp);
+
+			this.coordinates.addAll(secondRoute.getCoordinates());
+			Point[] p = new Point[coordinates.size()];
+			this.coordsArray = coordinates.toArray(p);
+			Action[] a = new Action[directions.size()];
+			this.dirsArray = directions.toArray(a);
 		}
-
-		this.coordinates.addAll(secondRoute.getCoordinates());
-		Point[] p = new Point[coordinates.size()];
-		this.coordsArray = coordinates.toArray(p);
-		Action[] a = new Action[directions.size()];
-		this.dirsArray = directions.toArray(a);
 	}
 
-	/*checks if the given instruction is a non-movement action*/
-	private boolean nonMoveFirst(Action action) {
-		return (action.equals(Action.DROPOFF)||action.equals(Action.HOLD)|| action.equals(Action.PICKUP)||action.equals(Action.WAIT));
-	}
-	
 	/* checks if two points are at adjacent grid positions to each other */
 	private boolean adjacentCoords(Point p1, Point p2) {
 		for (int x = -1; x < 2; x++) {
@@ -287,7 +325,7 @@ public class Route {
 
 	/*
 	 * checks that only non move instructions are added to the route from outside an
-	 * existing route object (only instructions which cannot be produced by AStar)
+	 * existing route object
 	 */
 	private boolean nonMovementAction(Action a) {
 		if (a == null) {
@@ -356,37 +394,9 @@ public class Route {
 	 */
 	public Pose getPoseAt(int relativeTime) {
 		Pose p;
-		if (relativeTime > 1 && relativeTime < routeLength) {
-			if (!coordsArray[relativeTime - 1].equals(coordsArray[relativeTime])) {
+		if (relativeTime > 0 && relativeTime < routeLength) {
+			if (!coordsArray[relativeTime-1].equals(coordsArray[relativeTime])) {
 				int direction = AStar.getDirection(coordsArray[relativeTime - 1], coordsArray[relativeTime]);
-				switch (direction) {
-				case 0: {
-					p = Pose.NEG_X;
-					break;
-				}
-				case 1: {
-					p = Pose.NEG_Y;
-					break;
-				}
-				case 2: {
-					p = Pose.POS_X;
-					break;
-				}
-				case 3: {
-					p = Pose.POS_Y;
-					break;
-				}
-				default: { // should not be possible to reach
-					p = Pose.POS_X;
-					break;
-				}
-				}
-			} else {
-				return getPoseAt(relativeTime - 1);
-			}
-		} else if (relativeTime == 1) {
-			if (!coordsArray[0].equals(startPoint)) {
-				int direction = AStar.getDirection(startPoint, coordsArray[0]);
 				switch (direction) {
 				case 0: {
 					p = Pose.NEG_X;
@@ -411,7 +421,7 @@ public class Route {
 				}
 			}
 			else {
-				return getPoseAt(0);
+				return getPoseAt(relativeTime-1);
 			}
 		} else if (relativeTime == 0) {
 			p = this.getStartPose();
@@ -431,7 +441,6 @@ public class Route {
 		return myStartTime;
 	}
 
-	/**@return the starting coordinate of this route before any instructions are executed*/
 	public Point getStartPoint() {
 		return startPoint;
 	}
@@ -442,15 +451,11 @@ public class Route {
 	 */
 	private Action generateRotation(Point firstPoint, Point secondPoint, Pose poseAtFirstPoint) {
 		int direction = AStar.getDirection(firstPoint, secondPoint);
-		//Level currentLevel = logger.getLevel();
-		//logger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.OFF);
 		logger.debug(direction);
 		logger.debug(firstPoint);
 		logger.debug(secondPoint);
 		int startPose = AStar.poseToInt(poseAtFirstPoint);
-		Action a = AStar.generateDirectionInstruction(startPose, direction);
-		logger.debug(a);
-		//logger.setLevel(currentLevel);
-		return a;
+		return AStar.generateDirectionInstruction(startPose, direction);
 	}
 }

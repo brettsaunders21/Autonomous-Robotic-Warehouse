@@ -15,8 +15,6 @@ import job.Item;
 import job.Job;
 import job.JobList;
 import lejos.geom.Point;
-import routeplanning.AStar;
-import routeplanning.Map;
 import routeplanning.Route;
 
 public class RouteExecution {
@@ -32,7 +30,6 @@ public class RouteExecution {
 	private PointsHeld heldPoints;
 	private JobList jobList;
 	private Robot[] robots;
-	private AStar routeMaker;
 
 
 	
@@ -45,7 +42,6 @@ public class RouteExecution {
 		counter = _counter;
 		heldPoints = _heldPoints;
 		jobList = _jobList;
-		routeMaker = new AStar(Map.generateRealWarehouseMap());
 		robots = _robots;
 	}
 
@@ -152,7 +148,6 @@ public class RouteExecution {
 							j++;
 						}
 					}
-					currentRoute = routeMaker.adjustForCollisions(currentRoute, routesRunning, counter.getTime());
 					rELogger.debug(whereImGoing);
 					rELogger.debug(currentRoute.getStartPoint());
 					rELogger.debug(currentRoute.getStartTime());
