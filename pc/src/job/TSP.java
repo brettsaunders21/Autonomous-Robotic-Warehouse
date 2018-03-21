@@ -1,8 +1,6 @@
 package job;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import interfaces.Pose;
 import interfaces.Robot;
 import lejos.geom.Point;
@@ -38,6 +36,7 @@ public class TSP {
 		for (Item item : items) {
 			weightRunningTotal += item.getTOTAL_WEIGHT();
 			if (weightRunningTotal >= 50) {
+				// TODO fix drop point
 				Item dropPoint = new Item("droppoint", 0, 0, nearestDropPoint(item.getPOSITION(), Pose.POS_X), 0);
 				withDrops.add(dropPoint);
 				weightRunningTotal = 0;

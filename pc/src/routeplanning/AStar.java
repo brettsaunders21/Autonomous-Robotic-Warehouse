@@ -5,7 +5,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import interfaces.Action;
 import interfaces.Pose;
@@ -29,7 +28,6 @@ public class AStar {
 	private final static int POS_X = 2;
 	private final static int POS_Y = 3;
 	private final static int STILL = 4;
-	private final static int HOLD = 5;
 
 	private final Map map;
 
@@ -93,6 +91,7 @@ public class AStar {
 				r.getPoseAt(diffFromStart - 1), rs, startTime);
 		
 		//if the remaining route has no coordinates then the route just generated is returned, otherwise the routes are concatenated
+
 		if (r.getCoordinates().size() == 0) {
 			r = nextStep;
 		} else {
@@ -382,66 +381,8 @@ public class AStar {
 			Point myStartCoord, Map tempMap) throws BacktrackNeededException {
 		ArrayList<Point> tempCoords = tempInfo.getCoords();
 		ArrayList<Integer> tempDirs = tempInfo.getDirs();
-		ArrayList<Point> holdCoords = new ArrayList<Point>();
-		boolean[] heldAlreadyFound = new boolean[routes.length];
-		for (int i = 0; i < heldAlreadyFound.length; i++) {
-			heldAlreadyFound[i] = false;
-		}
-		
-		//finds the first hold point in each existing route
-		for (int routeIndex = 0; routeIndex < routes.length; routeIndex++) {
-			if (!heldAlreadyFound[routeIndex]) {
-				Action[] directions = routes[routeIndex].getDirectionArray();
-				Point[] coords = routes[routeIndex].getCoordinatesArray();
-				// loops until the next hold/pickup/dropoff point is reached
-				for (int i = 0; i < directions.length; i++) {
-					if (directions[i].equals(Action.PICKUP) || directions[i].equals(Action.DROPOFF)
-							|| directions[i].equals(Action.HOLD)) {
-						// if one is found it is added to the array list
-						holdCoords.add(coords[i]);
-						heldAlreadyFound[routeIndex] = true;
-						break;
-					}
-				}
-			}
-			else {
-				//if a route has not found the next hold/pickup/dropoff point then continue loop
-				boolean noFurtherChecks = true;
-				for (int i = 0; i < heldAlreadyFound.length; i++) {
-					if (!heldAlreadyFound[i]) {
-						noFurtherChecks = false;
-					}
-				}
-				if (noFurtherChecks) {
-					break;
-				}
-			}
-		}
-		
-		
-		boolean holdAdded = false;
 		int i = 0;
 		while (i < tempCoords.size()) {
-			for (Point p : holdCoords) {
-				if (p.equals(tempCoords.get(i))) {
-					if (i + 1 == tempCoords.size()) {
-						if (i > 0) {
-							tempCoords.add(i, tempCoords.get(i - 1));
-						} else {
-							tempCoords.add(i, myStartCoord);
-						}
-						tempDirs.add(i, HOLD);
-						holdAdded = true;
-						break;
-					} else if (tempMap.isPassable(p)) {
-						logger.info(p);
-						throw new BacktrackNeededException(p);
-					}
-				}
-			}
-			if (holdAdded) {
-				break;
-			}
 			for (Route route : routes) {
 				int startTime = route.getStartTime();
 				int endTime = route.getStartTime() + route.getLength();
@@ -491,8 +432,6 @@ public class AStar {
 		for (int i = 0; i < tempDirs.size(); i++) {
 			if (tempDirs.get(i).equals(STILL)) {
 				directions.add(Action.WAIT);
-			} else if (tempDirs.get(i).equals(HOLD)) {
-				directions.add(Action.HOLD);
 			} else {
 				logger.trace(startPose);
 				Action action = generateDirectionInstruction(startPose, tempDirs.get(i));

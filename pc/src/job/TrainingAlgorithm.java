@@ -1,7 +1,6 @@
 package job;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,9 +25,8 @@ public class TrainingAlgorithm {
 
 	// File with past cancellation , this file + hashmap obtained from file with
 	// available orders will be used to train
-	private String cancelDataFile = "C:" + File.separator + "Users" + File.separator + "samko" + File.separator
-			+ "Desktop" + File.separator + "rp-team1.1" + File.separator + "pc" + File.separator + "src"
-			+ File.separator + "job" + File.separator + "csv" + File.separator + "cancellations.csv";
+	String filePath = "";
+	private String cancelDataFile = filePath + "src/job/csv/cancellations.csv";
 
 	private String line = "";
 	private String csvSplitBy = ",";
@@ -125,8 +123,7 @@ public class TrainingAlgorithm {
 		log4j.debug("Correct " + correctPredictions);
 
 		try {
-			FileWriter writer = new FileWriter("C:" + File.separator + "Users" + File.separator + "samko" + File.separator + "Desktop"
-					+ File.separator + "rp-team1.1"+ File.separator + "pc"  + File.separator + "src" + File.separator + "job" + File.separator+ "csv" + File.separator + "betaValuesFromTraining.csv");
+			FileWriter writer = new FileWriter(filePath + "src/job/csv/betaValuesFromTraining.csv");
 			for (int i = 0; i < itemNamesList.size(); i++) {
 				writer.append(itemNamesList.get(i));
 				writer.append(',');
