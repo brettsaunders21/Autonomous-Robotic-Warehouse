@@ -113,8 +113,8 @@ public class RobotInterface {
 		LCD.drawString(robotName, 1, 0 );
 		LCD.drawString("is moving to", 1, 1 );
 		LCD.drawString("the drop point.", 1, 2 );
-		//LCD.drawString("Job ID: ", 1, 3);
-		//LCD.drawInt(jobCode, 1,4);
+		LCD.drawString("Job ID: ", 1, 3);
+		LCD.drawInt(jobCode, 1,4);
 		LCD.drawString("Destination Coordinates: ", 1, 5);
 		LCD.drawString(dropLocation, 1,6);
 	}
@@ -139,6 +139,8 @@ public class RobotInterface {
 			LCD.drawString("Current items " + itemQuantity, 1,0);
 			Button.waitForAnyPress();
 			itemQuantity = pickItems(itemQuantity);
+			LCD.drawString("Items picked up: " + itemQuantity, 1, 1);
+			LCD.clear();
 			}
 		}
 //			if(Button.waitForAnyPress() == Button.ID_ESCAPE){
@@ -164,6 +166,8 @@ public class RobotInterface {
 			System.out.println("Current items " + itemsHeld);
 			Button.waitForAnyPress(); 
 			itemsHeld = dropItems(itemsHeld);
+			LCD.drawString("Items dropped off: " + itemsHeld, 1, 1);
+			LCD.clear();
 			break;
 			}
 			
@@ -203,7 +207,7 @@ public class RobotInterface {
 		LCD.drawString("items.", 1, 6);
 		LCD.drawString("Current items " + itemsHeld, 1, 7);
 		waitForUnloadingMessage();
-		LCD.clear();
+		//LCD.clear();
 	}
 	
 	/**
