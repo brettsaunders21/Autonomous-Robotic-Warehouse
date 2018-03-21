@@ -244,7 +244,7 @@ public class Route {
 			temp.remove();
 			Point[] ps = firstRoute.getCoordinatesArray();
 			Point p1 = ps[ps.length - 1];
-			Point p2 = secondRoute.getCoordinatesArray()[0];
+			Point p2 = secondRoute.getCoordinates().peek();
 
 			// adds correct direction instruction
 			Level currentLevel = logger.getLevel();
