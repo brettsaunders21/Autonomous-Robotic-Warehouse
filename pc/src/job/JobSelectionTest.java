@@ -26,7 +26,7 @@ public class JobSelectionTest {
 		JobInput jI = new JobInput();
 		JobSelection jS = new JobSelection(jI.getBetaValues());
 		Point point = new Point(0,0);
-		Robot robot = new Robot("test","test",point);
+		Robot robot = new Robot("test","test",point,0f, Pose.POS_X);
 		Job job = jS.getJob(jS.prioritize(), robot);
 		assertEquals(true, jS.prioritize().contains(job));
 	}
