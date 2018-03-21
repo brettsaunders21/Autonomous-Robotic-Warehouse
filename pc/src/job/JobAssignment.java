@@ -37,11 +37,11 @@ public class JobAssignment {
 		jobList = _jobList;
 		robots = _robots;
 		jS = _jS;
+		jobs = new ArrayList<Job>(jobList.getJobList());
 	}
 
 
 	public void assignJobs(Robot robot) {
-		jobs = new ArrayList<Job>(jobList.getJobList());
 		Job job;
 		if (!jobs.isEmpty()) {
 			job = jS.getJob(jobs, robot);

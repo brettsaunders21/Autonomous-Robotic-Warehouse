@@ -22,11 +22,11 @@ public class PCController {
 	private static final Logger aStarLogger = Logger.getLogger(AStar.class);
 	private static final Logger routeExeLogger = Logger.getLogger(RouteExecution.class);
 	private static final Logger jobAssLogger = Logger.getLogger(JobAssignment.class);
-	private static float totalReward = 0;
+	private static float totalReward;
 	private static final Robot[] ROBOTS = { 
-			//new Robot("Spike", "0016530AA681", new Point(0, 0), totalReward, Pose.POS_X),
-			//new Robot("Jeremy", "00165308E37C", new Point(0, 7), totalReward, Pos.POS_X),
-			new Robot("Marco", "001653115A7E", new Point(11, 7), totalReward, Pose.POS_X) 
+			new Robot("Spike", "0016530AA681", new Point(0, 0), totalReward, Pose.POS_X),
+			new Robot("Jeremy", "00165308E37C", new Point(0, 7), totalReward, Pose.POS_X),
+			new Robot("Marco", "001653115A7E", new Point(11, 7), totalReward, Pose.NEG_X) 
 			};
 	private static ArrayList<Job> completedJobs = new ArrayList<Job>();
 	private static int numOfRobots = ROBOTS.length;
@@ -40,6 +40,7 @@ public class PCController {
 		aStarLogger.setLevel(Level.OFF);
 		routeExeLogger.setLevel(Level.ALL);
 		jobAssLogger.setLevel(Level.ALL);
+		totalReward = 0;
 	}
 
 	public static void main(String[] args) {
