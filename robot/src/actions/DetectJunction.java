@@ -6,6 +6,7 @@ import communication.RobotNetworkHandler;
 import interfaces.Action;
 import lejos.robotics.subsumption.Behavior;
 import lejos.util.Delay;
+
 /**
  * Detect Junctions Class
  * 
@@ -19,39 +20,45 @@ public class DetectJunction extends AbstractBehaviour {
 	private RobotNetworkHandler networkHandler;
 	private RobotInterface rInterface;
 	private Movement move;
+	private boolean inControl;
 
 	/**
 	 * Constructor.
-	 * @param rInterface 
-	 * @param networkHandler 
-	 * @param atJunction 
-	 * @param forward 
-	 * @param correctRight 
-	 * @param correctLeft 
-	 * @param arby 
-	 * @param _config The WheeledRobotConfiguration being used by the robot
-	 * @param route 
+	 * 
+	 * @param rInterface
+	 * @param networkHandler
+	 * @param atJunction
+	 * @param forward
+	 * @param correctRight
+	 * @param correctLeft
+	 * @param arby
+	 * @param _config
+	 *            The WheeledRobotConfiguration being used by the robot
+	 * @param route
 	 */
-	public DetectJunction(int _MID_BOUND, RobotNetworkHandler _networkHandler, RobotInterface _rInterface, Movement _move) {
+	public DetectJunction(int _MID_BOUND, RobotNetworkHandler _networkHandler, RobotInterface _rInterface,
+			Movement _move) {
 		super(_MID_BOUND);
 		networkHandler = _networkHandler;
 		rInterface = _rInterface;
 		move = _move;
+		inControl = false;
 	}
 
 	@Override
 	public boolean takeControl() {
-		//If the right sensor detects a line then takeControl
+		// If the right sensor detects a line then takeControl
 		Delay.msDelay(1);
 		return isLeftOnLine() && isRightOnLine();
 	}
 
 	@Override
 	public void action() {
+		inControl = true;
 		PILOT.stop();
 		Action currentCommand = null;
 		int pickAmount = 0;
-		while (true) {
+		while (inControl) {
 			try {
 				rInterface.setJobCode(networkHandler.receiveInt());
 				rInterface.waitingForOrdersMessage();
@@ -68,6 +75,7 @@ public class DetectJunction extends AbstractBehaviour {
 					break;
 				}
 				networkHandler.sendObject(Action.ACTION_COMPLETE);
+				inControl = false;
 			} catch (IOException e) {
 				System.out.println("Couldn't receive object in RobotController" + e.getMessage());
 			}
