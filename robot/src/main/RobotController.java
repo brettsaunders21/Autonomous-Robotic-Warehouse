@@ -20,7 +20,7 @@ public class RobotController implements StoppableRunnable {
 	private int lineValue = 0;
 	private int backgroundValue = 0;
 	int MID_BOUND;
-	private int high = 0; //darker is higher value
+	private int high = 0; // darker is higher value
 	private int low = 999;
 
 	public RobotController() {
@@ -38,7 +38,7 @@ public class RobotController implements StoppableRunnable {
 		userCalibration();
 		lineValue = getLine();
 		backgroundValue = getBackground();
-		MID_BOUND = (lineValue + backgroundValue) /2;
+		MID_BOUND = (lineValue + backgroundValue) / 2;
 		Button.waitForAnyPress();
 		move = new Movement(MID_BOUND, rInterface);
 		networkHandler.run();
@@ -55,20 +55,24 @@ public class RobotController implements StoppableRunnable {
 				rInterface.setJobCode(networkHandler.receiveInt());
 				rInterface.waitingForOrdersMessage();
 				currentCommand = (Action) networkHandler.receiveAction();
-				rInterface.setCurrentDirection(currentCommand);
 				if (currentCommand != null) {
-					rInterface.networkMessage(currentCommand);
-					if (currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)) {
-						pickAmount = (int) networkHandler.receiveInt();
+					if (!currentCommand.equals(Action.CANCEL)) {
+						rInterface.setCurrentDirection(currentCommand);
+						rInterface.networkMessage(currentCommand);
+						if (currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)) {
+							pickAmount = (int) networkHandler.receiveInt();
+						}
+						move.nextAction(currentCommand, pickAmount);
+					} else {
+						rInterface.dropAll();
 					}
-					move.nextAction(currentCommand, pickAmount);
 				} else {
 					System.out.println("Error: No command received");
 					break;
 				}
 				networkHandler.sendObject(Action.ACTION_COMPLETE);
 			} catch (IOException e) {
-				System.out.println("Couldn't receive object in RobotController" + e.getMessage());
+				System.out.println("Couldn't receive object in RobotController " + e.getMessage());
 			}
 		}
 	}
@@ -78,29 +82,28 @@ public class RobotController implements StoppableRunnable {
 		running = false;
 
 	}
-	
+
 	private int getAverageLight() {
 		int value = (LEFT_SENSOR.getNormalizedLightValue() + RIGHT_SENSOR.getNormalizedLightValue()) / 2;
-		System.out.println(value);
 		return value;
 	}
 
 	public int getLine() {
 		return this.high;
 	}
-	
+
 	public int getBackground() {
 		return this.low;
 	}
-	
+
 	private void userCalibration() {
-			System.out.println("Place the bot's sensors over line.");
-			Button.waitForAnyPress();
-			high = getAverageLight();
-			System.out.println("Place the bot's sensors over background.");
-			Button.waitForAnyPress();
-			low = getAverageLight();
-		}
+		System.out.println("Place the bot's sensors over line.");
+		Button.waitForAnyPress();
+		high = getAverageLight();
+		System.out.println("Place the bot's sensors over background.");
+		Button.waitForAnyPress();
+		low = getAverageLight();
+	}
 
 	public static void main(String[] args) {
 		RobotController rc = new RobotController();

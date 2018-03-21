@@ -44,6 +44,7 @@ public class MapTestFail {
 		this.pointy = pointy;
 	}
 	
+	//checks that each of the above map parameters are invalid
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorTest() {
 		logger.debug("w: "+width+" h: "+height+" p: ("+pointx+","+pointy+")");

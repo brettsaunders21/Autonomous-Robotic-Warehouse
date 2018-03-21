@@ -3,10 +3,8 @@ package job;
 import routeplanning.Map;
 import interfaces.Action;
 import interfaces.Pose;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import interfaces.Robot;
 import lejos.geom.Point;
@@ -16,7 +14,6 @@ import routeplanning.Route;
 
 public class JobAssignment {
 
-	
 	private List<Job> jobs;
 	private Map map = Map.generateRealWarehouseMap();
 	private Counter counter;
@@ -27,7 +24,7 @@ public class JobAssignment {
 	private Job recentJob;
 	private JobList jobList;
 	private Robot[] robots;
-	
+
 	public JobAssignment(JobList _jobList, Counter _counter, ArrayList<Point> _drops, Robot[] _robots) {
 		jobs = _jobList.getJobList();
 		counter = _counter;
@@ -37,22 +34,18 @@ public class JobAssignment {
 		robots = _robots;
 	}
 
-
 	public void assignJobs(Robot robot) {
 		jobs = jobList.getJobList();
 		Job job;
 		if (!jobs.isEmpty()) {
 			job = jobList.getNewJob(robot);
-		}else{	
-			return;	
+		} else {
+			return;
 		}
 		jobs.removeIf(i -> i.getID() == job.getID());
 		ArrayList<Item> items = job.getITEMS();
-		ArrayList<Item> orderedItems = tsp.orderItems(items,robot);
+		ArrayList<Item> orderedItems = tsp.orderItems(items, robot);
 		job.setItems(orderedItems);
-		Item finalItem = orderedItems.get(orderedItems.size()-1);
-		Point dropOff = tsp.nearestDropPoint(finalItem.getPOSITION(), Pose.POS_X);
-		job.setDropLocation(dropOff);
 		ArrayList<Route> routes = calculateRoute(robot, map, job, orderedItems);
 		ArrayList<Action> actions = calculateActions(routes);
 		Route routeForAllItems = new Route(routes, actions);
@@ -60,11 +53,11 @@ public class JobAssignment {
 		job.assignCurrentroute(routeWithDropoff);
 		robot.setActiveJob(job);
 		recentJob = job;
-		logger.debug(robot);
-		logger.debug(routeWithDropoff);
-		logger.debug(job);
-		logger.debug(items);
-	
+		logger.info(robot);
+		logger.info(routeWithDropoff);
+		logger.info(job);
+		logger.info(items);
+
 	}
 
 	private ArrayList<Action> calculateActions(ArrayList<Route> routes) {
@@ -74,7 +67,6 @@ public class JobAssignment {
 		}
 		return actions;
 	}
-	
 
 	private ArrayList<Route> calculateRoute(Robot r, Map map, Job job, ArrayList<Item> items) {
 		int timeCount = counter.getTime();
@@ -83,15 +75,16 @@ public class JobAssignment {
 		Route itemRoute;
 		Pose initialPose = r.getCurrentPose();
 		for (Item item : items) {
-			if(item.getID().equals("droppoint")){
-				logger.info("Dropoff at " + job.getDropLocation() + " added for job " + job.getID());
-
-				itemRoute = routeMaker.generateRoute(currentRobotPosition,job.getDropLocation(), initialPose, getCurrentRoutes(r),timeCount);
-				currentRobotPosition = job.getDropLocation();
+			if (item.getID().equals("droppoint")) {
+				Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition, initialPose);
+				itemRoute = routeMaker.generateRoute(currentRobotPosition, nearestDropoff, initialPose,
+						getCurrentRoutes(r), timeCount);
+				currentRobotPosition = nearestDropoff;
 				Route routeWithDropoff = new Route(itemRoute, Action.DROPOFF);
 				routes.add(routeWithDropoff);
-			}else{
-				itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), initialPose,getCurrentRoutes(r), timeCount);
+			} else {
+				itemRoute = routeMaker.generateRoute(currentRobotPosition, item.getPOSITION(), initialPose,
+						getCurrentRoutes(r), timeCount);
 				currentRobotPosition = item.getPOSITION();
 				routes.add(itemRoute);
 			}
@@ -100,29 +93,28 @@ public class JobAssignment {
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
 		}
-		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition,job.getDropLocation() , initialPose, getCurrentRoutes(r),timeCount);
-		logger.info("Dropoff at " + job.getDropLocation() + " added for job " + job.getID());
+		Point nearestDropoff = tsp.nearestDropPoint(currentRobotPosition, initialPose);
+		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition, nearestDropoff, initialPose,
+				getCurrentRoutes(r), timeCount);
 		routes.add(dropoffRoute);
 		logger.debug(dropoffRoute.getStartPose());
 		logger.debug(routes);
-		logger.info(" ");
 		return routes;
 	}
-	
-	public Job getCurrentJob(){
+
+	public Job getCurrentJob() {
 		return recentJob;
 	}
-	
-	private Route[] getCurrentRoutes(Robot currentRobot){
+
+	private Route[] getCurrentRoutes(Robot currentRobot) {
 		ArrayList<Route> routes = new ArrayList<Route>();
 		for (int i = 0; i < robots.length; i++) {
-			if (robots[i].getActiveJob() != null 
-					&& robots[i].getActiveJob().getCurrentroute() != null
+			if (robots[i].getActiveJob() != null && robots[i].getActiveJob().getCurrentroute() != null
 					&& robots[i].getRobotName() != currentRobot.getRobotName()) {
 				routes.add(robots[i].getActiveJob().getCurrentroute());
 			}
 		}
 		return routes.toArray(new Route[routes.size()]);
 	}
-		
+
 }
