@@ -85,15 +85,15 @@ public class AStar {
 			coord = coordQ.peek();
 			Level currentLevel = logger.getLevel();
 			logger.setLevel(Level.DEBUG);
-			logger.debug(dirQ.peek());
 			logger.debug(coordQ.peek());
+			logger.debug(dirQ.peek());
 			logger.setLevel(currentLevel);
 		} else {
 			coord = coordQ.poll();
 			Level currentLevel = logger.getLevel();
 			logger.setLevel(Level.DEBUG);
+			logger.debug(coord);
 			logger.debug(dirQ.poll());
-			logger.debug(coordQ.peek());
 			logger.setLevel(currentLevel);
 		}
 		
@@ -156,7 +156,7 @@ public class AStar {
 
 		// finds the shortest route between the two points
 		TempRouteInfo ti = null;
-		ti = routeFindingAlgo(currentPosition, targetPosition, tempMap, routes, myStartTime, startingPose);
+		ti = routeFindingAlgo(currentPosition, targetPosition, tempMap, routes, myStartTime, currentPosition, startingPose);
 		// moves final coordinates to queue and finalises the length of the route
 		coordinates.addAll(ti.getCoords());
 
@@ -182,7 +182,7 @@ public class AStar {
 	 * object
 	 */
 	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap, Route[] routes,
-			int myStartTime, Pose startPose) {
+			int myStartTime, Point myStartCoord, Pose startPose) {
 
 		while (true) {
 			// finds the shortest route through the map
@@ -193,10 +193,10 @@ public class AStar {
 			TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints, startPose);
 
 			try {
-				return addRobotAvoidInstructions(tempInfo, routes, myStartTime, startPosition, tempMap);
+				return addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord, tempMap);
 			} catch (BacktrackNeededException e) {
 				Map updatedMap = tempMap.clone(e.getBlockedPoint());
-				return routeFindingAlgo(startPosition, targetPosition, updatedMap, routes, myStartTime, startPose);
+				return routeFindingAlgo(startPosition, targetPosition, updatedMap, routes, myStartTime, myStartCoord, startPose);
 			}
 		}
 	}

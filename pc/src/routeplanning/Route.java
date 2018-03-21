@@ -206,17 +206,18 @@ public class Route {
 		}
 		// checks that the end of the first route is only one grid space away from the
 		// start of the second
-		if (!firstRoute.getCoordinatesArray()[firstRoute.getCoordinatesArray().length - 1].equals(secondRoute.getStartPoint())) {
-			throw new IllegalArgumentException(
-					"last coordinate of first route is not equal to start coordinate of second route");
-		}
-
 		boolean nonMoveInstructionFirst = false;
-		if (nonMoveFirst(secondRoute.getDirections().peek()) && secondRoute.getCoordinates().peek().equals(secondRoute.getStartPoint())) {
-			nonMoveInstructionFirst = true;
-		}
-		else {
-			throw new IllegalArgumentException("Points are equal but action is movement");
+		if (!adjacentCoords(firstRoute.getCoordinatesArray()[firstRoute.getCoordinatesArray().length - 1],
+				secondRoute.getCoordinatesArray()[0])) {
+
+			if (nonMoveFirst(secondRoute.getDirections().peek()) && !secondRoute.getCoordinates().peek().equals(firstRoute.getCoordinatesArray()[firstRoute.getLength()-1])) {
+				throw new IllegalArgumentException(
+						"last coordinate of first route is not adjacent to first coordinate of second route");
+			}
+			else {
+				nonMoveInstructionFirst = true;
+			}
+			
 		}
 
 		//adds first part of route information to route
@@ -244,7 +245,7 @@ public class Route {
 			temp.remove();
 			Point[] ps = firstRoute.getCoordinatesArray();
 			Point p1 = ps[ps.length - 1];
-			Point p2 = secondRoute.getCoordinates().peek();
+			Point p2 = secondRoute.getCoordinatesArray()[0];
 
 			// adds correct direction instruction
 			Level currentLevel = logger.getLevel();
