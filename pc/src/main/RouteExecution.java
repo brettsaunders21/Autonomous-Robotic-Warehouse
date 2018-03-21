@@ -33,8 +33,7 @@ public class RouteExecution {
 	private JobList jobList;
 	private Robot[] robots;
 	private AStar routeMaker;
-
-
+	private Point whereImGoing;
 	
 	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints,
 			Robot[] _robots, JobList _jobList) {
@@ -54,10 +53,6 @@ public class RouteExecution {
 		try {
 			//checking active job ID exists and job is not cancelled
 			currentJob = robot.getActiveJob();
-			if (jobList.getJob(robot.getActiveJob().getID()) != null) {
-				if (jobList.getJob(robot.getActiveJob().getID()).isCanceled())
-					robot.cancelJob();
-			}
 			//retrieving Arraylist of items
 			ITEMS = currentJob.getITEMS();
 			currentDirections = currentJob.getCurrentroute().getDirections();
@@ -69,12 +64,20 @@ public class RouteExecution {
 			rELogger.debug(ITEMS);
 			//sending instructions (actions)
 			while (!currentDirections.isEmpty()) {
+				if (jobList.getJob(robot.getActiveJob().getID()) != null) {
+					if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) {
+						robot.cancelJob();
+						network.sendObject(Action.CANCEL);
+						robot.setWeight(0);
+						if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
+							rELogger.error("Never receivered response about cancelation from " + robot.getRobotName());
+						}
+						break;
+					}
+				}
 				instructionCounter++;
 				currentCommand = currentDirections.poll();
-				if (robot.getJobCancelled()) {
-					network.sendObject(Action.CANCEL);
-					break;
-				}
+				whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				// if action received is not pickup, drop-off or hold, robot will sleep
 				counter.readyToMove(robot.getRobotName());
 				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
@@ -91,7 +94,6 @@ public class RouteExecution {
 				network.sendObject(currentJob.getID());
 				network.sendObject(currentCommand);
 				counter.iMoved();
-				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				rELogger.debug(whereImGoing);
 				// if PICKUP is received, no of items to be picked up is sent to RobotController
 				if (currentCommand == Action.PICKUP) {
@@ -108,6 +110,10 @@ public class RouteExecution {
 					robot.cancelJob();
 					break;
 				}
+				//Moved to set pose and position
+				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
+				robot.setCurrentPosition(whereImGoing);
+				
 				//if HOLD is received, robot will pause
 				if (currentCommand.equals(Action.HOLD)) {
 					// hold instruction cannot be the last instruction
@@ -148,20 +154,18 @@ public class RouteExecution {
 					itemsToDrop.add(ITEMS.get(0));
 					ITEMS.remove(0);
 					rELogger.debug(robot.getRobotName() + " picked up items");
+					if (robot.getWeight() > 50) rELogger.error(robot.getRobotName() + " weight exceded.");
 				} else if (currentCommand.equals(Action.DROPOFF)) {
 					robot.setWeight(0);
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
-				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
-				robot.setCurrentPosition(whereImGoing);
 			}
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		//checking job finished and calculating reward
 		if (!robot.getJobCancelled()) {
-			System.out.println("JOB FINISHED");
 			robot.jobFinished();
 			robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 			rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward "

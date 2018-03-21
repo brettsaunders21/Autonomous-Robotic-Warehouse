@@ -15,7 +15,7 @@ public class Item {
 	private final float TOTAL_REWARD;
 	private final Point POSITION;
 	private final int QUANTITY;
-	
+
 	public Item(String _ID, int _QUANTITY, float _WEIGHT, Point _POS, float _REWARD) {
 		this.ID = _ID;
 		this.QUANTITY = _QUANTITY;
@@ -31,20 +31,6 @@ public class Item {
 	 */
 	public final String getID() {
 		return ID;
-	}
-
-	/**
-	 * @return the weight of the item
-	 */
-	public final float getWEIGHT() {
-		return WEIGHT;
-	}
-
-	/**
-	 * @return the reward of the item
-	 */
-	public final float getREWARD() {
-		return REWARD;
 	}
 
 	/**

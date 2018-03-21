@@ -50,12 +50,13 @@ public class Job {
 	}
 
 	/**
-	 * @param dropLocation set the location of where items are dropped
+	 * @param dropLocation
+	 *            set the location of where items are dropped
 	 */
 	public final void setDropLocation(Point dropLocation) {
 		this.dropLocation = dropLocation;
 	}
-	
+
 	public float calculateWeight() {
 		float weight = 0.0f;
 		for (Item i : ITEMS) {
@@ -63,7 +64,7 @@ public class Job {
 		}
 		return weight;
 	}
-	
+
 	public float calculateReward() {
 		float reward = 0.0f;
 		for (Item i : ITEMS) {
@@ -71,7 +72,7 @@ public class Job {
 		}
 		return reward;
 	}
-	
+
 	public void setItems(ArrayList<Item> orderedItems) {
 		ITEMS = orderedItems;
 	}
