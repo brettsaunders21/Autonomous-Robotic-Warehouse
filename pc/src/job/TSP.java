@@ -120,7 +120,7 @@ public class TSP {
 		Point closestPoint = drops.get(0);
 		int closestPointDistance = Integer.MAX_VALUE;
 		for (Point point : drops) {
-			if (drops.contains(point)) {
+			if (drops.contains(currentLocation)) {
 				closestPoint = point;
 				continue;
 			}
