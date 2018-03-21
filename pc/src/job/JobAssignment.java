@@ -88,7 +88,7 @@ public class JobAssignment {
 				currentRobotPosition = item.getPOSITION();
 				routes.add(itemRoute);
 			}
-			initialPose = itemRoute.getFinalPose();
+			
 			logger.trace(item);
 			logger.trace(itemRoute);
 			timeCount = counter.getTime();
@@ -97,7 +97,7 @@ public class JobAssignment {
 		Route dropoffRoute = routeMaker.generateRoute(currentRobotPosition, nearestDropoff, initialPose,
 				getCurrentRoutes(r), timeCount);
 		routes.add(dropoffRoute);
-		logger.debug(initialPose);
+		logger.debug(dropoffRoute.getStartPose());
 		logger.debug(routes);
 		return routes;
 	}

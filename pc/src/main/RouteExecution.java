@@ -60,6 +60,7 @@ public class RouteExecution {
 			Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
 			int instructionCounter = -1;
 			rELogger.debug(currentDirections);
+			rELogger.debug(currentJob.getCurrentroute().getDirections());
 			rELogger.debug(currentJob.getCurrentroute().getStartTime());
 			rELogger.debug(ITEMS);
 			//sending instructions (actions)
@@ -141,7 +142,11 @@ public class RouteExecution {
 						}
 					}
 					currentRoute = routeMaker.adjustForCollisions(currentRoute, routesRunning, counter.getTime());
+					rELogger.debug(currentRoute.getStartTime());
 					rELogger.debug(currentRoute.getStartPose());
+					rELogger.debug(currentDirections);
+					rELogger.debug(currentJob.getCurrentroute().getDirections());
+					rELogger.debug(currentJob.getCurrentroute().getStartTime());
 					currentJob.assignCurrentroute(currentRoute);
 					currentDirections = currentRoute.getDirections();
 					instructionCounter = -1;
