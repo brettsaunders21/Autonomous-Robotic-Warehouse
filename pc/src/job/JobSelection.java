@@ -140,7 +140,7 @@ public class JobSelection {
 		return orderedJobs;
 	}
 	
-	public Job getJob(List<Job> jobs, Robot robot) {
+	public Job getJob(List<Job> jobs, Robot robot[]) {
 		HashMap<Float,Integer> ratioJob = new HashMap<Float,Integer>();
 		ArrayList<Integer> orderedOrders2 = new ArrayList<Integer>();
 		ArrayList<Job> orderedJobs2 = new ArrayList<Job>();

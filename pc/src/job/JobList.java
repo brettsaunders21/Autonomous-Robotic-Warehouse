@@ -25,8 +25,8 @@ public class JobList {
 		jobsCompleted = Collections.synchronizedList(new ArrayList<>());
 	}
 
-	public synchronized Job getNewJob(Robot robot){
-		return jS.getJob(jobs, robot);
+	public synchronized Job getNewJob(Robot[] robots){
+		return jS.getJob(jobs, robots);
 	}
 	
 	public synchronized void replaceJobList(List<Job> newList){

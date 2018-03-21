@@ -61,9 +61,9 @@ public class JobAssignment {
 			job = waitingMap.get(robot).get();
 			waitingMap.put(robot, Optional.empty());
 		}else if (!jobs.isEmpty()) {
-			Job preJob = jobList.getNewJob(robot);
+			Job preJob = jobList.getNewJob(robots);
 			ConcurrentHashMap<Robot, ArrayList<Item>> itemsForRobots = tsp.splitItemsBetweenRobots(preJob,robots);
-			preJob.setDropLocation(tsp.bestDropPoint(itemsForRobots, preJob));
+			preJob.setDropLocation(tsp.bestDropPoint(itemsForRobots, preJob,robot.getCurrentPosition(),robot.getCurrentPose()));
 			logger.info("Job " + preJob.getID() + " drop point is " + preJob.getDropLocation());
 			job = createSubJob(robot, preJob,itemsForRobots);
 			waitingMap.put(robot, Optional.empty());
@@ -117,7 +117,6 @@ public class JobAssignment {
 	
 
 	private  ArrayList<Route> calculateRoute(Robot r, Map map, Job job, ArrayList<Item> items) {
-		System.out.println();
 		int timeCount = counter.getTime();
 		Point currentRobotPosition = r.getCurrentPosition();
 		ArrayList<Route> routes = new ArrayList<Route>();
@@ -129,14 +128,14 @@ public class JobAssignment {
 		logger.debug(routesForAStar.length + " length");
 		logger.debug("Routes for AStar as array " + routesForAStar);
 		routesForAStar = generatedList.toArray(routesForAStar);
-		System.out.println("Job " +job.getID() + " for robot " + r.getRobotName());
+		logger.trace("Job " +job.getID() + " for robot " + r.getRobotName());
 		float weight = 0.0f;
 		for (Item item : items) {
-			System.out.println(item.getID() + " " + item.getTOTAL_WEIGHT());
+			logger.trace(item.getID() + " " + item.getTOTAL_WEIGHT());
 			weight += item.getTOTAL_WEIGHT();
-			System.out.println("Item " + item.getID() + " WeightSoFar " + weight);
+			logger.trace("Item " + item.getID() + " WeightSoFar " + weight);
 			if(item.getID().equals("droppoint")){
-				System.out.println("dropoff");
+				logger.trace("dropoff");
 				itemRoute = routeMaker.generateRoute(currentRobotPosition,job.getDropLocation(), initialPose, routesForAStar,timeCount);
 				currentRobotPosition = job.getDropLocation();
 				Route routeWithDropoff = new Route(itemRoute, Action.DROPOFF);

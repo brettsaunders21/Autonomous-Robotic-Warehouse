@@ -37,19 +37,18 @@ public class TSP {
 			items.remove(closestItem);
 			orderedItems.add(closestItem);
 		}
-		ArrayList<Item> dropItems = addDropPoints(orderedItems);
 		robot.setCurrentPose(prePose);
-		return dropItems;
+		return orderedItems;
 	}
 	
-	private ArrayList<Item> addDropPoints(ArrayList<Item> items) {
+	private ArrayList<Item> addDropPoints(ArrayList<Item> items, Job j) {
 		int weightRunningTotal = 0;
 		ArrayList<Item> withDrops = new ArrayList<Item>();
 		for (Item item : items) {
 			weightRunningTotal += item.getTOTAL_WEIGHT();
 			if (weightRunningTotal >= 50) {
-				System.out.println("Add dropoff");
-				Item dropPoint = new Item("droppoint", 0, 0, nearestDropPoint(item.getPOSITION(), Pose.POS_X), 0);
+				logger.debug("Adding dropoff for job " + j.getDropLocation());
+				Item dropPoint = new Item("droppoint", 0, 0, j.getDropLocation(), 0);
 				withDrops.add(dropPoint);
 				weightRunningTotal = 0;
 			}
@@ -58,32 +57,45 @@ public class TSP {
 		return withDrops;
 	}
 	
-	public int calculateJobDistance(Job job, Robot robot) {
-		ArrayList<Item> tempItems = new ArrayList<Item>(job.getITEMS());
-		Robot tempR = robot;
-		//tempItems = orderItems(tempItems, tempR);
-		//tempItems = addDropPoints(tempItems);
+	public int calculateJobDistance(Job job, Robot[] robots) {
 		int distance = 0;
-		if (tempItems.size() > 1) 
-		for (int i = 1; i <= tempItems.size() - 1; i++) {
-			distance += routeMaker.generateRoute(tempItems.get(i-1).getPOSITION(), tempItems.get(i).getPOSITION(), Pose.POS_X, new Route[] {}, 0).getLength();
+		ConcurrentHashMap<Robot, Point> copyOfPositionMap = new ConcurrentHashMap<Robot, Point> (positionMap);
+		ConcurrentHashMap<Robot, ArrayList<Item>> splitItemMap = splitItemsBetweenRobots(job, robots);
+		for (int z = 0; z < robots.length; z++) {
+			ArrayList<Item> tempItems = splitItemMap.get(robots[z]);
+			if (!tempItems.isEmpty()) {
+				for (int i = 1; i <= tempItems.size() - 1; i++) {
+					distance += routeMaker.generateRoute(tempItems.get(i - 1).getPOSITION(),
+							tempItems.get(i).getPOSITION(), Pose.POS_X, new Route[] {}, 0).getLength();
+				}
+				distance += routeMaker.generateRoute(robots[z].getCurrentPosition(), tempItems.get(0).getPOSITION(),
+						robots[z].getCurrentPose(), new Route[] {}, 0).getLength();
+			}
 		}
-		distance += routeMaker.generateRoute(robot.getCurrentPosition(), tempItems.get(0).getPOSITION(), robot.getCurrentPose(), new Route[] {}, 0).getLength();
+		positionMap = copyOfPositionMap;
 		return distance;
 	}
 	
-	public int calculateJobDistance(ArrayList<Item> items, Robot robot) {
+	public int calculateJobDistance(ArrayList<Item> items, Robot robot, Job j) {
 		ArrayList<Item> tempItems = new ArrayList<Item>(items);
 		Robot tempR = robot;
-		//tempItems = orderItems(tempItems, tempR);
-		//tempItems = addDropPoints(tempItems);
+		tempItems = orderItems(tempItems, tempR);
+		tempItems = addDropPoints(tempItems, j);
 		int distance = 0;
-		if (tempItems.size() > 1) 
-		for (int i = 1; i <= tempItems.size() - 1; i++) {
-			distance += routeMaker.generateRoute(tempItems.get(i-1).getPOSITION(), tempItems.get(i).getPOSITION(), Pose.POS_X, new Route[] {}, 0).getLength();
-			tempR.setCurrentPosition(tempItems.get(i).getPOSITION());
+		if (!items.isEmpty()) {
+			if (items.size() > 1) {
+				for (int i = 1; i <= tempItems.size() - 1; i++) {
+					distance += routeMaker.generateRoute(
+							tempItems.get(i - 1).getPOSITION(),
+							tempItems.get(i).getPOSITION(),
+							Pose.POS_X, new Route[] {}, 0).getLength();
+					tempR.setCurrentPosition(tempItems.get(i).getPOSITION());
+				}
+			}
+
+		distance += routeMaker.generateRoute(robot.getCurrentPosition(), tempItems.get(0).getPOSITION(),
+				robot.getCurrentPose(), new Route[] {}, 0).getLength();
 		}
-		distance += routeMaker.generateRoute(robot.getCurrentPosition(), tempItems.get(0).getPOSITION(), robot.getCurrentPose(), new Route[] {}, 0).getLength();
 		return distance;
 	}
 	
@@ -108,6 +120,10 @@ public class TSP {
 		Point closestPoint = drops.get(0);
 		int closestPointDistance = Integer.MAX_VALUE;
 		for (Point point : drops) {
+			if (drops.contains(point)) {
+				closestPoint = point;
+				continue;
+			}
 			int routeToDrop1 = routeMaker.generateRoute(currentLocation, point, pose, new Route[] {}, 0).getLength();
 			if (routeToDrop1 < closestPointDistance) {
 				closestPointDistance = routeToDrop1;
@@ -117,7 +133,7 @@ public class TSP {
 		return closestPoint;
 	}
 
-	public Point bestDropPoint(ConcurrentHashMap<Robot, ArrayList<Item>> itemsForRobots, Job j) {
+	public Point bestDropPoint(ConcurrentHashMap<Robot, ArrayList<Item>> itemsForRobots, Job j, Point currentLocation, Pose pose) {
 		// TODO Auto-generated method stub
 		HashMap<Point, Integer> dropMap = new HashMap<>();
 		Entry<Point, Integer> bestDropPoint = null;
@@ -134,11 +150,16 @@ public class TSP {
 				dropMap.put(bestDrop, 1);
 			}
 		}
+		if (bestDropPoint == null) {
+			Point drop = nearestDropPoint(currentLocation, pose);
+			dropMap.put(drop, 1);
+		}
 		for (Entry<Point, Integer> entry : dropMap.entrySet()) {
 			if (bestDropPoint == null || entry.getValue() > bestDropPoint.getValue()) {
 				bestDropPoint = entry;
 			}
 		}
+
 		//j.setDropLocation(bestDropPoint.getKey());
 		return bestDropPoint.getKey();
 	}
@@ -197,7 +218,7 @@ public class TSP {
 				int robotVal = Integer.MAX_VALUE;
 				for (Item item : items) {
 					if (robotWeight + item.getTOTAL_WEIGHT() < 50.0f) {
-						int cost = calculateCost(item,itemMap,robot,robot.getCurrentPosition());
+						int cost = calculateCost(item,itemMap,robot,robot.getCurrentPosition(), j);
 						if (cost < bidVal) {
 							robotPick = item;
 							robotVal = cost;
@@ -210,7 +231,7 @@ public class TSP {
 			Robot bidPickRobot = getBidPick(bidValueMap);
 			bidPick = bidPickMap.get(bidPickRobot);
 			ArrayList<Item> itemListForRobot = itemMap.get(bidPickRobot);
-			itemListForRobot = addDropPoints(itemListForRobot);
+			itemListForRobot = addDropPoints(itemListForRobot, j);
 			itemListForRobot.add(bidPick);
 			itemMap.put(bidPickRobot, itemListForRobot);
 			items.remove(bidPick);
@@ -236,11 +257,13 @@ public class TSP {
 	}
 
 
-	private int calculateCost(Item item, ConcurrentHashMap<Robot, ArrayList<Item>> itemMap, Robot _robot, Point robotPosition) {
+	private int calculateCost(Item item, ConcurrentHashMap<Robot, ArrayList<Item>> itemMap, Robot _robot, Point robotPosition, Job j) {
+		Job jCopy = j;
+		jCopy.setDropLocation(bestDropPoint(itemMap, jCopy, robotPosition, Pose.POS_X));
 		Robot robotCopy = new Robot("TestRobot", "", robotPosition);
 		ArrayList<Item> itemArrayList = new ArrayList<>(itemMap.get(_robot));
 		itemArrayList.add(item);
-		int distance = calculateJobDistance(itemArrayList, robotCopy);
+		int distance = calculateJobDistance(itemArrayList, robotCopy,jCopy);
 		return distance;
 	}
 }
