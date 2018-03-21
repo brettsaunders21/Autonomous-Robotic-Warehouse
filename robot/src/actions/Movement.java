@@ -1,14 +1,13 @@
 package actions;
 
 import interfaces.Action;
-import lejos.nxt.Button;
 import lejos.nxt.Motor;
 import lejos.robotics.navigation.DifferentialPilot;
-import lejos.robotics.subsumption.ArbitratorEx;
+import lejos.robotics.subsumption.Arbitrator;
 import lejos.robotics.subsumption.Behavior;
 import lejos.util.Delay;
 
-public class Movement {
+public class Movement extends Thread{
 	private final int MID_BOUND;
 	private final DifferentialPilot PILOT;
 	private RobotInterface rInterface;
@@ -63,17 +62,6 @@ public class Movement {
 			break;
 		default:
 			break;
-		}
-		if (!(command.equals(Action.PICKUP) || command.equals(Action.DROPOFF) || command.equals(Action.WAIT)
-				|| command.equals(Action.HOLD))) {
-			ArbitratorEx arby = null;
-			Behavior junction = new DetectJunction(MID_BOUND, arby);
-			Behavior correctLeft = new LeftOfLine(MID_BOUND);
-			Behavior correctRight = new RightOfLine(MID_BOUND);
-			Behavior forward = new DriveForward(MID_BOUND);
-			Button.waitForAnyPress();
-			arby = new ArbitratorEx(new Behavior[] { forward, correctLeft, correctRight, junction});
-			arby.start();
 		}
 		PILOT.stop();
 		rInterface.resetQuantity();

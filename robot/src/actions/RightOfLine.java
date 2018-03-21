@@ -23,14 +23,14 @@ public class RightOfLine extends AbstractBehaviour {
 	@Override
 	public boolean takeControl() {
 		//If the right sensor detects a line then takeControl
-		Delay.msDelay(25);
+		Delay.msDelay(10);
 		return !isLeftOnLine() && isRightOnLine();
 	}
 
 	@Override
 	public void action() {
-		Motor.A.setSpeed(Motor.A.getSpeed() * 1.3f);
-		Delay.msDelay(200);
+		PILOT.forward();
+		Motor.C.setSpeed(Motor.C.getSpeed() * 1.3f);
 	}
 
 }

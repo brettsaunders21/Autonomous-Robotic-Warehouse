@@ -1,12 +1,19 @@
 package main;
 
 import java.io.IOException;
+
+import actions.DetectJunction;
+import actions.DriveForward;
+import actions.LeftOfLine;
 import actions.Movement;
+import actions.RightOfLine;
 import actions.RobotInterface;
 import communication.RobotNetworkHandler;
 import interfaces.Action;
 import lejos.nxt.Button;
 import lejos.nxt.LightSensor;
+import lejos.robotics.subsumption.Arbitrator;
+import lejos.robotics.subsumption.Behavior;
 import rp.systems.StoppableRunnable;
 
 public class RobotController implements StoppableRunnable {
@@ -29,6 +36,8 @@ public class RobotController implements StoppableRunnable {
 		running = true;
 		MID_BOUND = 0;
 		networkHandler = new RobotNetworkHandler();
+		move = new Movement(MID_BOUND, rInterface);
+		move.start();
 	}
 
 	@Override
@@ -47,35 +56,12 @@ public class RobotController implements StoppableRunnable {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		Action currentCommand = null;
-		int pickAmount = 0;
-		while (running) {
-			try {
-				rInterface.setJobCode(networkHandler.receiveInt());
-				rInterface.waitingForOrdersMessage();
-				currentCommand = (Action) networkHandler.receiveAction();
-				rInterface.setCurrentDirection(currentCommand);
-				if (currentCommand != null) {
-					rInterface.networkMessage(currentCommand);
-					if (currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)) {
-						pickAmount = (int) networkHandler.receiveInt();
-					}
-					move.nextAction(currentCommand, pickAmount);
-				} else {
-					System.out.println("Error: No command received");
-					break;
-				}
-				networkHandler.sendObject(Action.ACTION_COMPLETE);
-			} catch (IOException e) {
-				System.out.println("Couldn't receive object in RobotController" + e.getMessage());
-			}
-		}
-	}
-
-	@Override
-	public void stop() {
-		running = false;
-
+		Behavior correctLeft = new LeftOfLine(MID_BOUND);
+		Behavior correctRight = new RightOfLine(MID_BOUND);
+		Behavior forward = new DriveForward(MID_BOUND);
+		Behavior junction = new DetectJunction(MID_BOUND, networkHandler, rInterface);
+		Arbitrator arby = new Arbitrator(new Behavior[] { forward, correctLeft, correctRight, junction});
+		arby.start();
 	}
 	
 	private int getAverageLight() {

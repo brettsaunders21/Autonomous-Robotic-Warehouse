@@ -37,12 +37,14 @@ public class DriveForward extends AbstractBehaviour {
 	 */
 	@Override
 	public void action() {
+		PILOT.setTravelSpeed(PILOT.getMaxTravelSpeed());
+		PILOT.setRotateSpeed(PILOT.getRotateMaxSpeed());
+		System.out.println("FORWARD");
 		PILOT.forward();
 		Rate r = new Rate(20);
 		while (!m_suppressed) {
 			r.sleep();
 		}
-		PILOT.stop();
 		m_suppressed = false;
 	}
 
