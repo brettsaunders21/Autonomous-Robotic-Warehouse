@@ -349,7 +349,7 @@ public class Route {
 	 */
 	public Pose getPoseAt(int relativeTime) {
 		Pose p;
-		if (relativeTime > 0 && relativeTime < routeLength) {
+		if (relativeTime > 1 && relativeTime < routeLength) {
 			if (!coordsArray[relativeTime - 1].equals(coordsArray[relativeTime])) {
 				int direction = AStar.getDirection(coordsArray[relativeTime - 1], coordsArray[relativeTime]);
 				switch (direction) {
@@ -376,6 +376,35 @@ public class Route {
 				}
 			} else {
 				return getPoseAt(relativeTime - 1);
+			}
+		} else if (relativeTime == 1) {
+			if (!coordsArray[0].equals(startPoint)) {
+				int direction = AStar.getDirection(startPoint, coordsArray[0]);
+				switch (direction) {
+				case 0: {
+					p = Pose.NEG_X;
+					break;
+				}
+				case 1: {
+					p = Pose.NEG_Y;
+					break;
+				}
+				case 2: {
+					p = Pose.POS_X;
+					break;
+				}
+				case 3: {
+					p = Pose.POS_Y;
+					break;
+				}
+				default: { // should not be possible to reach
+					p = Pose.POS_X;
+					break;
+				}
+				}
+			}
+			else {
+				return getPoseAt(0);
 			}
 		} else if (relativeTime == 0) {
 			p = this.getStartPose();
