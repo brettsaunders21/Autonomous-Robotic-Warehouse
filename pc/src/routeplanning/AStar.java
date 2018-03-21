@@ -86,11 +86,13 @@ public class AStar {
 			Level currentLevel = logger.getLevel();
 			logger.setLevel(Level.DEBUG);
 			logger.debug(coordQ.peek());
+			logger.debug(dirQ.peek());
 			logger.setLevel(currentLevel);
 		} else {
 			coord = coordQ.poll();
 			Level currentLevel = logger.getLevel();
 			logger.setLevel(Level.DEBUG);
+			logger.debug(coord);
 			logger.debug(dirQ.poll());
 			logger.setLevel(currentLevel);
 		}

@@ -143,19 +143,6 @@ public class RobotInterface {
 			LCD.clear();
 			}
 		}
-//			if(Button.waitForAnyPress() == Button.ID_ESCAPE){
-//				LCD.clear();
-//				System.out.println("You are cancelling the order. If you wish to confirm press ENTER. "
-//						+ "If you do not wish to cancel press any other button.");
-//				if(Button.waitForAnyPress() == Button.ID_ENTER){
-//					robotInfo.cancelJob();
-//				}
-//				else{
-//					loadItemsMessage();
-//				}
-//			}
-			
-	
 		
 	
 	/**
@@ -163,9 +150,9 @@ public class RobotInterface {
 	 */
 	public void waitForUnloadingMessage(){
 		while (itemsHeld != 0) {
-			System.out.println("Current items " + itemsHeld);
+			LCD.drawString("Current items " + itemsHeld, 1, 0);
 			Button.waitForAnyPress(); 
-			itemsHeld = dropItems(itemsHeld);
+			dropItems();
 			LCD.drawString("Items dropped off: " + itemsHeld, 1, 1);
 			LCD.clear();
 			break;
@@ -205,7 +192,7 @@ public class RobotInterface {
 		LCD.drawString("Press a button", 1, 4);
 		LCD.drawString("to unload the", 1, 5);
 		LCD.drawString("items.", 1, 6);
-		LCD.drawString("Current items " + itemsHeld, 1, 7);
+		LCD.drawString("Current items " + itemsHeld + " ", 1, 7);
 		waitForUnloadingMessage();
 		//LCD.clear();
 	}
@@ -222,12 +209,11 @@ public class RobotInterface {
 	 * A method to drop items off. 
 	 * @param noOfItems The number of items to be dropped off.
 	 */
-	public int dropItems(int noOfItems){
-		noOfItems = noOfItems - 1;
-		if(noOfItems <= 0){
-			noOfItems = 0;
+	public void dropItems(){
+		itemsHeld--;
+		if(itemsHeld <= 0){
+			itemsHeld = 0;
 		}
-		return noOfItems;
 	}
 
 	/** 
