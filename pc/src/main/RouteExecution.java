@@ -64,6 +64,11 @@ public class RouteExecution {
 			//retrieving coordinates for job
 			Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
 			int instructionCounter = -1;
+			
+			heldPoints.holdAt(currentJob.getCurrentroute().getStartPoint());
+			
+			Point previousPoint = currentJob.getCurrentroute().getStartPoint();
+			
 			rELogger.debug(currentDirections);
 			rELogger.debug(currentJob.getCurrentroute().getDirections());
 			rELogger.debug(currentJob.getCurrentroute().getStartTime());
@@ -72,6 +77,19 @@ public class RouteExecution {
 			while (!currentDirections.isEmpty()) {
 				instructionCounter++;
 				currentCommand = currentDirections.poll();
+				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
+				
+				boolean messageSent = false;
+				while (heldPoints.isStillHeld(whereImGoing)) {
+					if (!messageSent) {
+						rELogger.debug("Waiting for coordinate (" + whereImGoing.x + ", " + whereImGoing.y + ") to free up.");
+					}
+					Thread.sleep(1);
+				}
+				
+				heldPoints.freeUp(previousPoint);
+				heldPoints.holdAt(whereImGoing);
+				previousPoint = whereImGoing;
 				if (robot.getJobCancelled()) {
 					network.sendObject(Action.CANCEL);
 					break;
@@ -84,15 +102,12 @@ public class RouteExecution {
 						Thread.sleep(100);
 					}
 				} else {
-					Point heldCoord = arrayOfCoords[instructionCounter];
-					heldPoints.holdAt(heldCoord);
 					counter.isNonMove(robot.getRobotName());
 				}
 				//sending job ID and currentCommand to RobotController
 				network.sendObject(currentJob.getID());
 				network.sendObject(currentCommand);
 				counter.iMoved();
-				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				rELogger.debug(whereImGoing);
 				// if PICKUP is received, no of items to be picked up is sent to RobotController
 				if (currentCommand == Action.PICKUP) {
@@ -113,17 +128,12 @@ public class RouteExecution {
 				if (currentCommand.equals(Action.HOLD)) {
 					// hold instruction cannot be the last instruction
 					Point heldCoord = arrayOfCoords[instructionCounter + 1];
-					while (heldPoints.isStillHeld(heldCoord)) {
-						Thread.sleep(100);
-					}
-					heldPoints.freeUp(arrayOfCoords[instructionCounter]);
 					counter.isMoveable(robot.getRobotName());
 				}
 				//robot will run route
 				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
 						|| currentCommand.equals(Action.HOLD))) {
 					Point heldCoord = arrayOfCoords[instructionCounter];
-					heldPoints.freeUp(heldCoord);
 					counter.isMoveable(robot.getRobotName());
 					Route currentRoute = currentJob.getCurrentroute();
 					Route[] routesRunning = new Route[robots.length - 1];
@@ -158,7 +168,9 @@ public class RouteExecution {
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
-				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
+				if (!robot.getCurrentPosition().equals(whereImGoing)) {
+					robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
+				}
 				robot.setCurrentPosition(whereImGoing);
 			}
 		} catch (IOException | InterruptedException e) {
