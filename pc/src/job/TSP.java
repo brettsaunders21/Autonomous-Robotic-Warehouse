@@ -33,11 +33,11 @@ public class TSP {
 	private ArrayList<Item> addDropPoints(ArrayList<Item> items) {
 		int weightRunningTotal = 0;
 		ArrayList<Item> withDrops = new ArrayList<Item>();
+		Item finalItem = items.get(items.size()- 1);
 		for (Item item : items) {
 			weightRunningTotal += item.getTOTAL_WEIGHT();
 			if (weightRunningTotal >= 50) {
-				// TODO fix drop point
-				Item dropPoint = new Item("droppoint", 0, 0, nearestDropPoint(item.getPOSITION(), Pose.POS_X), 0);
+				Item dropPoint = new Item("droppoint", 0, 0, nearestDropPoint(finalItem.getPOSITION(), Pose.POS_X), 0);
 				withDrops.add(dropPoint);
 				weightRunningTotal = 0;
 			}

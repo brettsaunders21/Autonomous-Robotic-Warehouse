@@ -177,7 +177,6 @@ public class RouteExecution {
 		}
 		//checking job finished and calculating reward
 		if (!robot.getJobCancelled()) {
-			System.out.println("JOB FINISHED");
 			robot.jobFinished();
 			robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 			rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward "

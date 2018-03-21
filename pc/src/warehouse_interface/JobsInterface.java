@@ -4,12 +4,10 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
 import interfaces.Robot;
 import job.Item;
 import job.Job;
 import job.JobList;
-
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -21,8 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -32,11 +28,12 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	private JPanel contentPane;
 	private JPanel cancelJobPane;
-	private JLabel totalReward;
+	private JLabel totalRewardLabel;
 	private JTextField textField;
 	private Thread thread;
 	private Robot[] robots;
 	private ArrayList<Job> completedJobs;
+	float totalReward;
 	GridLayout mainLayout;
 	GridLayout cancelJobLayout = new GridLayout(2, 0);
 	String[][] completedJobsData = new String[20][3];
@@ -45,18 +42,18 @@ public class JobsInterface extends JFrame implements Runnable {
 	String[][] robot1Data = new String[1][5];
 	String[][] robot2Data = new String[1][5];
 	String[][] robot3Data = new String[1][5];
-	private float allRewardSum;
 	private JTable t;
 	String itemsCsvFile = "src/job/csv/items.csv";
 	JobList jobList;
 
-	public JobsInterface(Robot[] robots, ArrayList<Job> completedJobs, JobList jobList) {
+	public JobsInterface(Robot[] robots, ArrayList<Job> completedJobs, JobList jobList, float totalReward) {
 		mainLayout = new GridLayout((8 + robots.length * 2), 0);
 		setFrame();
 		setPanes();
 		this.robots = robots;
 		this.completedJobs = completedJobs;
 		this.jobList = jobList;
+		this.totalReward = totalReward;
 		for (int i = 0; i < robots.length; i++) {
 			currentInfo(robots[i].getRobotName(), i);
 		}
@@ -139,8 +136,8 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	// Total reward from all robots
 	public void totalReward() {
-		totalReward = new JLabel("Total reward: " + Float.toString(allRewardSum));
-		contentPane.add(totalReward);
+		totalRewardLabel = new JLabel("Total reward: " + Float.toString(totalReward));
+		contentPane.add(totalRewardLabel);
 	}
 
 	// Button to cancel particular job
@@ -243,17 +240,7 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	// Method that updates total reward
 	public void updateTotalReward() {
-		float checkReward = allRewardSum;
-		for (int i = 0; i < robots.length; i++) {
-			try {
-				checkReward += robots[i].currentReward();			
-			} catch (NullPointerException e) {
-
-			}
-			if(allRewardSum != checkReward)
-				allRewardSum = checkReward;
-		}
-		totalReward.setText("Total reward: " + Float.toString(allRewardSum));
+		totalRewardLabel.setText("Total reward: " + Float.toString(totalReward));
 	}
 
 	// Thread that updated all information

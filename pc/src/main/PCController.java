@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import interfaces.Pose;
 import interfaces.Robot;
 import job.Job;
 import job.JobAssignment;
@@ -21,10 +22,11 @@ public class PCController {
 	private static final Logger aStarLogger = Logger.getLogger(AStar.class);
 	private static final Logger routeExeLogger = Logger.getLogger(RouteExecution.class);
 	private static final Logger jobAssLogger = Logger.getLogger(JobAssignment.class);
+	private static float totalReward = 0;
 	private static final Robot[] ROBOTS = { 
-			new Robot("Spike", "0016530AA681", new Point(0, 0)),
-			//new Robot("Jeremy", "00165308E37C", new Point(0, 7)),
-			new Robot("Marco", "001653115A7E", new Point(11, 7)) 
+			new Robot("Spike", "0016530AA681", new Point(0, 0), totalReward, Pose.POS_X),
+			//new Robot("Jeremy", "00165308E37C", new Point(0, 7), totalReward, Pos.POS_X),
+			new Robot("Marco", "001653115A7E", new Point(11, 7), totalReward, Pose.POS_X) 
 			};
 	private static ArrayList<Job> completedJobs = new ArrayList<Job>();
 	private static int numOfRobots = ROBOTS.length;
@@ -51,7 +53,7 @@ public class PCController {
 
 		// creates new interfaces for warehouse and jobs
 		new WarehouseInterface(ROBOTS);
-		new JobsInterface(ROBOTS, completedJobs, jobList);
+		new JobsInterface(ROBOTS, completedJobs, jobList, totalReward);
 
 		// Start thread to manage and control each robot
 		for (int i = 0; i < numOfRobots; i++) {
