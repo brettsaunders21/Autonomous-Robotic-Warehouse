@@ -28,7 +28,6 @@ public class AStar {
 	private final static int POS_X = 2;
 	private final static int POS_Y = 3;
 	private final static int STILL = 4;
-	private final static int HOLD = 5;
 
 	private final Map map;
 
@@ -357,58 +356,8 @@ public class AStar {
 			Point myStartCoord, Map tempMap) throws BacktrackNeededException {
 		ArrayList<Point> tempCoords = tempInfo.getCoords();
 		ArrayList<Integer> tempDirs = tempInfo.getDirs();
-		ArrayList<Point> holdCoords = new ArrayList<Point>();
-		boolean[] heldAlreadyFound = new boolean[routes.length];
-		for (int i = 0; i < heldAlreadyFound.length; i++) {
-			heldAlreadyFound[i] = false;
-		}
-		for (int routeIndex = 0; routeIndex < routes.length; routeIndex++) {
-			if (!heldAlreadyFound[routeIndex]) {
-				Action[] directions = routes[routeIndex].getDirectionArray();
-				Point[] coords = routes[routeIndex].getCoordinatesArray();
-				for (int i = 0; i < directions.length; i++) {
-					if (directions[i].equals(Action.PICKUP) || directions[i].equals(Action.DROPOFF)
-							|| directions[i].equals(Action.HOLD)) {
-						holdCoords.add(coords[i]);
-						heldAlreadyFound[routeIndex] = true;
-						break;
-					}
-				}
-			} else {
-				boolean noFurtherChecks = true;
-				for (int i = 0; i < heldAlreadyFound.length; i++) {
-					if (!heldAlreadyFound[i]) {
-						noFurtherChecks = false;
-					}
-				}
-				if (noFurtherChecks) {
-					break;
-				}
-			}
-		}
-		boolean holdAdded = false;
 		int i = 0;
 		while (i < tempCoords.size()) {
-			for (Point p : holdCoords) {
-				if (p.equals(tempCoords.get(i))) {
-					if (i + 1 == tempCoords.size()) {
-						if (i > 0) {
-							tempCoords.add(i, tempCoords.get(i - 1));
-						} else {
-							tempCoords.add(i, myStartCoord);
-						}
-						tempDirs.add(i, HOLD);
-						holdAdded = true;
-						break;
-					} else if (tempMap.isPassable(p)) {
-						logger.info(p);
-						throw new BacktrackNeededException(p);
-					}
-				}
-			}
-			if (holdAdded) {
-				break;
-			}
 			for (Route route : routes) {
 				int startTime = route.getStartTime();
 				int endTime = route.getStartTime() + route.getLength();
@@ -458,8 +407,6 @@ public class AStar {
 		for (int i = 0; i < tempDirs.size(); i++) {
 			if (tempDirs.get(i).equals(STILL)) {
 				directions.add(Action.WAIT);
-			} else if (tempDirs.get(i).equals(HOLD)) {
-				directions.add(Action.HOLD);
 			} else {
 				logger.trace(startPose);
 				Action action = generateDirectionInstruction(startPose, tempDirs.get(i));

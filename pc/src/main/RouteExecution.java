@@ -33,7 +33,8 @@ public class RouteExecution {
 	private JobList jobList;
 	private Robot[] robots;
 	private AStar routeMaker;
-	private Point whereImGoing;
+
+
 	
 	public RouteExecution(Robot _robot, PCNetworkHandler _network, Counter _counter, PointsHeld _heldPoints,
 			Robot[] _robots, JobList _jobList) {
@@ -53,32 +54,46 @@ public class RouteExecution {
 		try {
 			//checking active job ID exists and job is not cancelled
 			currentJob = robot.getActiveJob();
+			if (jobList.getJob(robot.getActiveJob().getID()) != null) {
+				if (jobList.getJob(robot.getActiveJob().getID()).isCanceled())
+					robot.cancelJob();
+			}
 			//retrieving Arraylist of items
 			ITEMS = currentJob.getITEMS();
 			currentDirections = currentJob.getCurrentroute().getDirections();
 			//retrieving coordinates for job
 			Point[] arrayOfCoords = currentJob.getCurrentroute().getCoordinatesArray();
 			int instructionCounter = -1;
+			
+			heldPoints.holdAt(currentJob.getCurrentroute().getStartPoint());
+			
+			Point previousPoint = currentJob.getCurrentroute().getStartPoint();
+			
 			rELogger.debug(currentDirections);
 			rELogger.debug(currentJob.getCurrentroute().getDirections());
 			rELogger.debug(currentJob.getCurrentroute().getStartTime());
 			rELogger.debug(ITEMS);
 			//sending instructions (actions)
 			while (!currentDirections.isEmpty()) {
-				if (jobList.getJob(robot.getActiveJob().getID()) != null) {
-					if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) {
-						robot.cancelJob();
-						network.sendObject(Action.CANCEL);
-						robot.setWeight(0);
-						if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
-							rELogger.error("Never receivered response about cancelation from " + robot.getRobotName());
-						}
-						break;
-					}
-				}
 				instructionCounter++;
 				currentCommand = currentDirections.poll();
-				whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
+				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
+				
+				boolean messageSent = false;
+				while (heldPoints.isStillHeld(whereImGoing)) {
+					if (!messageSent) {
+						rELogger.debug("Waiting for coordinate (" + whereImGoing.x + ", " + whereImGoing.y + ") to free up.");
+					}
+					Thread.sleep(1);
+				}
+				
+				heldPoints.freeUp(previousPoint);
+				heldPoints.holdAt(whereImGoing);
+				previousPoint = whereImGoing;
+				if (robot.getJobCancelled()) {
+					network.sendObject(Action.CANCEL);
+					break;
+				}
 				// if action received is not pickup, drop-off or hold, robot will sleep
 				counter.readyToMove(robot.getRobotName());
 				if (!(currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
@@ -87,8 +102,6 @@ public class RouteExecution {
 						Thread.sleep(100);
 					}
 				} else {
-					Point heldCoord = arrayOfCoords[instructionCounter];
-					heldPoints.holdAt(heldCoord);
 					counter.isNonMove(robot.getRobotName());
 				}
 				//sending job ID and currentCommand to RobotController
@@ -111,25 +124,16 @@ public class RouteExecution {
 					robot.cancelJob();
 					break;
 				}
-				//Moved to set pose and position
-				robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
-				robot.setCurrentPosition(whereImGoing);
-				
 				//if HOLD is received, robot will pause
 				if (currentCommand.equals(Action.HOLD)) {
 					// hold instruction cannot be the last instruction
 					Point heldCoord = arrayOfCoords[instructionCounter + 1];
-					while (heldPoints.isStillHeld(heldCoord)) {
-						Thread.sleep(100);
-					}
-					heldPoints.freeUp(arrayOfCoords[instructionCounter]);
 					counter.isMoveable(robot.getRobotName());
 				}
 				//robot will run route
 				if ((currentCommand.equals(Action.PICKUP) || currentCommand.equals(Action.DROPOFF)
 						|| currentCommand.equals(Action.HOLD))) {
 					Point heldCoord = arrayOfCoords[instructionCounter];
-					heldPoints.freeUp(heldCoord);
 					counter.isMoveable(robot.getRobotName());
 					Route currentRoute = currentJob.getCurrentroute();
 					Route[] routesRunning = new Route[robots.length - 1];
@@ -159,18 +163,23 @@ public class RouteExecution {
 					itemsToDrop.add(ITEMS.get(0));
 					ITEMS.remove(0);
 					rELogger.debug(robot.getRobotName() + " picked up items");
-					if (robot.getWeight() > 50) rELogger.error(robot.getRobotName() + " weight exceded.");
 				} else if (currentCommand.equals(Action.DROPOFF)) {
 					robot.setWeight(0);
 					itemsToDrop.poll();
 					rELogger.debug(robot.getRobotName() + " dropped off items");
 				}
+
+				if (!robot.getCurrentPosition().equals(whereImGoing)) {
+					robot.setCurrentPose(getDirection(robot.getCurrentPosition(), whereImGoing));
+				}
+				robot.setCurrentPosition(whereImGoing);
 			}
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 		//checking job finished and calculating reward
 		if (!robot.getJobCancelled()) {
+			System.out.println("JOB FINISHED");
 			robot.jobFinished();
 			robot.setCurrentPose(currentJob.getCurrentroute().getFinalPose());
 			rELogger.debug("Job " + currentJob.getID() + " has finished on " + robot.getRobotName() + " giving reward "
