@@ -23,15 +23,6 @@ public class JobSelectionTest {
 		assertEquals(83, orderedJobs.size(), 0); //There should be only 83 jobs as the other 17 are predicted to be cancelled based on the beta values from training
 		
 	}
-	@Test
-	public void testGetJob() {
-		JobInput jI = new JobInput();
-		JobSelection jS = new JobSelection(jI.getBetaValues());
-		Point point = new Point(0,0);
-		Robot robot = new Robot("test","test",point, totalReward, Pose.POS_X);
-		Job job = jS.getJob(jS.prioritize(), robot);
-		assertEquals(true, jS.prioritize().contains(job));
-	}
 	
 
 }

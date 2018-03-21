@@ -65,7 +65,7 @@ public class jobAssignmentTest {
 	
 	@Test
 	public void checkMultipleJobsCanAssignWithoutError() {
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 10; i++) {
 			jAssignment.assignJobs(robot1);
 			//System.out.println(i + "completed");
 		}

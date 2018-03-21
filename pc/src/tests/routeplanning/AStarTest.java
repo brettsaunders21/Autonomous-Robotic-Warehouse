@@ -599,35 +599,4 @@ public class AStarTest {
 		aStarLogger.setLevel(aStarLevel);
 	}
 	
-	@Test
-	public void adjustTest6() {
-		aStarLogger.setLevel(Level.DEBUG);
-		routeLogger.setLevel(Level.DEBUG);
-		logger.setLevel(Level.DEBUG);
-		Route r1 = aStar.generateRoute(new Point(9, 5), new Point(7, 7), Pose.POS_X, new Route[] {}, 0);
-		BlockingQueue<Point> crds = new LinkedBlockingQueue<Point>();
-		BlockingQueue<Action> drs = new LinkedBlockingQueue<Action>();
-		
-		
-		crds.add(new Point(7,7));
-		drs.add(Action.DROPOFF);
-
-		Route r3 =new Route(crds, drs, Pose.POS_Y, 0, new Point(8,5));
-
-		//logger.setLevel(Level.DEBUG);
-		r1 = new Route(r1, r3);
-
-		logger.debug(r1.getStartPose());
-		logger.debug(r1.getDirections());
-		logger.debug(r1.getCoordinates());
-
-		Point[] ps1 = new Point[] {new Point(4,6), new Point(5,6), new Point(5,5), new Point(5,5), new Point(6, 5), new Point(6, 5), new Point(6, 4), new Point(6, 3), new Point(6, 2),
-				new Point(5, 2), new Point(5, 1), new Point(5,1) };
-		assertArrayEquals(ps1, r1.getCoordinatesArray());
-
-
-		routeLogger.setLevel(routeLevel);
-		logger.setLevel(myLevel);
-		aStarLogger.setLevel(aStarLevel);
-	}
 }
