@@ -251,6 +251,7 @@ public class Route {
 			Level currentLevel = logger.getLevel();
 			logger.setLevel(Level.DEBUG);
 			logger.debug(secondRoute.getDirections().peek());
+			logger.setLevel(currentLevel);
 			this.directions.add(generateRotation(p1, p2, firstRoute.getFinalPose()));
 		}
 		this.directions.addAll(temp);
