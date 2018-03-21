@@ -147,6 +147,7 @@ public class RouteExecution {
 					rELogger.debug(whereImGoing);
 					rELogger.debug(currentRoute.getStartPoint());
 					rELogger.debug(currentRoute.getStartTime());
+					rELogger.debug(counter.getTime());
 					rELogger.debug(currentRoute.getStartPose());
 					rELogger.debug(currentRoute.getDirections());
 					rELogger.debug(currentRoute.getCoordinates());

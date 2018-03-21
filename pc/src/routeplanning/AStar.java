@@ -145,7 +145,7 @@ public class AStar {
 
 		// finds the shortest route between the two points
 		TempRouteInfo ti = null;
-		ti = routeFindingAlgo(currentPosition, targetPosition, tempMap, routes, myStartTime, currentPosition);
+		ti = routeFindingAlgo(currentPosition, targetPosition, tempMap, routes, myStartTime, currentPosition, startingPose);
 		// moves final coordinates to queue and finalises the length of the route
 		coordinates.addAll(ti.getCoords());
 
@@ -171,7 +171,7 @@ public class AStar {
 	 * object
 	 */
 	private TempRouteInfo routeFindingAlgo(Point startPosition, Point targetPosition, Map tempMap, Route[] routes,
-			int myStartTime, Point myStartCoord) {
+			int myStartTime, Point myStartCoord, Pose startPose) {
 
 		while (true) {
 			// finds the shortest route through the map
@@ -179,13 +179,13 @@ public class AStar {
 					targetPosition, routes, myStartTime);
 
 			// produces the route information in the correct order
-			TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints);
+			TempRouteInfo tempInfo = produceInOrderRouteInfo(startPosition, targetPosition, visitedPoints, startPose);
 
 			try {
 				return addRobotAvoidInstructions(tempInfo, routes, myStartTime, myStartCoord, tempMap);
 			} catch (BacktrackNeededException e) {
 				Map updatedMap = tempMap.clone(e.getBlockedPoint());
-				return routeFindingAlgo(startPosition, targetPosition, updatedMap, routes, myStartTime, myStartCoord);
+				return routeFindingAlgo(startPosition, targetPosition, updatedMap, routes, myStartTime, myStartCoord, startPose);
 			}
 		}
 	}
@@ -324,7 +324,7 @@ public class AStar {
 	 * coordinates and directions in the correct order
 	 */
 	private TempRouteInfo produceInOrderRouteInfo(Point startPosition, Point targetPosition,
-			ConcurrentMap<Point, RouteCoordInfo> visitedPoints) {
+			ConcurrentMap<Point, RouteCoordInfo> visitedPoints, Pose startPose) {
 		// loop exit condition
 		boolean atStart = startPosition.equals(targetPosition);
 		Point testPoint = targetPosition;
@@ -345,7 +345,12 @@ public class AStar {
 			tempCoords.set(pInfo.getDistFromStart() - 1, testPoint);
 			testPoint = pInfo.getOriginPoint();
 			atStart = startPosition.equals(testPoint);
-			tempDirs.set(pInfo.getDistFromStart() - 1, getDirection(pInfo.getOriginPoint(), pInfo.getThisPoint()));
+			if (!pInfo.getOriginPoint().equals(pInfo.getThisPoint())) {
+				tempDirs.set(pInfo.getDistFromStart() - 1, getDirection(pInfo.getOriginPoint(), pInfo.getThisPoint()));
+			}
+			else {
+				tempDirs.set(pInfo.getDistFromStart()-1, poseToInt(startPose));
+			}
 		}
 		return new TempRouteInfo(tempCoords, tempDirs);
 	}
