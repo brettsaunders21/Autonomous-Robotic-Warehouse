@@ -60,8 +60,6 @@ public class JobAssignment {
 		}else if (!jobs.isEmpty()) {
 			Job preJob = jobList.getNewJob(robots);
 			ConcurrentHashMap<Robot, ArrayList<Item>> itemsForRobots = tsp.getSplitMap(preJob.getID());
-			//System.out.println(itemsForRobots);
-			//ConcurrentHashMap<Robot, ArrayList<Item>> itemsForRobots = tsp.splitItemsBetweenRobots(preJob,robots);
 			preJob.setDropLocation(tsp.bestDropPoint(itemsForRobots, preJob,robot.getCurrentPosition(),robot.getCurrentPose()));
 			logger.info("Job " + preJob.getID() + " drop point is " + preJob.getDropLocation());
 			job = createSubJob(robot, preJob,itemsForRobots);
@@ -167,7 +165,7 @@ public class JobAssignment {
 		 * 
 		 * 
 		 */
-		//r.setCurrentPosition(job.getDropLocation());
+		r.setCurrentPosition(job.getDropLocation());
 		/*
 		 * Remove above after testing
 		 * 

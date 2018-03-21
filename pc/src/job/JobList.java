@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.sun.corba.se.impl.encoding.OSFCodeSetRegistry.Entry;
-
 import interfaces.Robot;
 
 /*All jobs will be stored in this list and accessed by all classes*/
@@ -15,7 +13,7 @@ import interfaces.Robot;
 public class JobList {
 	private JobSelection jS;
 	private List<Job> jobs;
-	public List<Job> jobsCompleted;
+	private List<Job> jobsCompleted;
 	private ConcurrentHashMap<Integer, ArrayList<Robot>> jobInProgressMap;
 	
 	public JobList(JobSelection _jS, Robot[] robots){
@@ -91,7 +89,6 @@ public class JobList {
 		ArrayList<Job> jobsCompleteAL = new ArrayList<>(jobsCompleted);
 		return jobsCompleteAL;
 	}
-
 
 }
 

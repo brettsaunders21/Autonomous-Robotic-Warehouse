@@ -22,7 +22,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -37,7 +36,7 @@ public class JobsInterface extends JFrame implements Runnable {
 	private JTextField textField;
 	private Thread thread;
 	private Robot[] robots;
-	private List<Job> completedJobs;
+	private ArrayList<Job> completedJobs;
 	GridLayout mainLayout;
 	GridLayout cancelJobLayout = new GridLayout(2, 0);
 	String[][] completedJobsData = new String[20][4];
@@ -56,7 +55,7 @@ public class JobsInterface extends JFrame implements Runnable {
 		setFrame();
 		setPanes();
 		this.robots = robots;
-		this.completedJobs = jobList.jobsCompleted;
+		this.completedJobs = completedJobs;
 		this.jobList = jobList;
 		for (int i = 0; i < robots.length; i++) {
 			currentInfo(robots[i].getRobotName(), i);
@@ -232,17 +231,14 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	// Method that updates the information about completed jobs
 	public void setCompletedJobsInfo() {
-		completedJobs = jobList.getJobsCompleted();
 		try {
 			for (int i = 0; i < completedJobs.size(); i++) {
 				completedJobsData[i][0] = Integer.toString(completedJobs.get(i).getID());
 				completedJobsData[i][1] = Float.toString(completedJobs.get(i).getWEIGHT());
 				completedJobsData[i][2] = Float.toString(completedJobs.get(i).getREWARD());
 				String allItems = "";
-				for (Item item : completedJobs.get(i).getITEMS()){
-					allItems += item.getID();
-					allItems += ",";
-				}
+				for (Item item : completedJobs.get(i).getITEMS())
+					allItems += item.getID() + ",";
 				completedJobsData[i][3] = allItems.substring(0, allItems.length() - 1);
 			}
 		} catch (NullPointerException e) {

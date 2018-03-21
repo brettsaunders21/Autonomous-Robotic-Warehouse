@@ -87,8 +87,8 @@ public class TSP {
 	public int calculateJobDistance(ArrayList<Item> items, Robot robot, Job j) {
 		ArrayList<Item> tempItems = new ArrayList<Item>(items);
 		Robot tempR = robot;
-		//tempItems = orderItems(tempItems, tempR);
-		tempItems = addDropPoints(tempItems, j);
+		tempItems = orderItems(tempItems, tempR);
+		//tempItems = addDropPoints(tempItems, j);
 		int distance = 0;
 		if (!items.isEmpty()) {
 			if (items.size() > 1) {
