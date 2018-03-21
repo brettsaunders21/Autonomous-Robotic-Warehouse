@@ -129,8 +129,8 @@ public class RobotInterface {
 			LCD.clear();
 			break;
 			}
-			
 		}
+			
 		
 		
 	/**
@@ -165,8 +165,21 @@ public class RobotInterface {
 		LCD.drawString("to unload the", 1, 5);
 		LCD.drawString("items.", 1, 6);
 		LCD.drawString("Current items " + itemsHeld + " ", 1, 7);
+//		Button.waitForAnyPress();
+//		if (Button.waitForAnyPress() == Button.ID_ESCAPE){
+//			LCD.clear();
+//			LCD.drawString("You are cancelling", 1, 1);
+//			LCD.drawString(" this job ",  1, 2);
+//			LCD.drawInt(jobCode, 1, 3);
+//			LCD.drawString("Press ENTER to cancel the job, ESCAPE to drop off", 1, 3);
+//			if(Button.waitForAnyPress() == Button.ID_ENTER){
+//				currentJobCancelled();
+//			}
+//			else{
+//				waitForUnloadingMessage();
+//			}
+//		}
 		waitForUnloadingMessage();
-		//LCD.clear();
 	}
 	
 	/**
