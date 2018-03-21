@@ -281,11 +281,14 @@ public class JobsInterface extends JFrame implements Runnable {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
+			System.out.println("yep");
 			for (int indexOfRobot = 0; indexOfRobot < robots.length; indexOfRobot++) {
 				try {
 					String jobTocancel = Integer.toString(robots[indexOfRobot].getActiveJob().getID());
 					if (textField.getText().equals(jobTocancel)) {
-						jobList.cancelJob(Integer.parseInt(textField.getText()));
+						int jobCanceled = Integer.parseInt(textField.getText());
+						System.out.println(jobCanceled);
+						jobList.cancelJob(jobCanceled);
 					}
 				} catch (Exception ee) {
 					// TODO: handle exception

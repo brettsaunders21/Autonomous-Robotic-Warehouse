@@ -50,7 +50,7 @@ public class TSP {
 		ArrayList<Item> tempItems = new ArrayList<Item>(job.getITEMS());
 		Robot tempR = robot;
 		tempItems = orderItems(tempItems, tempR);
-		tempItems = addDropPoints(tempItems);
+		//tempItems = addDropPoints(tempItems);
 		int distance = 0;
 		if (tempItems.size() > 1) 
 		for (int i = 1; i <= tempItems.size() - 1; i++) {
