@@ -6,6 +6,10 @@ import routeplanning.AStar;
 import routeplanning.Map;
 import routeplanning.Route;
 import static org.junit.Assert.*;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import interfaces.Action;
@@ -19,8 +23,10 @@ import interfaces.Pose;
 public class AStarTest {
 	private final static Logger logger = Logger.getLogger(AStarTest.class);
 	private final static Logger aStarLogger = Logger.getLogger(AStar.class);
+	private final static Logger routeLogger = Logger.getLogger(Route.class);
 	private final static Level myLevel = Level.OFF;
 	private final static Level aStarLevel = Level.OFF;
+	private final static Level routeLevel = Level.OFF;
 
 	private Map map = Map.generateRealWarehouseMap();
 	private AStar aStar;
@@ -30,6 +36,7 @@ public class AStarTest {
 		aStar = new AStar(map);
 		logger.setLevel(myLevel);
 		aStarLogger.setLevel(aStarLevel);
+		routeLogger.setLevel(routeLevel);
 	}
 
 	// Starts facing left and wants to travel left
@@ -226,7 +233,6 @@ public class AStarTest {
 	// tests that two robots will not occupy the same space
 	@Test(timeout = 1000)
 	public void multiRobotRouteCoords1() {
-		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(3, 1), new Point(6, 0), Pose.POS_X, new Route[] {}, 0);
 		Route[] rs = new Route[1];
 		rs[0] = r1;
@@ -276,8 +282,6 @@ public class AStarTest {
 	// tests that two robots will not occupy the same space
 	@Test(timeout = 1000)
 	public void multiRobotRouteCoords3() {
-		aStarLogger.setLevel(Level.OFF);
-		logger.setLevel(Level.OFF);
 		Route r1 = aStar.generateRoute(new Point(0, 0), new Point(1, 0), Pose.POS_X, new Route[] {}, 0);
 		Route[] rs = new Route[1];
 		rs[0] = r1;
@@ -539,7 +543,6 @@ public class AStarTest {
 
 	@Test
 	public void adjustTest5() {
-		logger.setLevel(Level.DEBUG);
 		Route r1 = aStar.generateRoute(new Point(4, 7), new Point(5, 5), Pose.POS_Y, new Route[] {}, 15);
 		Route r3 = aStar.generateRoute(new Point(5, 5), new Point(6, 5), Pose.NEG_Y, new Route[] {}, 15);
 		r1 = new Route(r1, Action.PICKUP);
@@ -592,6 +595,38 @@ public class AStarTest {
 		assertArrayEquals(ps3, r1.getCoordinatesArray());
 
 		
+		logger.setLevel(myLevel);
+		aStarLogger.setLevel(aStarLevel);
+	}
+	
+	@Test
+	public void adjustTest6() {
+		aStarLogger.setLevel(Level.DEBUG);
+		routeLogger.setLevel(Level.DEBUG);
+		logger.setLevel(Level.DEBUG);
+		Route r1 = aStar.generateRoute(new Point(9, 5), new Point(7, 7), Pose.POS_X, new Route[] {}, 0);
+		BlockingQueue<Point> crds = new LinkedBlockingQueue<Point>();
+		BlockingQueue<Action> drs = new LinkedBlockingQueue<Action>();
+		
+		
+		crds.add(new Point(7,7));
+		drs.add(Action.DROPOFF);
+
+		Route r3 =new Route(crds, drs, Pose.POS_Y, 0, new Point(8,5));
+
+		//logger.setLevel(Level.DEBUG);
+		r1 = new Route(r1, r3);
+
+		logger.debug(r1.getStartPose());
+		logger.debug(r1.getDirections());
+		logger.debug(r1.getCoordinates());
+
+		Point[] ps1 = new Point[] {new Point(4,6), new Point(5,6), new Point(5,5), new Point(5,5), new Point(6, 5), new Point(6, 5), new Point(6, 4), new Point(6, 3), new Point(6, 2),
+				new Point(5, 2), new Point(5, 1), new Point(5,1) };
+		assertArrayEquals(ps1, r1.getCoordinatesArray());
+
+
+		routeLogger.setLevel(routeLevel);
 		logger.setLevel(myLevel);
 		aStarLogger.setLevel(aStarLevel);
 	}

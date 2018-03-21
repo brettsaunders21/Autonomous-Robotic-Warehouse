@@ -32,5 +32,6 @@ public class JobSelectionTest {
 		Job job = jS.getJob(jS.prioritize(), robot);
 		assertEquals(true, jS.prioritize().contains(job));
 	}
+	
 
 }
