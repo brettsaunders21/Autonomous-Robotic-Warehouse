@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 
 public class JobsInterface extends JFrame implements Runnable {
 
+	private static final long serialVersionUID = 7336286967971471354L;
 	private JPanel contentPane;
 	private JPanel cancelJobPane;
 	private JLabel totalRewardLabel;
@@ -268,6 +269,7 @@ public class JobsInterface extends JFrame implements Runnable {
 		public void actionPerformed(ActionEvent e) {
 						int jobCanceled = Integer.parseInt(textField.getText());
 						jobList.cancelJob(jobCanceled);
+						System.out.println("Job canceled " + jobCanceled);
 				}
 
 			}

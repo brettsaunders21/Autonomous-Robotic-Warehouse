@@ -27,22 +27,24 @@ public class JobAssignment {
 	private Job recentJob;
 	private JobList jobList;
 	private Robot[] robots;
+	private JobSelection jS;
 	
-	public JobAssignment(JobList _jobList, Counter _counter, ArrayList<Point> _drops, Robot[] _robots) {
+	public JobAssignment(JobList _jobList, Counter _counter, ArrayList<Point> _drops, Robot[] _robots, JobSelection _jS) {
 		jobs = _jobList.getJobList();
 		counter = _counter;
 		drops = _drops;
 		tsp = new TSP(drops);
 		jobList = _jobList;
 		robots = _robots;
+		jS = _jS;
 	}
 
 
 	public void assignJobs(Robot robot) {
-		jobs = jobList.getJobList();
+		jobs = new ArrayList<Job>(jobList.getJobList());
 		Job job;
 		if (!jobs.isEmpty()) {
-			job = jobList.getNewJob(robot);
+			job = jS.getJob(jobs, robot);
 		}else{	
 			return;	
 		}

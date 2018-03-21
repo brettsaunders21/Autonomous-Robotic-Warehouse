@@ -58,6 +58,7 @@ public class RobotThread extends Thread{
 		while(true) {
 			//checks if the job is finished or cancelled
 			if (robot.getJobCancelled() || robot.isJobFinished()) {
+				robot.resetJobCanceled();
 				if (robot.isJobFinished()) {
 					//if job is finished, it is added to completedJobs
 					if (robot.getActiveJob() != null) {

@@ -68,18 +68,20 @@ public class RouteExecution {
 			rELogger.debug(ITEMS);
 			//sending instructions (actions)
 			while (!currentDirections.isEmpty()) {
-				if (jobList.getJob(robot.getActiveJob().getID()) != null) {
 					if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) {
 						robot.cancelJob();
+						network.sendObject(robot.getActiveJob().getID());
 						network.sendObject(Action.CANCEL);
+						robot.getActiveJob().setCanceled(true);
 						robot.setWeight(0);
+						robot.jobNotFinished();
+						jobList.remove(robot.getActiveJob().getID());
 						rELogger.debug(robot.getActiveJob() + " has been canceled on " + robot.getRobotName());
 						if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
 							rELogger.error("Never receivered response about cancelation from " + robot.getRobotName());
 						}
 						break;
 					}
-				}
 				currentCommand = currentDirections.poll();
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				

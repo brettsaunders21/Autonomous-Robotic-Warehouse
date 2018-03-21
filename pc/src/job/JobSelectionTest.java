@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import interfaces.Pose;
 import interfaces.Robot;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import lejos.geom.Point;
 
 
 public class JobSelectionTest {
+	private float totalReward = 0;
 
 	@Test
 	public void testPrioritize() {
@@ -26,7 +28,7 @@ public class JobSelectionTest {
 		JobInput jI = new JobInput();
 		JobSelection jS = new JobSelection(jI.getBetaValues());
 		Point point = new Point(0,0);
-		Robot robot = new Robot("test","test",point);
+		Robot robot = new Robot("test","test",point, totalReward, Pose.POS_X);
 		Job job = jS.getJob(jS.prioritize(), robot);
 		assertEquals(true, jS.prioritize().contains(job));
 	}

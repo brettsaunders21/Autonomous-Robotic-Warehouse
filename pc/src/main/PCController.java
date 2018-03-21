@@ -49,7 +49,7 @@ public class PCController {
 		JobList jobList = new JobList(jS);
 		Counter counter = new Counter(ROBOTS);
 		PointsHeld heldPoints = new PointsHeld();
-		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops(), ROBOTS);
+		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops(), ROBOTS, jS);
 
 		// creates new interfaces for warehouse and jobs
 		new WarehouseInterface(ROBOTS);

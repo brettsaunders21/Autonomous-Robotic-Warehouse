@@ -39,7 +39,7 @@ public class Robot {
 		jobFinished = true;
 		reward += activeJob.getREWARD();
 		jobsCompleted += 1;
-		totalReward += reward;
+		totalReward += activeJob.getREWARD();;
 	}
 	
 	public NXTInfo getNXTInfo() {
@@ -48,6 +48,10 @@ public class Robot {
 	
 	public void cancelJob() {
 		jobCancelled = true;
+	}
+	
+	public void resetJobCanceled() {
+		jobCancelled = false;
 	}
 	
 	public boolean getJobCancelled() {
