@@ -167,7 +167,7 @@ public class JobAssignment {
 		 * 
 		 * 
 		 */
-		r.setCurrentPosition(job.getDropLocation());
+		//r.setCurrentPosition(job.getDropLocation());
 		/*
 		 * Remove above after testing
 		 * 

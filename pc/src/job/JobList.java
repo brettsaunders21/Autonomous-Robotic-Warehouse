@@ -15,7 +15,7 @@ import interfaces.Robot;
 public class JobList {
 	private JobSelection jS;
 	private List<Job> jobs;
-	private List<Job> jobsCompleted;
+	public List<Job> jobsCompleted;
 	private ConcurrentHashMap<Integer, ArrayList<Robot>> jobInProgressMap;
 	
 	public JobList(JobSelection _jS, Robot[] robots){
@@ -91,6 +91,7 @@ public class JobList {
 		ArrayList<Job> jobsCompleteAL = new ArrayList<>(jobsCompleted);
 		return jobsCompleteAL;
 	}
+
 
 }
 
