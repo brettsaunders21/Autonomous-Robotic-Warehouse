@@ -439,11 +439,15 @@ public class Route {
 	 */
 	private Action generateRotation(Point firstPoint, Point secondPoint, Pose poseAtFirstPoint) {
 		int direction = AStar.getDirection(firstPoint, secondPoint);
-		logger.setLevel(Level.OFF);
+		Level currentLevel = logger.getLevel();
+		logger.setLevel(Level.DEBUG);
 		logger.debug(direction);
 		logger.debug(firstPoint);
 		logger.debug(secondPoint);
 		int startPose = AStar.poseToInt(poseAtFirstPoint);
-		return AStar.generateDirectionInstruction(startPose, direction);
+		Action a = AStar.generateDirectionInstruction(startPose, direction);
+		logger.debug(a);
+		logger.setLevel(currentLevel);
+		return a;
 	}
 }
