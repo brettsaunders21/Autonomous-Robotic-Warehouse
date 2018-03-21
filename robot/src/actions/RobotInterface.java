@@ -101,34 +101,6 @@ public class RobotInterface {
 		LCD.drawString(robotName, 1, 0 );
 		LCD.drawString("is waiting",1, 1 );
 		LCD.drawString("for orders.", 1, 2);
-		
-		
-	}
-	
-	/**
-	 * Prints a message when the robot is travelling towards the drop off location.
-	 */
-	 public void movingToDestinationMessage(){
-		LCD.clear();
-		LCD.drawString(robotName, 1, 0 );
-		LCD.drawString("is moving to", 1, 1 );
-		LCD.drawString("the drop point.", 1, 2 );
-		LCD.drawString("Job ID: ", 1, 3);
-		LCD.drawInt(jobCode, 1,4);
-		LCD.drawString("Destination Coordinates: ", 1, 5);
-		LCD.drawString(dropLocation, 1,6);
-	}
-	
-	/**
-	 * Prints a message when the robot is travelling towards the item.
-	 */
-	 public void movingToItemMessage(){
-		LCD.clear();
-		LCD.drawString(robotName + " is", 1, 0);
-		LCD.drawString("moving to the collection point", 1, 1);
-		LCD.drawString("Job ID: " + jobCode, 1, 2);
-		LCD.drawString("Destination Coordinates: ", 1, 3);
-		LCD.drawString(dropLocation, 1,4);
 	}
 	
 	/**
@@ -227,6 +199,11 @@ public class RobotInterface {
 	public void dropAll() {
 		itemQuantity = 0;
 		itemsHeld = 0;
+	}
+	
+	public void currentJobCancelled(){
+		LCD.drawString("This job, " + jobCode, 1, 0);
+		LCD.drawString("has been cancelled.", 1, 1);
 	}
 	
 	/**
