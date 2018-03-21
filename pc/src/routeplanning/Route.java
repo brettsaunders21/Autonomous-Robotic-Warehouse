@@ -206,18 +206,17 @@ public class Route {
 		}
 		// checks that the end of the first route is only one grid space away from the
 		// start of the second
-		boolean nonMoveInstructionFirst = false;
-		if (!adjacentCoords(firstRoute.getCoordinatesArray()[firstRoute.getCoordinatesArray().length - 1],
-				secondRoute.getCoordinatesArray()[0])) {
+		if (!firstRoute.getCoordinatesArray()[firstRoute.getCoordinatesArray().length - 1].equals(secondRoute.getStartPoint())) {
+			throw new IllegalArgumentException(
+					"last coordinate of first route is not equal to start coordinate of second route");
+		}
 
-			if (nonMoveFirst(secondRoute.getDirections().peek()) && !secondRoute.getCoordinates().peek().equals(firstRoute.getCoordinatesArray()[firstRoute.getLength()-1])) {
-				throw new IllegalArgumentException(
-						"last coordinate of first route is not adjacent to first coordinate of second route");
-			}
-			else {
-				nonMoveInstructionFirst = true;
-			}
-			
+		boolean nonMoveInstructionFirst = false;
+		if (nonMoveFirst(secondRoute.getDirections().peek()) && secondRoute.getCoordinates().peek().equals(secondRoute.getStartPoint())) {
+			nonMoveInstructionFirst = true;
+		}
+		else {
+			throw new IllegalArgumentException("Points are equal but action is movement");
 		}
 
 		//adds first part of route information to route
