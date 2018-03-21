@@ -12,6 +12,7 @@ import job.JobAssignment;
 import job.JobInput;
 import job.JobList;
 import job.JobSelection;
+import job.TSP;
 import lejos.geom.Point;
 import routeplanning.AStar;
 import warehouse_interface.JobsInterface;
@@ -38,11 +39,12 @@ public class PCController {
 		routeExeLogger.setLevel(Level.ALL);
 		jobAssLogger.setLevel(Level.ALL);
 		JobInput jI = new JobInput();
-		JobSelection jS = new JobSelection(jI.getBetaValues());
-		JobList jobList = new JobList(jS);
+		TSP tsp = new TSP(jI.getDrops());
+		JobSelection jS = new JobSelection(jI.getBetaValues(),tsp);
+		JobList jobList = new JobList(jS, ROBOTS);
 		Counter counter = new Counter(ROBOTS);
 		PointsHeld heldPoints = new PointsHeld();
-		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops(), ROBOTS);
+		JobAssignment jA = new JobAssignment(jobList, counter, jI.getDrops(), ROBOTS,tsp);
 		new WarehouseInterface(ROBOTS);
 		new JobsInterface(ROBOTS, completedJobs, jobList);
 		for (int i = 0; i<numOfRobots; i++) {

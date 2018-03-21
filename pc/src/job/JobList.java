@@ -18,7 +18,7 @@ public class JobList {
 	private List<Job> jobsCompleted;
 	private ConcurrentHashMap<Integer, ArrayList<Robot>> jobInProgressMap;
 	
-	public JobList(JobSelection _jS){
+	public JobList(JobSelection _jS, Robot[] robots){
 		jS = _jS;
 		jobs = Collections.synchronizedList(new ArrayList<Job>(jS.prioritize()));
 		jobInProgressMap = new ConcurrentHashMap<Integer, ArrayList<Robot>>();

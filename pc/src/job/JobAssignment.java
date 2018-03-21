@@ -6,11 +6,8 @@ import interfaces.Pose;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
@@ -38,15 +35,15 @@ public class JobAssignment {
 	private ConcurrentHashMap<Robot, Optional<Job>> waitingMap;
 
 	
-	public JobAssignment(JobList _jobList, Counter _counter, ArrayList<Point> _drops, Robot[] _robots) {
+	public JobAssignment(JobList _jobList, Counter _counter, ArrayList<Point> _drops, Robot[] _robots, TSP tsp2) {
 		jobs = _jobList.getJobList();
 		counter = _counter;
 		drops = _drops;
-		tsp = new TSP(drops);
+		tsp = tsp2;
 		jobList = _jobList;
 		robots = _robots;
 		waitingMap = new ConcurrentHashMap<>();
-
+		
 		for (Robot robot : _robots)
 			waitingMap.put(robot, Optional.empty());
 	}
@@ -62,7 +59,9 @@ public class JobAssignment {
 			waitingMap.put(robot, Optional.empty());
 		}else if (!jobs.isEmpty()) {
 			Job preJob = jobList.getNewJob(robots);
-			ConcurrentHashMap<Robot, ArrayList<Item>> itemsForRobots = tsp.splitItemsBetweenRobots(preJob,robots);
+			ConcurrentHashMap<Robot, ArrayList<Item>> itemsForRobots = tsp.getSplitMap(preJob.getID());
+			//System.out.println(itemsForRobots);
+			//ConcurrentHashMap<Robot, ArrayList<Item>> itemsForRobots = tsp.splitItemsBetweenRobots(preJob,robots);
 			preJob.setDropLocation(tsp.bestDropPoint(itemsForRobots, preJob,robot.getCurrentPosition(),robot.getCurrentPose()));
 			logger.info("Job " + preJob.getID() + " drop point is " + preJob.getDropLocation());
 			job = createSubJob(robot, preJob,itemsForRobots);
@@ -223,6 +222,5 @@ public class JobAssignment {
 		}
 		
 	}
-	
 		
 }

@@ -42,15 +42,15 @@ public class jobAssignmentTest {
 	Counter counter = new Counter(robotList);
 	Job firstJobAssigned;
 	ArrayList<Point> drops;
-
+	TSP tsp = new TSP(jobInput.getDrops());
 	
-	JobSelection jobSelection = new JobSelection(betaValues);
-	JobList jobList = new JobList(jobSelection);
+	JobSelection jobSelection = new JobSelection(betaValues,tsp);
+	JobList jobList = new JobList(jobSelection, robotList);
 	
 
 	public jobAssignmentTest() {
 		drops = jobInput.getDrops();
-		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList,tsp);
 		jobAssignmentLogger.setLevel(Level.INFO);
 		logger.setLevel(Level.OFF);
 		AStarLogger.setLevel(Level.OFF);
@@ -60,8 +60,8 @@ public class jobAssignmentTest {
 
 	@Test
 	public void checkTSP() {
-		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
-		for (int i = 0; i < 80; i++) {
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList,tsp);
+		for (int i = 0; i < 100; i++) {
 			jAssignment.assignJobs(robot1);
 			jAssignment.assignJobs(robot2);
 			jAssignment.assignJobs(robot3);
@@ -69,6 +69,46 @@ public class jobAssignmentTest {
 			//System.out.println(i + "completed");
 		}
 		assertEquals(true,true);
+	}
+	
+	@Test
+	public void checkJobAssigned() {
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList,tsp);
+		jAssignment.assignJobs(robot1);
+		firstJobAssigned = jAssignment.getCurrentJob();
+		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
+	}
+	
+	@Test
+	public void checkMultipleJobsCanAssignWithoutError() {
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList,tsp);
+		for (int i = 0; i < 1000; i++) {
+			jAssignment.assignJobs(robot1);
+			//System.out.println(i + "completed");
+		}
+		jAssignment.assignJobs(robot1);
+		jAssignment.assignJobs(robot1);
+		assertEquals(true,true);
+	}
+	
+	@Test
+	public void dropoffAtEndOfJob() {
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList,tsp);
+		//robot1.setCurrentPosition(new Point(0,0));
+		jAssignment.assignJobs(robot1);
+		Job currentJob = robot1.getActiveJob();
+		Route route = currentJob.getCurrentroute();
+		Action[] routeArray = route.getDirectionArray();
+		assertEquals(Action.DROPOFF, routeArray[routeArray.length-1]);	
+	}
+	
+	@Test
+	public void checkJobGetsCancelled(){
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList,tsp);
+		Robot[] testArray = {robot1};
+		int j1 = jobList.getNewJob(testArray).getID();
+		jobList.cancelJob(j1);
+		assertEquals(true, jobList.getJob(j1).isCanceled());
 	}
 	
 	}

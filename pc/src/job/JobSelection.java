@@ -19,7 +19,7 @@ public class JobSelection {
 	static Logger log4j = Logger.getLogger("jobs.JobSelection");
 
 	JobInput jb = new JobInput();
-	TSP tsp = new TSP(jb.getDrops());
+	TSP tsp;
 
 	private ArrayList<Integer> orderedOrders = new ArrayList<Integer>();
 	private ArrayList<Job> orderedJobs = new ArrayList<Job>();
@@ -35,11 +35,12 @@ public class JobSelection {
 	private ArrayList<String> itemNamesList = jb.itemNames();
 
 	private HashMap<String, Double> betaValuesFromTrainingSet = new HashMap<>();
+	
 
-	public JobSelection(HashMap<String, Double> betaValues) {
+	public JobSelection(HashMap<String, Double> betaValues, TSP tsp2) {
 		this.betaValuesFromTrainingSet = betaValues;
 		log4j.setLevel(Level.OFF);
-
+		tsp = tsp2;
 	}
 
 	public ArrayList<Job> prioritize() {
@@ -139,14 +140,18 @@ public class JobSelection {
 		log4j.debug("Ordered jobs " + orderedJobs.toString());
 		return orderedJobs;
 	}
-	
-	public Job getJob(List<Job> jobs, Robot robot[]) {
-		HashMap<Float,Integer> ratioJob = new HashMap<Float,Integer>();
+
+	public void calculateRatios(List<Job> jobs, Robot robots[]){
+		//HashMap<Float,Integer> ratioJob = new HashMap<>();
+
+	}
+	public Job getJob(List<Job> jobs, Robot robots[]) {
 		ArrayList<Integer> orderedOrders2 = new ArrayList<Integer>();
 		ArrayList<Job> orderedJobs2 = new ArrayList<Job>();
+		 HashMap<Float,Integer> ratioJob = new HashMap<>();
 		for (int i = 0; i < jobs.size(); i++) {
 			
-			int totalDistance = tsp.calculateJobDistance(jobs.get(i), robot);
+			int totalDistance = tsp.calculateJobDistance(jobs.get(i), robots);
 
 			float totalWeight = jobs.get(i).calculateWeight();
 
@@ -156,7 +161,6 @@ public class JobSelection {
 
 			ratioJob.put(ratio,jobs.get(i).getID());			
 		}
-
 		ratiosSet = ratioJob.keySet();
 
 		Float[] ratiosList = ratiosSet.toArray(new Float[ratiosSet.size()]);
