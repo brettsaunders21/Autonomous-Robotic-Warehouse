@@ -24,7 +24,7 @@ public class PCController {
 	private static final Logger jobAssLogger = Logger.getLogger(JobAssignment.class);
 	private static float totalReward = 0;
 	private static final Robot[] ROBOTS = { 
-			new Robot("Spike", "0016530AA681", new Point(0, 0), totalReward, Pose.POS_X),
+			//new Robot("Spike", "0016530AA681", new Point(0, 0), totalReward, Pose.POS_X),
 			//new Robot("Jeremy", "00165308E37C", new Point(0, 7), totalReward, Pos.POS_X),
 			new Robot("Marco", "001653115A7E", new Point(11, 7), totalReward, Pose.POS_X) 
 			};

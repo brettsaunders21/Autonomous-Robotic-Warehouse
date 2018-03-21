@@ -52,12 +52,7 @@ public class RouteExecution {
 	
 	public void run() {
 		try {
-			//checking active job ID exists and job is not cancelled
 			currentJob = robot.getActiveJob();
-			if (jobList.getJob(robot.getActiveJob().getID()) != null) {
-				if (jobList.getJob(robot.getActiveJob().getID()).isCanceled())
-					robot.cancelJob();
-			}
 			//retrieving Arraylist of items
 			ITEMS = currentJob.getITEMS();
 			currentDirections = currentJob.getCurrentroute().getDirections();
@@ -67,12 +62,24 @@ public class RouteExecution {
 			Point previousPoint = currentJob.getCurrentroute().getStartPoint();
 			
 			rELogger.debug(currentDirections);
-			rELogger.debug(currentJob.getCurrentroute().getDirections());
+			rELogger.debug(currentJob.getCurrentroute().getCoordinates());
 			rELogger.debug(currentJob.getCurrentroute().getStartTime());
 			rELogger.debug(counter.getTime());
 			rELogger.debug(ITEMS);
 			//sending instructions (actions)
 			while (!currentDirections.isEmpty()) {
+				if (jobList.getJob(robot.getActiveJob().getID()) != null) {
+					if (jobList.getJob(robot.getActiveJob().getID()).isCanceled()) {
+						robot.cancelJob();
+						network.sendObject(Action.CANCEL);
+						robot.setWeight(0);
+						rELogger.debug(robot.getActiveJob() + " has been canceled on " + robot.getRobotName());
+						if (!network.receiveAction().equals(Action.ACTION_COMPLETE)) {
+							rELogger.error("Never receivered response about cancelation from " + robot.getRobotName());
+						}
+						break;
+					}
+				}
 				currentCommand = currentDirections.poll();
 				Point whereImGoing = currentJob.getCurrentroute().getCoordinates().poll();
 				

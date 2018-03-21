@@ -268,7 +268,7 @@ public class Route {
 
 	/*checks if the given instruction is a non-movement action*/
 	private boolean nonMoveFirst(Action action) {
-		return (action.equals(Action.DROPOFF)||action.equals(Action.HOLD)|| action.equals(Action.PICKUP));
+		return (action.equals(Action.DROPOFF)||action.equals(Action.HOLD)|| action.equals(Action.PICKUP)||action.equals(Action.WAIT));
 	}
 	
 	/* checks if two points are at adjacent grid positions to each other */
