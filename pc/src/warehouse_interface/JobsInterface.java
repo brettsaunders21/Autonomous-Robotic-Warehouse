@@ -39,7 +39,7 @@ public class JobsInterface extends JFrame implements Runnable {
 	private ArrayList<Job> completedJobs;
 	GridLayout mainLayout;
 	GridLayout cancelJobLayout = new GridLayout(2, 0);
-	String[][] completedJobsData = new String[20][4];
+	String[][] completedJobsData = new String[20][3];
 	String[][] itemsInformationData = new String[30][3];
 	String[][] robotInfoData = new String[1][4];
 	String[][] robot1Data = new String[1][5];
@@ -94,7 +94,7 @@ public class JobsInterface extends JFrame implements Runnable {
 		contentPane.setLayout(mainLayout);
 		JLabel label = new JLabel("Completed jobs");
 		add(label);
-		String[] fields = { "Job ID", "Total Weight", "Total Reward", "All Items" };
+		String[] fields = { "Job ID", "Total Weight", "Total Reward" };
 		t = new JTable(completedJobsData, fields);
 		t.setFillsViewportHeight(true);
 		JScrollPane scrollPane = new JScrollPane(t);
@@ -236,10 +236,6 @@ public class JobsInterface extends JFrame implements Runnable {
 				completedJobsData[i][0] = Integer.toString(completedJobs.get(i).getID());
 				completedJobsData[i][1] = Float.toString(completedJobs.get(i).getWEIGHT());
 				completedJobsData[i][2] = Float.toString(completedJobs.get(i).getREWARD());
-				String allItems = "";
-				for (Item item : completedJobs.get(i).getITEMS())
-					allItems += item.getID() + ",";
-				completedJobsData[i][3] = allItems.substring(0, allItems.length() - 1);
 			}
 		} catch (NullPointerException e) {
 		}
@@ -247,12 +243,15 @@ public class JobsInterface extends JFrame implements Runnable {
 
 	// Method that updates total reward
 	public void updateTotalReward() {
+		float checkReward = allRewardSum;
 		for (int i = 0; i < robots.length; i++) {
 			try {
-				allRewardSum += robots[i].currentReward();
+				checkReward += robots[i].currentReward();			
 			} catch (NullPointerException e) {
 
 			}
+			if(allRewardSum != checkReward)
+				allRewardSum = checkReward;
 		}
 		totalReward.setText("Total reward: " + Float.toString(allRewardSum));
 	}
