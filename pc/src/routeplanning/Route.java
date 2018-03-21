@@ -241,11 +241,14 @@ public class Route {
 		BlockingQueue<Action> temp = secondRoute.getDirections();
 		// the first instructon of the second route has to be changed to change the
 		// direction the robot is travelling in
-		if (!nonMoveInstructionFirst) {
+		if (secondRoute.getCoordinates().peek().equals(firstRoute.getCoordinatesArray()[firstRoute.getLength()-1])) {
+			this.directions.addAll(temp);
+		}
+		else {
 			temp.remove();
 			Point[] ps = firstRoute.getCoordinatesArray();
 			Point p1 = ps[ps.length - 1];
-			Point p2 = secondRoute.getCoordinatesArray()[0];
+			Point p2 = secondRoute.getCoordinates().peek();
 
 			// adds correct direction instruction
 			Level currentLevel = logger.getLevel();
@@ -253,8 +256,8 @@ public class Route {
 			logger.debug(secondRoute.getDirections().peek());
 			logger.setLevel(currentLevel);
 			this.directions.add(generateRotation(p1, p2, firstRoute.getFinalPose()));
+			this.directions.addAll(temp);
 		}
-		this.directions.addAll(temp);
 
 		this.coordinates.addAll(secondRoute.getCoordinates());
 		Point[] p = new Point[coordinates.size()];
@@ -439,15 +442,15 @@ public class Route {
 	 */
 	private Action generateRotation(Point firstPoint, Point secondPoint, Pose poseAtFirstPoint) {
 		int direction = AStar.getDirection(firstPoint, secondPoint);
-		Level currentLevel = logger.getLevel();
-		logger.setLevel(Level.DEBUG);
+		//Level currentLevel = logger.getLevel();
+		//logger.setLevel(Level.DEBUG);
 		logger.debug(direction);
 		logger.debug(firstPoint);
 		logger.debug(secondPoint);
 		int startPose = AStar.poseToInt(poseAtFirstPoint);
 		Action a = AStar.generateDirectionInstruction(startPose, direction);
 		logger.debug(a);
-		logger.setLevel(currentLevel);
+		//logger.setLevel(currentLevel);
 		return a;
 	}
 }

@@ -61,7 +61,7 @@ public class AStar {
 		coordinates = r.getCoordinates().toArray(coordinates);
 		
 		//find the next hold/pickup/dropoff coordinate
-		int endPointIndex = directions.length - 1;
+		int endPointIndex = directions.length;
 		for (int i = 0; i < directions.length; i++) {
 			if (directions[i].equals(Action.PICKUP) || directions[i].equals(Action.DROPOFF)
 					|| directions[i].equals(Action.HOLD)) {
@@ -84,14 +84,14 @@ public class AStar {
 				|| dirQ.peek().equals(Action.DROPOFF)) {
 			coord = coordQ.peek();
 			Level currentLevel = logger.getLevel();
-			logger.setLevel(Level.DEBUG);
+			//logger.setLevel(Level.DEBUG);
 			logger.debug(coordQ.peek());
 			logger.debug(dirQ.peek());
 			logger.setLevel(currentLevel);
 		} else {
 			coord = coordQ.poll();
 			Level currentLevel = logger.getLevel();
-			logger.setLevel(Level.DEBUG);
+			//logger.setLevel(Level.DEBUG);
 			logger.debug(coord);
 			logger.debug(dirQ.poll());
 			logger.setLevel(currentLevel);
