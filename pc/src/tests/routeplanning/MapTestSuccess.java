@@ -50,24 +50,4 @@ public class MapTestSuccess {
 		Map.createTestMap(width, height, new Point[] { new Point(pointx, pointy) });
 	}
 	
-	//checks that the generateRealWarehouseMap() method produces a warehouse of the expected layout
-	@Test
-	public void warehouseConstructorTest() {
-		Map map = Map.generateRealWarehouseMap();
-		boolean[][] p = map.getPassable();
-		assertEquals(12, p.length);
-		assertEquals(8, p[0].length);
-		boolean[][] obstr = new boolean[12][8];
-		for (int x = 0; x<12; x++) {
-			for (int y = 0; y<8; y++) {
-				obstr[x][y] = false;
-			}
-		}
-		for (int x = 1; x<11; x=x+3) {
-			for (int y = 1; y<6; y++) {
-				obstr[x][y] = true;
-			}
-		}
-		assertArrayEquals(obstr, p);
-	}
 }

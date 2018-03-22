@@ -127,6 +127,8 @@ public abstract class AbstractSenderReceiver implements Runnable {
 			outputStream.writeDouble((Double) inputObject);
 		} else if (inputObject instanceof Float) {
 			outputStream.writeFloat((Float) inputObject);
+		} else {
+			throw new IllegalArgumentException("Can't send object of type " + inputObject.getClass());
 		}
 
 		// Include an exception for any other data types

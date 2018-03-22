@@ -12,6 +12,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import interfaces.Action;
+import interfaces.Pose;
 import interfaces.Robot;
 import job.Job;
 import job.JobAssignment;
@@ -25,9 +26,8 @@ import routeplanning.Route;
 
 //Job input, job selection, job assignment, robot and route planning
 public class jobAssignmentTest {
-	//private final static Logger logger = Logger.getLogger(AssignmentTest.class);;
 	JobInput jobInput =  new JobInput();
-	private Robot robot1 = new Robot("Spike", "0016530AA681", new Point(0,0));
+	private Robot robot1 = new Robot("Spike", "0016530AA681", new Point(0,0), 0, Pose.POS_X);
 	private Robot[] robotList = {robot1};
 	private JobAssignment jAssignment;
 	private HashMap<String, Double> betaValues = jobInput.getBetaValues();
@@ -47,7 +47,7 @@ public class jobAssignmentTest {
 	
 	public jobAssignmentTest() {
 		drops = jobInput.getDrops();
-		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList, jobSelection);
 		jobAssignmentLogger.setLevel(Level.INFO);
 		//logger.setLevel(Level.DEBUG);
 		logger.setLevel(Level.OFF);
@@ -57,7 +57,7 @@ public class jobAssignmentTest {
 
 	@Test
 	public void checkJobAssigned() {
-		jAssignment = new JobAssignment(jobList, counter, drops, robotList);
+		jAssignment = new JobAssignment(jobList, counter, drops, robotList, jobSelection);
 		jAssignment.assignJobs(robot1);
 		firstJobAssigned = jAssignment.getCurrentJob();
 		assertEquals(firstJobAssigned.getID(), robot1.getActiveJob().getID());
@@ -65,7 +65,7 @@ public class jobAssignmentTest {
 	
 	@Test
 	public void checkMultipleJobsCanAssignWithoutError() {
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 10; i++) {
 			jAssignment.assignJobs(robot1);
 			//System.out.println(i + "completed");
 		}
@@ -86,7 +86,8 @@ public class jobAssignmentTest {
 	
 	@Test
 	public void checkJobGetsCancelled(){
-		int j1 = jobList.getNewJob(robot1).getID();
+		//int j1 = jobList.getNewJob(robot1).getID();
+		int j1 = jobSelection.getJob(jobList.getJobList(), robot1).getID();
 		jobList.cancelJob(j1);
 		assertEquals(true, jobList.getJob(j1).isCanceled());
 	}
